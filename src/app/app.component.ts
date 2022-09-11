@@ -1,8 +1,22 @@
-import { HttpClient } from "@angular/common/http";
-import { Component, ViewChild } from '@angular/core';
-import { AgGridAngular } from "ag-grid-angular";
-import { CellClickedEvent, ColDef, GridReadyEvent } from "ag-grid-community";
-import { Observable } from "rxjs";
+import { Component } from '@angular/core';
+import { ColDef } from "ag-grid-community";
+import { DUMMY_SONGS } from "./songs/dummy-songs";
+import { Song } from "./songs/model";
+
+const COL_DEFS = [
+    {
+        field: 'title',
+        minWidth: 100
+    },
+    {
+        field: 'interpret',
+        minWidth: 100
+    },
+    {
+        field: 'link',
+        minWidth: 200
+    }
+];
 
 @Component({
     selector: 'app-root',
@@ -10,39 +24,6 @@ import { Observable } from "rxjs";
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
-    public columnDefs: ColDef[] = [
-        {field: 'make'},
-        {field: 'model'},
-        {field: 'price'}
-    ];
-
-    public defaultColDef: ColDef = {
-        sortable: true,
-        filter: true,
-    };
-
-    public rowData$!: Observable<any[]>;
-
-    @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
-
-    constructor(private http: HttpClient) {
-    }
-
-    // Example load data from sever
-    onGridReady(params: GridReadyEvent) {
-        this.rowData$ = this.http
-            .get<any[]>('https://www.ag-grid.com/example-assets/row-data.json');
-    }
-
-    // Example of consuming Grid Event
-    onCellClicked(e: CellClickedEvent): void {
-        console.log('cellClicked', e);
-    }
-
-    // Example using Grid's API
-    clearSelection(): void {
-        this.agGrid.api.deselectAll();
-    }
-
+    columnDefs: ColDef[] = COL_DEFS;
+    rowData: Song[] = DUMMY_SONGS;
 }
