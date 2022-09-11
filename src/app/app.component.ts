@@ -1,16 +1,15 @@
 import { Component } from '@angular/core';
-import { ColDef } from "ag-grid-community";
+import { ColDef, GridOptions, GridSizeChangedEvent } from "ag-grid-community";
 import { DUMMY_SONGS } from "./songs/dummy-songs";
-import { Song } from "./songs/model";
 
-const COL_DEFS = [
+const COL_DEFS: ColDef[] = [
     {
         field: 'title',
-        minWidth: 100
+        minWidth: 100,
     },
     {
         field: 'interpret',
-        minWidth: 100
+        minWidth: 100,
     },
     {
         field: 'link',
@@ -24,6 +23,11 @@ const COL_DEFS = [
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-    columnDefs: ColDef[] = COL_DEFS;
-    rowData: Song[] = DUMMY_SONGS;
+    gridOptions: GridOptions = {
+        columnDefs: COL_DEFS,
+        rowData: DUMMY_SONGS,
+        onGridSizeChanged: (event: GridSizeChangedEvent) => {
+            event.api.sizeColumnsToFit();
+        },
+    }
 }
