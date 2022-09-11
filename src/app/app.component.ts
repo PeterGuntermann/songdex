@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ColDef, GridOptions, GridSizeChangedEvent } from "ag-grid-community";
 import { DUMMY_SONGS } from "./songs/dummy-songs";
+import { SongsService } from "./songs/songs.service";
 
 const COL_DEFS: ColDef[] = [
     {
@@ -22,7 +23,7 @@ const COL_DEFS: ColDef[] = [
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     gridOptions: GridOptions = {
         columnDefs: COL_DEFS,
         rowData: DUMMY_SONGS,
@@ -30,4 +31,11 @@ export class AppComponent {
             event.api.sizeColumnsToFit();
         },
     }
+
+    constructor(private songsService: SongsService) {}
+
+    ngOnInit() {
+        this.songsService.querySongs()
+    }
+
 }
