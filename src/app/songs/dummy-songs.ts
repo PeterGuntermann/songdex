@@ -10,5 +10,5 @@ export const DUMMY_SONGS: Song[] = [
         title: "Hold the line",
         interpret: "Toto",
         link: "https://www.youtube.com/watch?v=htgr3pvBr-I",
-    }
-]
+    },
+];

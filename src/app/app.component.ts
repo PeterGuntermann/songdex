@@ -1,27 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 import { ColDef, GridOptions, GridSizeChangedEvent } from "ag-grid-community";
 import { DUMMY_SONGS } from "./songs/dummy-songs";
 import { SongsService } from "./songs/songs.service";
 
 const COL_DEFS: ColDef[] = [
     {
-        field: 'title',
+        field: "title",
         minWidth: 100,
     },
     {
-        field: 'interpret',
+        field: "interpret",
         minWidth: 100,
     },
     {
-        field: 'link',
-        minWidth: 200
-    }
+        field: "link",
+        minWidth: 200,
+    },
 ];
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss']
+    selector: "app-root",
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit {
     gridOptions: GridOptions = {
@@ -30,12 +30,11 @@ export class AppComponent implements OnInit {
         onGridSizeChanged: (event: GridSizeChangedEvent) => {
             event.api.sizeColumnsToFit();
         },
-    }
+    };
 
     constructor(private songsService: SongsService) {}
 
     ngOnInit() {
-        this.songsService.querySongs()
+        this.songsService.querySongs();
     }
-
 }

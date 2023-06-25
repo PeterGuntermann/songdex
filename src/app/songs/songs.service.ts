@@ -1,22 +1,20 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import { DUMMY_SONGS } from "./dummy-songs";
 import { Song } from "./model";
 
 namespace Spreadsheet {
-    const sheetId = "1DIje1IZ6hqs8GVWLBtpiB6iesN8ceOvP5z9t63iud-c"
-    const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`
-    const sheetName = "mainSheet"
-    const query = encodeURIComponent('Select *')
-    const url = `${base}&sheet=${sheetName}&tq=${query}`
+    const sheetId = "1DIje1IZ6hqs8GVWLBtpiB6iesN8ceOvP5z9t63iud-c";
+    const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
+    const sheetName = "mainSheet";
+    const query = encodeURIComponent("Select *");
+    const url = `${base}&sheet=${sheetName}&tq=${query}`;
 }
 
-
 @Injectable({
-    providedIn: 'root'
+    providedIn: "root",
 })
 export class SongsService {
-
     private _songs: Song[] = [];
 
     constructor(private http: HttpClient) {
@@ -25,20 +23,19 @@ export class SongsService {
 
     querySongs() {
         console.log("QUERY");
-        this.http.get(this._googleSpreadsheetUrl).subscribe(
-            x => console.log("SUCCESS:", x))
+        this.http.get(this._googleSpreadsheetUrl).subscribe(x => console.log("SUCCESS:", x));
     }
 
     get songs() {
-        return this._songs
+        return this._songs;
     }
 
     private get _googleSpreadsheetUrl(): string {
-        const sheetId = "1DIje1IZ6hqs8GVWLBtpiB6iesN8ceOvP5z9t63iud-c"
-        const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`
-        const sheetName = "mainSheet"
-        const query = encodeURIComponent('Select *')
-        const url = `${base}&sheet=${sheetName}&tq=${query}`
+        const sheetId = "1DIje1IZ6hqs8GVWLBtpiB6iesN8ceOvP5z9t63iud-c";
+        const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
+        const sheetName = "mainSheet";
+        const query = encodeURIComponent("Select *");
+        const url = `${base}&sheet=${sheetName}&tq=${query}`;
 
         console.log(url);
         return url;
@@ -49,5 +46,4 @@ export class SongsService {
         // const httpParams = "edit?usp=sharing"
         // return `${apiBase}/${sheetHash}/${httpParams}`;
     }
-
 }
