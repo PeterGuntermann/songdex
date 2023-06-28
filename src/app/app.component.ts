@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ColDef, GridOptions, GridSizeChangedEvent } from "ag-grid-community";
 import { PersistenceService } from "./persistence.service";
-import { DUMMY_SONGS } from "./songs/dummy-songs";
+import { Song } from "./songs/model";
 import { SongRepository } from "./songs/song-repository.service";
 
 const COL_DEFS: ColDef[] = [
@@ -25,9 +25,11 @@ const COL_DEFS: ColDef[] = [
     styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit {
+    songs: Song[] = [];
+
     gridOptions: GridOptions = {
         columnDefs: COL_DEFS,
-        rowData: DUMMY_SONGS,
+        rowData: this.songs,
         onGridSizeChanged: (event: GridSizeChangedEvent) => {
             event.api.sizeColumnsToFit();
         },
@@ -37,7 +39,7 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         this.songRepository.fetchSongsFromServer();
-        this.songRepository.getAll();
+        this.songs = this.songRepository.getAll();
         this.songRepository.seedWithDummyData();
     }
 }

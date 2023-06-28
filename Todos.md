@@ -10,3 +10,4 @@
 - [ ] elaborate Song model, formulate Features
 - [ ] decide about testing (Jest, Cypress, Jasmine, Karma?)
 - [ ] service for logging
+- [ ] actually display the fetched data and not the dummies
