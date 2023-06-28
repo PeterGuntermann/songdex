@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ColDef, GridOptions, GridSizeChangedEvent } from "ag-grid-community";
 import { PersistenceService } from "./persistence.service";
 import { DUMMY_SONGS } from "./songs/dummy-songs";
-import { SongsService } from "./songs/songs.service";
+import { SongRepository } from "./songs/song-repository.service";
 
 const COL_DEFS: ColDef[] = [
     {
@@ -33,11 +33,11 @@ export class AppComponent implements OnInit {
         },
     };
 
-    constructor(private songsService: SongsService, private persistence: PersistenceService) {}
+    constructor(private songRepository: SongRepository, private persistence: PersistenceService) {}
 
     ngOnInit() {
-        this.songsService.querySongs();
-        this.persistence.seedWithDummyData();
-        this.persistence.fetchValueByKey("songs").then(console.log);
+        this.songRepository.fetchSongsFromServer();
+        this.songRepository.getAll();
+        this.songRepository.seedWithDummyData();
     }
 }

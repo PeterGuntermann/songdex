@@ -9,4 +9,4 @@
 - [ ] Display data from KV
 - [ ] elaborate Song model, formulate Features
 - [ ] decide about testing (Jest, Cypress, Jasmine, Karma?)
-- [ ] 
+- [ ] service for logging
