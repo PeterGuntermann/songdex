@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { ColDef, GridOptions, GridSizeChangedEvent } from "ag-grid-community";
-import { environment } from "../environments/environment";
 import { DUMMY_SONGS } from "./songs/dummy-songs";
 import { SongsService } from "./songs/songs.service";
 
@@ -37,6 +36,5 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         this.songsService.querySongs();
-        console.log(environment.env);
     }
 }
