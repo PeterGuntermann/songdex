@@ -3,14 +3,14 @@ import { EnvironmentPlugin } from "webpack";
 
 config();
 
-console.log("process.env", process.env);
-
 module.exports = {
     plugins: [
         new EnvironmentPlugin([
-            "FOO",
-            // "KV_REST_API_TOKEN",
-            // "KV_REST_API_URL"
+            // Vercel KV
+            "KV_URL",
+            "KV_REST_API_URL",
+            "KV_REST_API_TOKEN",
+            "KV_REST_API_READ_ONLY_TOKEN",
         ]),
     ],
 };

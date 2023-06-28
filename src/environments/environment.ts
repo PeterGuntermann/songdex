@@ -4,7 +4,12 @@
 
 export const environment = {
     production: false,
-    env: process.env["FOO"],
+    kv: {
+        url: process.env["KV_URL"],
+        restApiUrl: process.env["KV_REST_API_URL"],
+        restApiToken: process.env["KV_REST_API_TOKEN"],
+        restApiReadOnlyToken: process.env["KV_REST_API_READ_ONLY_TOKEN"],
+    },
 };
 
 /*
