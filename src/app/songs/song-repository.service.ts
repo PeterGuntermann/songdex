@@ -23,7 +23,7 @@ export class SongRepository {
         }
     }
 
-    getAll(): Observable<Song[]> {
+    get allSongs$(): Observable<Song[]> {
         return this._songs$;
     }
 
@@ -33,7 +33,24 @@ export class SongRepository {
         });
     }
 
+    /** @obsolete This method can be removed as soon as ADD is implemented. */
     seedWithDummyData() {
         this.persistence.setKeyValue(this.DATABASE_KEY, DUMMY_SONGS);
+    }
+
+    addSong(song: Song) {
+        console.log("Not yet implemented.");
+    }
+
+    getSongById(id: string) {
+        console.log("Not yet implemented.");
+    }
+
+    updateSong(id: string) {
+        console.log("Not yet implemented.");
+    }
+
+    deleteSong(id: string) {
+        console.log("Not yet implemented.");
     }
 }

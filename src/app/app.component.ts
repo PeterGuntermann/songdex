@@ -38,13 +38,9 @@ export class AppComponent implements OnInit, OnDestroy {
     constructor(public songRepository: SongRepository) {}
 
     ngOnInit() {
-        this.songRepository
-            .getAll()
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe(songs => {
-                console.log("subscribed to songs:", songs);
-                this.songs = songs;
-            });
+        this.songRepository.allSongs$.pipe(takeUntil(this.onDestroy$)).subscribe(songs => {
+            this.songs = songs;
+        });
     }
 
     ngOnDestroy(): void {
