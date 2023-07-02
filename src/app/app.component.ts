@@ -28,7 +28,6 @@ export class AppComponent implements OnInit {
 
     gridOptions: GridOptions = {
         columnDefs: COL_DEFS,
-        rowData: this.songs,
         onGridSizeChanged: (event: GridSizeChangedEvent) => {
             event.api.sizeColumnsToFit();
         },
@@ -38,6 +37,5 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         this.songs = this.songRepository.getAll();
-        console.log(this.songs);
     }
 }
