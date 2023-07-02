@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, isDevMode } from "@angular/core";
 import { PersistenceService } from "../persistence.service";
 import { DUMMY_SONGS } from "./dummy-songs";
 import { Song } from "./model";
@@ -11,7 +11,13 @@ export class SongRepository {
 
     private _songs: Song[] = [];
 
-    constructor(private persistence: PersistenceService) {}
+    constructor(private persistence: PersistenceService) {
+        if (isDevMode()) {
+            this._songs = DUMMY_SONGS;
+        } else {
+            this.fetchSongsFromServer();
+        }
+    }
 
     getAll() {
         return this._songs;

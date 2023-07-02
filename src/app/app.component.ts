@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { ColDef, GridOptions, GridSizeChangedEvent } from "ag-grid-community";
-import { PersistenceService } from "./persistence.service";
 import { Song } from "./songs/model";
 import { SongRepository } from "./songs/song-repository.service";
 
@@ -35,11 +34,10 @@ export class AppComponent implements OnInit {
         },
     };
 
-    constructor(private songRepository: SongRepository, private persistence: PersistenceService) {}
+    constructor(public songRepository: SongRepository) {}
 
     ngOnInit() {
-        this.songRepository.fetchSongsFromServer();
         this.songs = this.songRepository.getAll();
-        this.songRepository.seedWithDummyData();
+        console.log(this.songs);
     }
 }

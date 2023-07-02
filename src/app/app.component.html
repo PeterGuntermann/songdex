@@ -2,7 +2,11 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Coversongs</a>
 
-        <button class="btn btn-primary">Click me</button>
+        <button class="btn btn-primary" (click)="songRepository.fetchSongsFromServer()">Fetch from server</button>
+
+        <button class="btn btn-outline-secondary" (click)="songRepository.seedWithDummyData()">
+            Seed with dummy data
+        </button>
     </div>
 </nav>
 
