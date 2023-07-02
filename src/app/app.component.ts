@@ -1,5 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ColDef, GridOptions, GridSizeChangedEvent } from "ag-grid-community";
+import { Subject, takeUntil } from "rxjs";
 import { Song } from "./songs/model";
 import { SongRepository } from "./songs/song-repository.service";
 
@@ -23,8 +24,9 @@ const COL_DEFS: ColDef[] = [
     templateUrl: "./app.component.html",
     styleUrls: ["./app.component.scss"],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
     songs: Song[] = [];
+    onDestroy$ = new Subject();
 
     gridOptions: GridOptions = {
         columnDefs: COL_DEFS,
@@ -36,6 +38,16 @@ export class AppComponent implements OnInit {
     constructor(public songRepository: SongRepository) {}
 
     ngOnInit() {
-        this.songs = this.songRepository.getAll();
+        this.songRepository
+            .getAll()
+            .pipe(takeUntil(this.onDestroy$))
+            .subscribe(songs => {
+                console.log("subscribed to songs:", songs);
+                this.songs = songs;
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.onDestroy$.next(1);
     }
 }

@@ -5,7 +5,7 @@ import { kv } from "@vercel/kv";
     providedIn: "root",
 })
 export class PersistenceService {
-    async fetchValueByKey(key: string): Promise<unknown | null> {
+    async fetchValueByKey<T>(key: string): Promise<T | null> {
         return kv.get(key);
     }
 
