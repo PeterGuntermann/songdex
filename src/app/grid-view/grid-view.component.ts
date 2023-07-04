@@ -14,6 +14,7 @@ export class GridViewComponent {
     gridOptions: GridOptions = {
         columnDefs: gridColumnDefinitions,
         suppressCellFocus: true,
+        suppressMovableColumns: true,
         onGridSizeChanged: (event: GridSizeChangedEvent) => {
             event.api.sizeColumnsToFit();
         },
