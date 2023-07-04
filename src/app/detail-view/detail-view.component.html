@@ -1,8 +1,10 @@
 <div class="container">
     <ng-container *ngIf="song; else noSong">
-        <h2>Song {{ this.song }}</h2>
+        <h2>{{ song.title }}</h2>
 
-        <p>More song stuff...</p>
+        <p>by {{ song.interpret }}</p>
+
+        <a href="{{ song.link }}" target="_blank">{{ song.link }}</a>
     </ng-container>
 
     <ng-template #noSong>
