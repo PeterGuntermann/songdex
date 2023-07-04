@@ -14,8 +14,8 @@ export class DetailViewComponent implements OnInit {
     constructor(private route: ActivatedRoute, private songRepository: SongRepository) {}
 
     ngOnInit(): void {
-        this.route.params.subscribe(({ songId }) => {
-            this.song = this.songRepository.getSongById(songId);
+        this.route.params.subscribe(async ({ songId }) => {
+            this.song = await this.songRepository.getSongById(songId);
             console.log(songId, this.song);
         });
     }

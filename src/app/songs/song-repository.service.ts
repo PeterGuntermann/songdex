@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, isDevMode } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, firstValueFrom, Observable } from "rxjs";
 import { PersistenceService } from "../persistence.service";
 import { DUMMY_SONGS } from "./dummy-songs";
 import { Song } from "./model";
@@ -42,9 +42,9 @@ export class SongRepository {
         console.log("Not yet implemented.");
     }
 
-    getSongById(id: string): Song | undefined {
-        console.log("Not yet implemented.");
-        return undefined;
+    async getSongById(id: string): Promise<Song | undefined> {
+        const songs = await firstValueFrom(this.allSongs$);
+        return songs.find(song => song.id === id);
     }
 
     updateSong(id: string) {
