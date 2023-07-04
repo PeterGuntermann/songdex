@@ -1,6 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Song } from "../songs/model";
-import { Subject, takeUntil } from "rxjs";
+import { Component } from "@angular/core";
 import { GridOptions, GridSizeChangedEvent } from "ag-grid-community";
 import { SongRepository } from "../songs/song-repository.service";
 import { gridColumnDefinitions } from "./grid-column-definitions";
@@ -10,10 +8,7 @@ import { gridColumnDefinitions } from "./grid-column-definitions";
     templateUrl: "./grid-view.component.html",
     styleUrls: ["./grid-view.component.scss"],
 })
-export class GridViewComponent implements OnInit, OnDestroy {
-    songs: Song[] = [];
-    onDestroy$ = new Subject();
-
+export class GridViewComponent {
     gridOptions: GridOptions = {
         columnDefs: gridColumnDefinitions,
         onGridSizeChanged: (event: GridSizeChangedEvent) => {
@@ -22,14 +17,4 @@ export class GridViewComponent implements OnInit, OnDestroy {
     };
 
     constructor(public songRepository: SongRepository) {}
-
-    ngOnInit() {
-        this.songRepository.allSongs$.pipe(takeUntil(this.onDestroy$)).subscribe(songs => {
-            this.songs = songs;
-        });
-    }
-
-    ngOnDestroy(): void {
-        this.onDestroy$.next(1);
-    }
 }
