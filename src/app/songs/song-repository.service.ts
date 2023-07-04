@@ -42,8 +42,9 @@ export class SongRepository {
         console.log("Not yet implemented.");
     }
 
-    getSongById(id: string) {
+    getSongById(id: string): Song | undefined {
         console.log("Not yet implemented.");
+        return undefined;
     }
 
     updateSong(id: string) {

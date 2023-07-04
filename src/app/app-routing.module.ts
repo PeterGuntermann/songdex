@@ -4,7 +4,7 @@ import { GridViewComponent } from "./grid-view/grid-view.component";
 import { DetailViewComponent } from "./detail-view/detail-view.component";
 
 const routes: Routes = [
-    { path: "detail/:id", component: DetailViewComponent },
+    { path: "detail/:songId", component: DetailViewComponent },
     { path: "", component: GridViewComponent },
 ];
 

@@ -1,1 +1,11 @@
-<p>detail-view works!</p>
+<div class="container">
+    <ng-container *ngIf="song; else noSong">
+        <h2>Song {{ this.song }}</h2>
+
+        <p>More song stuff...</p>
+    </ng-container>
+
+    <ng-template #noSong>
+        <div class="alert alert-warning">No song found by the given ID.</div>
+    </ng-template>
+</div>
