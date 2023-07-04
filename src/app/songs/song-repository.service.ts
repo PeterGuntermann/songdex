@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, isDevMode } from "@angular/core";
-import { BehaviorSubject, firstValueFrom, Observable } from "rxjs";
+import { BehaviorSubject, filter, firstValueFrom, Observable } from "rxjs";
 import { PersistenceService } from "../persistence.service";
 import { DUMMY_SONGS } from "./dummy-songs";
 import { Song } from "./model";
@@ -43,7 +43,7 @@ export class SongRepository {
     }
 
     async getSongById(id: string): Promise<Song | undefined> {
-        const songs = await firstValueFrom(this.allSongs$);
+        const songs = await firstValueFrom(this.allSongs$.pipe(filter(songs => songs.length > 0)));
         return songs.find(song => song.id === id);
     }
 
