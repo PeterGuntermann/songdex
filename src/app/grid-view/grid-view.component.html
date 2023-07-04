@@ -3,4 +3,5 @@
     class="ag-theme-alpine"
     [gridOptions]="gridOptions"
     [rowData]="songRepository.allSongs$ | async"
+    (cellClicked)="onCellClicked($event)"
 ></ag-grid-angular>
