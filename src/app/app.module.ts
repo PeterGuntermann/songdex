@@ -6,9 +6,10 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { GridViewComponent } from './grid-view/grid-view.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { DetailViewComponent } from './detail-view/detail-view.component';
 
 @NgModule({
-    declarations: [AppComponent, GridViewComponent, NavbarComponent],
+    declarations: [AppComponent, GridViewComponent, NavbarComponent, DetailViewComponent],
     imports: [BrowserModule, AppRoutingModule, AgGridModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
