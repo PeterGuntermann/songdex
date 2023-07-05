@@ -24,7 +24,7 @@ export class SongRepository {
     }
 
     get allSongs$(): Observable<Song[]> {
-        return this._songs$;
+        return this._songs$.pipe(filter(songs => songs.length > 0));
     }
 
     fetchSongsFromServer() {
@@ -35,15 +35,27 @@ export class SongRepository {
 
     /** @obsolete This method can be removed as soon as ADD is implemented. */
     seedWithDummyData() {
-        this.persistence.setKeyValue(this.DATABASE_KEY, DUMMY_SONGS);
+        this.writeSongsToDatabase(DUMMY_SONGS);
     }
 
-    addSong(song: Song) {
-        console.log("Not yet implemented.");
+    async addSong(newSong: Song) {
+        const songs = await firstValueFrom(this.allSongs$);
+        console.log("new song:", newSong);
+        console.log("all songs:", songs);
+
+        const alreadyExists = songs.find(song => song.title === newSong.title && song.artist === newSong.artist);
+        if (alreadyExists) {
+            console.warn("There already exists a song with that title and artist.");
+            return;
+        }
+
+        const newAllSongs = [...songs, newSong];
+        this._songs$.next(newAllSongs);
+        this.writeSongsToDatabase(newAllSongs);
     }
 
-    async getSongById(id: string): Promise<Song | undefined> {
-        const songs = await firstValueFrom(this.allSongs$.pipe(filter(songs => songs.length > 0)));
+    async getSongById(id: string) {
+        const songs = await firstValueFrom(this.allSongs$);
         return songs.find(song => song.id === id);
     }
 
@@ -53,5 +65,13 @@ export class SongRepository {
 
     deleteSong(id: string) {
         console.log("Not yet implemented.");
+    }
+
+    private writeSongsToDatabase(newSongs: Song[]) {
+        if (isDevMode()) {
+            console.log("Did not write to database because you are in dev mode.");
+        }
+
+        this.persistence.setKeyValue(this.DATABASE_KEY, newSongs);
     }
 }
