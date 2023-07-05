@@ -2,7 +2,7 @@
     <ng-container *ngIf="song; else noSong">
         <h2>{{ song.title }}</h2>
 
-        <p>by {{ song.interpret }}</p>
+        <p>by {{ song.artist }}</p>
 
         <a href="{{ song.link }}" target="_blank">{{ song.link }}</a>
     </ng-container>

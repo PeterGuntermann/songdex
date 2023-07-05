@@ -10,7 +10,7 @@ import { FormControl, FormGroup } from "@angular/forms";
 export class NavbarComponent {
     newSongForm = new FormGroup({
         titel: new FormControl(),
-        interpret: new FormControl(),
+        artist: new FormControl(),
     });
 
     constructor(public songRepository: SongRepository) {}

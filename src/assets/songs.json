@@ -2,19 +2,19 @@
     {
         "id": "9a185f1a",
         "title": "Dos Bros",
-        "interpret": "The Boss Hoss",
+        "artist": "The Boss Hoss",
         "link": "https://www.youtube.com/watch?v=YlUKcNNmywk"
     },
     {
         "id": "49ad5999",
         "title": "Californication",
-        "interpret": "Red Hot Chili Peppers",
+        "artist": "Red Hot Chili Peppers",
         "link": "https://www.youtube.com/watch?v=YlUKcNNmywk"
     },
     {
         "id" : "f69fe905",
         "title": "Hold the line",
-        "interpret": "Toto",
+        "artist": "Toto",
         "link": "https://www.youtube.com/watch?v=htgr3pvBr-I"
     }
 ]

@@ -1,6 +1,6 @@
 export interface Song {
     id: string;
     title: string;
-    interpret: string;
+    artist: string;
     link: string;
 }
