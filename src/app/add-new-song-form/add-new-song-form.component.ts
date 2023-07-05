@@ -20,6 +20,6 @@ export class AddNewSongFormComponent {
         const { title, artist } = this.newSongForm.value;
         const song = SongFactory.new(title, artist);
         this.newSongForm.reset();
-        void this.songRepository.addSong(song);
+        this.songRepository.addSong(song);
     }
 }
