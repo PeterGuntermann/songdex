@@ -54,6 +54,8 @@ export class SongRepository {
     }
 
     deleteSong(id: string) {
+        const songs = this._songs$.getValue();
+        console.log("deleted called!", songs);
         console.log("Not yet implemented.");
     }
 

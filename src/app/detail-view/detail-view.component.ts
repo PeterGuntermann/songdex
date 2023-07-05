@@ -19,4 +19,8 @@ export class DetailViewComponent implements OnInit {
             console.log(songId, this.song);
         });
     }
+
+    onDeleteClick(songId: string) {
+        this.songRepository.deleteSong(songId);
+    }
 }

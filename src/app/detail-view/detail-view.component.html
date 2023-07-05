@@ -1,10 +1,14 @@
 <div class="container">
     <ng-container *ngIf="song; else noSong">
-        <h2>{{ song.title }}</h2>
+        <div class="information mb-3">
+            <h2>{{ song.title }}</h2>
+            <p>by {{ song.artist }}</p>
+            <a href="{{ song.link }}" target="_blank">{{ song.link }}</a>
+        </div>
 
-        <p>by {{ song.artist }}</p>
-
-        <a href="{{ song.link }}" target="_blank">{{ song.link }}</a>
+        <div class="actions">
+            <button class="btn btn-outline-danger" (click)="onDeleteClick(song.id)">Song löschen</button>
+        </div>
     </ng-container>
 
     <ng-template #noSong>
