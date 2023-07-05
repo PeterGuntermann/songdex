@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { SongRepository } from "../songs/song-repository.service";
+import { FormControl, FormGroup } from "@angular/forms";
 
 @Component({
     selector: "app-navbar",
@@ -7,5 +8,15 @@ import { SongRepository } from "../songs/song-repository.service";
     styleUrls: ["./navbar.component.scss"],
 })
 export class NavbarComponent {
+    newSongForm = new FormGroup({
+        titel: new FormControl(),
+        interpret: new FormControl(),
+    });
+
     constructor(public songRepository: SongRepository) {}
+
+    onSubmit() {
+        console.log("Valid?", this.newSongForm.valid);
+        console.log("Value", this.newSongForm.value);
+    }
 }
