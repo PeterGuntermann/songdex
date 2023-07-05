@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { SongRepository } from "../songs/song-repository.service";
 import { FormControl, FormGroup } from "@angular/forms";
+import { SongFactory } from "../songs/song-factory";
 
 @Component({
     selector: "app-navbar",
@@ -9,15 +10,16 @@ import { FormControl, FormGroup } from "@angular/forms";
 })
 export class NavbarComponent {
     newSongForm = new FormGroup({
-        titel: new FormControl(),
+        title: new FormControl(),
         artist: new FormControl(),
     });
 
     constructor(public songRepository: SongRepository) {}
 
     onSubmit() {
-        console.log("Valid?", this.newSongForm.valid);
-        console.log("Value", this.newSongForm.value);
+        const { title, artist } = this.newSongForm.value;
+        const song = SongFactory.new(title, artist);
+        console.log("new song:", song);
         this.newSongForm.reset();
     }
 }

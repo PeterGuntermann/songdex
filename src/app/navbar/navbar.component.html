@@ -5,7 +5,7 @@
         <form [formGroup]="newSongForm" (ngSubmit)="onSubmit()">
             <div class="input-group me-1">
                 <span class="input-group-text">Neuen Song</span>
-                <input class="form-control" type="text" formControlName="titel" placeholder="Titel" />
+                <input class="form-control" type="text" formControlName="title" placeholder="Titel" />
                 <span class="input-group-text">von</span>
                 <input class="form-control" type="text" formControlName="artist" placeholder="Interpret" />
                 <button class="btn btn-outline-success" type="submit" [disabled]="!newSongForm.valid">
