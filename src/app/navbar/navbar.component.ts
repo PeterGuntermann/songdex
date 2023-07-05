@@ -19,7 +19,7 @@ export class NavbarComponent {
     onSubmit() {
         const { title, artist } = this.newSongForm.value;
         const song = SongFactory.new(title, artist);
-        this.songRepository.addSong(song);
         this.newSongForm.reset();
+        void this.songRepository.addSong(song);
     }
 }

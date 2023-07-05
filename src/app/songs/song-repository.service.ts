@@ -10,16 +10,12 @@ import { Song } from "./model";
 export class SongRepository {
     private readonly DATABASE_KEY = "songs";
 
-    private _seededSongs: Song[] = [];
     private _songs$ = new BehaviorSubject<Song[]>([]);
 
     constructor(private persistence: PersistenceService, private http: HttpClient) {
         if (isDevMode()) {
             this.http.get<Song[]>("assets/songs.json").subscribe(songs => {
-                console.log(this._seededSongs);
-                this._seededSongs = songs;
                 this._songs$.next(songs);
-                console.log(this._seededSongs);
             });
         } else {
             this.fetchSongsFromServer();
@@ -34,11 +30,6 @@ export class SongRepository {
         this.persistence.fetchValueByKey<Song[]>(this.DATABASE_KEY).then(songs => {
             this._songs$.next(songs ?? []);
         });
-    }
-
-    /** @obsolete This method can be removed as soon as ADD is implemented. */
-    seedWithDummyData() {
-        this.updateAllSongs(this._seededSongs);
     }
 
     async addSong(newSong: Song) {
@@ -71,6 +62,7 @@ export class SongRepository {
 
         if (isDevMode()) {
             console.log("Did not write to database because you are in dev mode.");
+            return;
         }
 
         this.persistence.setKeyValue(this.DATABASE_KEY, newSongs);
