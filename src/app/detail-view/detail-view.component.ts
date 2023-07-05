@@ -20,6 +20,7 @@ export class DetailViewComponent implements OnInit {
     }
 
     async onDeleteClick(songId: string) {
+        // TODO add confirmation dialog
         await this.songRepository.deleteSong(songId);
         await this.router.navigateByUrl("/");
     }

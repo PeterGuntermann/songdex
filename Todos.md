@@ -1,13 +1,17 @@
 # Todos
 
 - [x] Set up Vercel deployment with KV database
+- [x] Component for song list
+- [x] Display data from KV
+- [x] actually display the fetched data and not the dummies
+
+- [ ] edit existing songs
 - [ ] Clean up everything unused - no more warnings and trash
-- [ ] Import/export songs as CSV or JSON
-- [ ] Search for a more beautiful Bootstrap theme
-- [ ] Authentication for editors
-- [ ] Component for song list
-- [ ] Display data from KV
+- [ ] add Import/export songs as CSV or JSON
+- [ ] add Authentication for editors
+- [ ] fetch lyrics from the internet
 - [ ] elaborate Song model, formulate Features
 - [ ] decide about testing (Jest, Cypress, Jasmine, Karma?)
-- [ ] service for logging
-- [ ] actually display the fetched data and not the dummies
+- [ ] create service for logging
+- [ ] implement beautiful stylings manually 
+  - ~~Search for a more beautiful Bootstrap theme~~
