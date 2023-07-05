@@ -32,8 +32,8 @@ export class SongRepository {
         });
     }
 
-    addSong(newSong: Song) {
-        const allSongs = this._songs$.getValue();
+    async addSong(newSong: Song) {
+        const allSongs = await firstValueFrom(this.allSongs$);
 
         const alreadyExists = allSongs.find(song => song.title === newSong.title && song.artist === newSong.artist);
         if (alreadyExists) {
