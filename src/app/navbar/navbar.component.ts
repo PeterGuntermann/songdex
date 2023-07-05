@@ -18,5 +18,6 @@ export class NavbarComponent {
     onSubmit() {
         console.log("Valid?", this.newSongForm.valid);
         console.log("Value", this.newSongForm.value);
+        this.newSongForm.reset();
     }
 }
