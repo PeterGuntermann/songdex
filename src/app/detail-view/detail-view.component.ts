@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Song } from "../songs/model";
 import { SongRepository } from "../songs/song-repository.service";
 
@@ -11,16 +11,16 @@ import { SongRepository } from "../songs/song-repository.service";
 export class DetailViewComponent implements OnInit {
     song?: Song;
 
-    constructor(private route: ActivatedRoute, private songRepository: SongRepository) {}
+    constructor(private route: ActivatedRoute, private router: Router, private songRepository: SongRepository) {}
 
     ngOnInit(): void {
         this.route.params.subscribe(async ({ songId }) => {
             this.song = await this.songRepository.getSongById(songId);
-            console.log(songId, this.song);
         });
     }
 
-    onDeleteClick(songId: string) {
-        this.songRepository.deleteSong(songId);
+    async onDeleteClick(songId: string) {
+        await this.songRepository.deleteSong(songId);
+        await this.router.navigateByUrl("/");
     }
 }

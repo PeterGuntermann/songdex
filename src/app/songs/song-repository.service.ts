@@ -53,10 +53,16 @@ export class SongRepository {
         console.log("Not yet implemented.");
     }
 
-    deleteSong(id: string) {
-        const songs = this._songs$.getValue();
-        console.log("deleted called!", songs);
-        console.log("Not yet implemented.");
+    async deleteSong(id: string) {
+        const songs = await firstValueFrom(this.allSongs$);
+        const songsWithoutDeleted = songs.filter(song => song.id !== id);
+
+        if (!songs.find(song => song.id === id)) {
+            console.warn("Song does not exist and thus cannot be deleted!");
+            return;
+        }
+
+        this.updateAllSongs(songsWithoutDeleted);
     }
 
     private updateAllSongs(newSongs: Song[]) {
