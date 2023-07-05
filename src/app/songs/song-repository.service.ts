@@ -2,7 +2,6 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable, isDevMode } from "@angular/core";
 import { BehaviorSubject, filter, firstValueFrom, Observable } from "rxjs";
 import { PersistenceService } from "../persistence.service";
-import { DUMMY_SONGS } from "./dummy-songs";
 import { Song } from "./model";
 
 @Injectable({
@@ -11,12 +10,16 @@ import { Song } from "./model";
 export class SongRepository {
     private readonly DATABASE_KEY = "songs";
 
+    private _seededSongs: Song[] = [];
     private _songs$ = new BehaviorSubject<Song[]>([]);
 
     constructor(private persistence: PersistenceService, private http: HttpClient) {
         if (isDevMode()) {
             this.http.get<Song[]>("assets/songs.json").subscribe(songs => {
+                console.log(this._seededSongs);
+                this._seededSongs = songs;
                 this._songs$.next(songs);
+                console.log(this._seededSongs);
             });
         } else {
             this.fetchSongsFromServer();
@@ -35,7 +38,7 @@ export class SongRepository {
 
     /** @obsolete This method can be removed as soon as ADD is implemented. */
     seedWithDummyData() {
-        this.updateAllSongs(DUMMY_SONGS);
+        this.updateAllSongs(this._seededSongs);
     }
 
     async addSong(newSong: Song) {
