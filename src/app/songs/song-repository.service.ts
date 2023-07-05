@@ -35,23 +35,19 @@ export class SongRepository {
 
     /** @obsolete This method can be removed as soon as ADD is implemented. */
     seedWithDummyData() {
-        this.writeSongsToDatabase(DUMMY_SONGS);
+        this.updateAllSongs(DUMMY_SONGS);
     }
 
     async addSong(newSong: Song) {
-        const songs = await firstValueFrom(this.allSongs$);
-        console.log("new song:", newSong);
-        console.log("all songs:", songs);
+        const allSongs = await firstValueFrom(this.allSongs$);
 
-        const alreadyExists = songs.find(song => song.title === newSong.title && song.artist === newSong.artist);
+        const alreadyExists = allSongs.find(song => song.title === newSong.title && song.artist === newSong.artist);
         if (alreadyExists) {
             console.warn("There already exists a song with that title and artist.");
             return;
         }
 
-        const newAllSongs = [...songs, newSong];
-        this._songs$.next(newAllSongs);
-        this.writeSongsToDatabase(newAllSongs);
+        this.updateAllSongs([...allSongs, newSong]);
     }
 
     async getSongById(id: string) {
@@ -67,7 +63,9 @@ export class SongRepository {
         console.log("Not yet implemented.");
     }
 
-    private writeSongsToDatabase(newSongs: Song[]) {
+    private updateAllSongs(newSongs: Song[]) {
+        this._songs$.next(newSongs);
+
         if (isDevMode()) {
             console.log("Did not write to database because you are in dev mode.");
         }
