@@ -1,4 +1,4 @@
-﻿namespace Coversongs.Backend;
+﻿namespace Coversongs.Backend.Coversongs;
 
 public static class TestData
 {
