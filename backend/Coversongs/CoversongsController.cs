@@ -8,6 +8,10 @@ public class CoversongsController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        return Ok("blabla");
+        var song = new Coversong
+        {
+            Title = "I just wanna live"
+        };
+        return Ok(song);
     }
 }
