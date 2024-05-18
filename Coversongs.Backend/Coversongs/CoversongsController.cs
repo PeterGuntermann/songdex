@@ -1,17 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace backend.Coversongs;
+namespace Coversongs.Backend;
 
 [Route("api/[controller]")]
-public class CoversongsController : Controller
+public class CoversongsController(ICoversongsService coversongsService) : Controller
 {
     [HttpGet]
     public IActionResult Index()
     {
-        var song = new Coversong
-        {
-            Title = "I just wanna live"
-        };
-        return Ok(song);
+        return Ok(coversongsService.GetAllSongs());
     }
 }

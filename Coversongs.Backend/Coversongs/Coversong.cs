@@ -1,4 +1,4 @@
-﻿namespace backend.Coversongs;
+﻿namespace Coversongs.Backend;
 
 public class Coversong
 {

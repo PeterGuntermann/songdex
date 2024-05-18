@@ -1,5 +1,8 @@
+using Coversongs.Backend;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+builder.Services.AddSingleton<ICoversongsService, CoversongsService>();
 
 var app = builder.Build();
 
