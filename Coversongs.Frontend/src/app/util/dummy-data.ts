@@ -1,8 +1,6 @@
-import { newSong, type Song } from '../models/song';
+import { type Song, newSong } from '../models/song';
 
-export const generateDummySongs = () => dummySongs;
-
-export const dummySongs: Song[] = [
+export const generateDummySongs = (): Song[] => [
   newSong('Runaway', 'Bon Jovi', 'http://example.com'),
   newSong('Hurra', 'Die Ärzte', 'http://example.com'),
   newSong('Listen', 'Beyoncé', 'http://example.com'),
