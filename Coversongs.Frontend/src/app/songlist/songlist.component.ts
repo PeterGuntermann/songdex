@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { SonglistService } from './songlist.service';
+import { SongService } from '../services/song.service';
 
 @Component({
   selector: 'app-songlist',
@@ -10,6 +10,6 @@ import { SonglistService } from './songlist.service';
   styleUrl: './songlist.component.scss',
 })
 export class SonglistComponent {
-  readonly songlist = inject(SonglistService);
+  readonly songService = inject(SongService);
   readonly router = inject(Router);
 }

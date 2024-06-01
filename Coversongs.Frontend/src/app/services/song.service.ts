@@ -5,6 +5,6 @@ import { generateDummySongs } from '../util/dummy-data';
 @Injectable({
   providedIn: 'root',
 })
-export class SonglistService {
+export class SongService {
   readonly songs = signal<Song[]>(generateDummySongs());
 }
