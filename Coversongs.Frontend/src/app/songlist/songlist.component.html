@@ -1,16 +1,18 @@
-<table class="table table-sm table-zebra">
-  <thead>
-  <tr>
-    <th>Title</th>
-    <th>Artist</th>
-  </tr>
-  </thead>
-  <tbody>
-    @for (song of songlist.songs(); track $index) {
-      <tr class="hover">
-        <td>{{ song.title }}</td>
-        <td>{{ song.artist }}</td>
-      </tr>
-    }
-  </tbody>
-</table>
+<section class="max-h-screen p-2">
+  <table class="table table-sm table-zebra">
+    <thead>
+    <tr>
+      <th>Title</th>
+      <th>Artist</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (song of songlist.songs(); track $index) {
+        <tr class="hover">
+          <td>{{ song.title }}</td>
+          <td>{{ song.artist }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>
