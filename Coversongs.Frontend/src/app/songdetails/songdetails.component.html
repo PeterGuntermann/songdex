@@ -1,5 +1,12 @@
 <div class="p-6">
   <a routerLink="songs">← back</a>
 
-  <p>songdetails works!</p>
+  @if (song) {
+    <section class="prose">
+      <h2>{{ song.title }}</h2>
+      <h3>{{ song.artist }}</h3>
+    </section>
+  } @else {
+    <p>no song</p>
+  }
 </div>

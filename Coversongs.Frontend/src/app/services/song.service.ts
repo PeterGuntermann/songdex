@@ -7,4 +7,8 @@ import { generateDummySongs } from '../util/dummy-data';
 })
 export class SongService {
   readonly songs = signal<Song[]>(generateDummySongs());
+
+  getSongById(id: string): Song | undefined {
+    return this.songs().find((song) => song.id === id);
+  }
 }
