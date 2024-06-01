@@ -8,7 +8,7 @@
     </thead>
     <tbody>
       @for (song of songlist.songs(); track $index) {
-        <tr class="hover">
+        <tr class="hover" (click)="router.navigateByUrl('songs/' + song.id)">
           <td>{{ song.title }}</td>
           <td>{{ song.artist }}</td>
         </tr>
