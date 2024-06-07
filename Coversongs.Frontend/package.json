@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "coversongs-frontend",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",

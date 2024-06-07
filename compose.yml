@@ -1,6 +1,12 @@
 services:
   backend:
-    image: coversongs-backend
+    image: coversongs-backend:latest
     container_name: backend
     ports:
       - 5000:8080
+
+  frontend:
+    image: coversongs-frontend:latest
+    container_name: frontend
+    ports:
+      - 4200:80
