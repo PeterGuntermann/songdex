@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, type OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SongService } from '../services/song.service';
 
@@ -9,7 +9,14 @@ import { SongService } from '../services/song.service';
   templateUrl: './songlist.component.html',
   styleUrl: './songlist.component.scss',
 })
-export class SonglistComponent {
+export class SonglistComponent implements OnInit {
   readonly songService = inject(SongService);
   readonly router = inject(Router);
+
+  ngOnInit(): void {
+    this.songService.getSongs().subscribe({
+      next: console.log,
+      error: console.log,
+    });
+  }
 }
