@@ -10,5 +10,5 @@ RUN npm run build
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:1.17.1-alpine
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=build /usr/src/app/dist/coversongs-frontend /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/coversongs.conf
+COPY --from=build /usr/src/app/dist/coversongs-frontend/browser /usr/share/nginx/html
