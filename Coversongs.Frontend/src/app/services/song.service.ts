@@ -17,7 +17,7 @@ export class SongService {
   }
 
   getSongs(): Observable<unknown> {
-    const baseUrl = 'http://localhost:5000';
-    return this.http.get(`${baseUrl}/api/songs`);
+    const baseUrl = 'http://localhost:5286';
+    return this.http.get(`${baseUrl}/api/coversongs`);
   }
 }

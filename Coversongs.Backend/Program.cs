@@ -1,9 +1,19 @@
-using Coversongs.Backend;
 using Coversongs.Backend.Coversongs;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200");
+        });
+});
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ICoversongsService, CoversongsService>();
+
 
 var app = builder.Build();
 
@@ -14,6 +24,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+app.UseCors(MyAllowSpecificOrigins);
 
 app.MapControllerRoute(
     name: "default",
