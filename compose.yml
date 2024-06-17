@@ -3,7 +3,7 @@ services:
     image: coversongs-backend:latest
     container_name: backend
     ports:
-      - 5000:8080
+      - 5286:8080
 
   frontend:
     image: coversongs-frontend:latest
