@@ -1,0 +1,6 @@
+- [ ] Upgrade to Angular 20
+- [ ] Use signals over observables
+- [ ] use HttpResource api
+- [ ] migrate to standalone
+- [ ] introduce Jest for unit testing
+- [ ] introduce Playwright for E2E and integration testing
