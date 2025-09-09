@@ -19,4 +19,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Coversongs.Backend.Infrastructure\Coversongs.Backend.Infrastructure.csproj" />
+    <ProjectReference Include="..\Coversongs.Backend.WebApi\Coversongs.Backend.WebApi.csproj" />
+  </ItemGroup>
+
 </Project>
