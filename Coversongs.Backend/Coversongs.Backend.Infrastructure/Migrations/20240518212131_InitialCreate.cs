@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿#nullable disable
 
-#nullable disable
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Coversongs.Backend.Migrations
+namespace Coversongs.Backend.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

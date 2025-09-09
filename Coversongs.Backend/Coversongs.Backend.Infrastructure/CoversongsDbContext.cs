@@ -1,7 +1,7 @@
 ﻿using Coversongs.Backend.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Coversongs.Backend.Service.Coversongs;
+namespace Coversongs.Backend.Infrastructure;
 
 public class CoversongsDbContext : DbContext
 {
