@@ -1,9 +1,7 @@
-﻿namespace Coversongs.Backend.Service.Coversongs;
+﻿using Coversongs.Backend.Domain.Model;
+using Coversongs.Backend.Domain.Services;
 
-public interface ICoversongsService
-{
-    IEnumerable<Coversong> GetAllSongs();
-}
+namespace Coversongs.Backend.Application.Coversongs;
 
 public class CoversongsService : ICoversongsService
 {

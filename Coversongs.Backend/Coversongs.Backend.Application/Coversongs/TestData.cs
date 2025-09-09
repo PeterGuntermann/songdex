@@ -1,4 +1,6 @@
-﻿namespace Coversongs.Backend.Service.Coversongs;
+﻿using Coversongs.Backend.Domain.Model;
+
+namespace Coversongs.Backend.Application.Coversongs;
 
 public static class TestData
 {

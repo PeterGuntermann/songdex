@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Coversongs.Backend.Domain.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Coversongs.Backend.Service.Coversongs;
 
