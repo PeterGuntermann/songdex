@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Coversongs.Backend.Coversongs;
+namespace Coversongs.Backend.Service.Coversongs;
 
 public class CoversongsDbContext : DbContext
 {

@@ -1,4 +1,4 @@
-﻿namespace Coversongs.Backend.Coversongs;
+﻿namespace Coversongs.Backend.Service.Coversongs;
 
 public interface ICoversongsService
 {

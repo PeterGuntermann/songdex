@@ -1,4 +1,4 @@
-using Coversongs.Backend.Coversongs;
+using Coversongs.Backend.Service.Coversongs;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
