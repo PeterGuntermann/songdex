@@ -4,3 +4,4 @@
 - [ ] migrate to standalone
 - [ ] introduce Jest for unit testing
 - [ ] introduce Playwright for E2E and integration testing
+- [ ] upgrade Tailwind (https://tailwindcss.com/docs/upgrade-guide)
