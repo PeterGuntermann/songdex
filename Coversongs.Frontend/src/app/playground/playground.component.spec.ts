@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PlaygroundComponent } from './playground.component';
 
@@ -8,10 +8,9 @@ describe('PlaygroundComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlaygroundComponent]
-    })
-    .compileComponents();
-    
+      imports: [PlaygroundComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(PlaygroundComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
