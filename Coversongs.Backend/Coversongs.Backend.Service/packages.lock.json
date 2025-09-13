@@ -215,7 +215,8 @@
       "coversongs.backend.webapi": {
         "type": "Project",
         "dependencies": {
-          "Coversongs.Backend.Application": "[1.0.0, )"
+          "Coversongs.Backend.Application": "[1.0.0, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.0, )"
         }
       }
     }
