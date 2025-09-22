@@ -3,12 +3,18 @@ using Songdex.Backend.Domain.Model;
 
 namespace Songdex.Backend.Infrastructure.Database;
 
-public class SongdexDbContext : DbContext
+public class SongdexDbContext(DbContextOptions<SongdexDbContext> options) : DbContext(options)
 {
     public DbSet<Song> Songs { get; set; }
 
-    public string DbPath => "songdex.db";
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
     
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");
+        modelBuilder.Entity<Song>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).HasMaxLength(200);
+        });
+    }
 }
