@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Songdex.Backend.Domain.Model;
 
-namespace Songdex.Backend.Infrastructure;
+namespace Songdex.Backend.Infrastructure.Database;
 
 public class SongdexDbContext : DbContext
 {
