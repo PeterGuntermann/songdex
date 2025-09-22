@@ -1,4 +1,4 @@
 Write-Host -ForegroundColor DarkMagenta "Build frontend ..."
-Push-Location ./Coversongs.Frontend
-docker build -t coversongs-frontend .
+Push-Location ./Songdex.Frontend
+docker build -t songdex-frontend .
 Pop-Location

@@ -1,12 +1,12 @@
 services:
   backend:
-    image: coversongs-backend:latest
+    image: songdex-backend:latest
     container_name: backend
     ports:
       - 5286:8080
 
   frontend:
-    image: coversongs-frontend:latest
+    image: songdex-frontend:latest
     container_name: frontend
     ports:
       - 8080:80
