@@ -192,6 +192,7 @@
       "songdex.backend.application": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.0, )",
           "Songdex.Backend.Domain": "[1.0.0, )"
         }
       },
