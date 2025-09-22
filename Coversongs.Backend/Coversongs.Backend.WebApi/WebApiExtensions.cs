@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Coversongs.Backend.WebApi;
 
@@ -18,5 +20,25 @@ public static class WebApiExtensions
         });
         services.AddControllers();
         return services;
+    }
+
+    public static WebApplication UseWebApi(this WebApplication app)
+    {
+        
+        if (!app.Environment.IsDevelopment())
+        {
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+
+        app.UseRouting();
+        app.UseCors(WebApiConstants.AllowSpecificOrigins);
+
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller}/{action=Index}/{id?}");
+
+        app.MapGet("/", () => "Hello World!");
+        return app;
     }
 }
