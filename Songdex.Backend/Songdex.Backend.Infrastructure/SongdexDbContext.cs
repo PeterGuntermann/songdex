@@ -3,11 +3,11 @@ using Songdex.Backend.Domain.Model;
 
 namespace Songdex.Backend.Infrastructure;
 
-public class CoversongsDbContext : DbContext
+public class SongdexDbContext : DbContext
 {
-    public DbSet<Coversong> Coversongs { get; set; }
+    public DbSet<Song> Songs { get; set; }
 
-    public string DbPath => "coversongs.db";
+    public string DbPath => "songdex.db";
     
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite($"Data Source={DbPath}");

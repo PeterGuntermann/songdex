@@ -5,11 +5,11 @@ namespace Songdex.Backend.Application.Coversongs;
 
 public class CoversongsService : ICoversongsService
 {
-    public IEnumerable<Coversong> GetAllSongs()
+    public IEnumerable<Song> GetAllSongs()
     {
-        return new List<Coversong>
+        return new List<Song>
         {
-            TestData.AnyCoversong
+            TestData.AnySong
         };
     }
 }

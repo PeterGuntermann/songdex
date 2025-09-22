@@ -1,8 +1,8 @@
-﻿#nullable disable
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-using Microsoft.EntityFrameworkCore.Migrations;
+#nullable disable
 
-namespace Coversongs.Backend.Infrastructure.Migrations
+namespace Songdex.Backend.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -11,7 +11,7 @@ namespace Coversongs.Backend.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Coversongs",
+                name: "Songs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -20,7 +20,7 @@ namespace Coversongs.Backend.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Coversongs", x => x.Id);
+                    table.PrimaryKey("PK_Songs", x => x.Id);
                 });
         }
 
@@ -28,7 +28,7 @@ namespace Coversongs.Backend.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Coversongs");
+                name: "Songs");
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Songdex.Backend.Application.Coversongs;
 
 public static class TestData
 {
-    public static Coversong AnyCoversong => new()
+    public static Song AnySong => new()
     {
         Title = "I just wanna live"
     };
