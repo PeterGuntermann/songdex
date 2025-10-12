@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.ComponentModel;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Songdex.Backend.WebApi.Endpoints.Songs;
@@ -14,6 +15,8 @@ public static class WebApiExtensions
 {
     public static IServiceCollection AddWebApi(this IServiceCollection services)
     {
+        services.AddEndpointsApiExplorer();
+        services.AddOpenApiDocument();
         services.AddCors(options =>
         {
             options.AddPolicy(name: WebApiConstants.AllowSpecificOrigins,
@@ -31,6 +34,12 @@ public static class WebApiExtensions
             app.UseHsts();
         }
 
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseOpenApi();
+            app.UseSwaggerUi();
+        }
+
         app.UseRouting();
         app.UseCors(WebApiConstants.AllowSpecificOrigins);
 
@@ -40,19 +49,19 @@ public static class WebApiExtensions
 
         app.MapGet("/", () => "Hello World!");
 
-        var songs = app.MapGroup("/api/songs");
+        var songs = app.MapGroup("/api/songs").WithOpenApi();
         songs.MapGet("/", SongsApi.GetAllSongs);
         songs.MapGet("/{id}", SongsApi.GetSong);
         songs.MapPost("/", SongsApi.CreateSong);
         songs.MapPut("/{id}", SongsApi.UpdateSong);
         songs.MapDelete("/{id}", SongsApi.DeleteSong);
 
-        var artists = app.MapGroup("/api/artists");
+        var artists = app.MapGroup("/api/artists").WithOpenApi();
         artists.MapGet("/", ArtistsApi.GetAllArtists);
-        artists.MapGet("/{id}", ArtistsApi.GetArtist);
-        artists.MapPost("/", ArtistsApi.CreateArtist);
-        artists.MapPut("/{id}", ArtistsApi.UpdateArtist);
-        artists.MapDelete("/{id}", ArtistsApi.DeleteArtist);
+        // artists.MapGet("/{id}", ArtistsApi.GetArtist);
+        // artists.MapPost("/", ArtistsApi.CreateArtist);
+        // artists.MapPut("/{id}", ArtistsApi.UpdateArtist);
+        // artists.MapDelete("/{id}", ArtistsApi.DeleteArtist);
 
         return app;
     }
