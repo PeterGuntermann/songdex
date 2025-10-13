@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Songdex.Backend.WebApi.Endpoints.Songs;
@@ -58,10 +57,10 @@ public static class WebApiExtensions
 
         var artists = app.MapGroup("/api/artists").WithOpenApi();
         artists.MapGet("/", ArtistsApi.GetAllArtists);
-        // artists.MapGet("/{id}", ArtistsApi.GetArtist);
-        // artists.MapPost("/", ArtistsApi.CreateArtist);
-        // artists.MapPut("/{id}", ArtistsApi.UpdateArtist);
-        // artists.MapDelete("/{id}", ArtistsApi.DeleteArtist);
+        artists.MapGet("/{id}", ArtistsApi.GetArtist);
+        artists.MapPost("/", ArtistsApi.CreateArtist);
+        artists.MapPut("/{id}", ArtistsApi.UpdateArtist);
+        artists.MapDelete("/{id}", ArtistsApi.DeleteArtist);
 
         return app;
     }

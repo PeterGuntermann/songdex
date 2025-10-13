@@ -10,7 +10,7 @@ public static class ArtistsApi
         return TypedResults.Ok();
     }
 
-    public static async Task<IResult> GetArtist()
+    public static async Task<IResult> GetArtist(int id)
     {
         // TODO 
         return TypedResults.Ok();
@@ -22,13 +22,13 @@ public static class ArtistsApi
         return TypedResults.Ok();
     }
 
-    public static async Task<IResult> UpdateArtist()
+    public static async Task<IResult> UpdateArtist(int id)
     {
         // TODO 
         return TypedResults.Ok();
     }
 
-    public static async Task<IResult> DeleteArtist()
+    public static async Task<IResult> DeleteArtist(int id)
     {
         // TODO 
         return TypedResults.Ok();
