@@ -18,11 +18,7 @@ public class LocalDatabaseInitializer(
         {
             logger.LogInformation("Initializing empty local database...");
 
-            var songs = new List<Song>
-            {
-                new() { Title = "Foobar" }
-            };
-            context.Songs.AddRange(songs);
+            context.Songs.AddRange(DataSeed.Songs);
 
             await context.SaveChangesAsync(cancellationToken);
         }
