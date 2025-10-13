@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NSwag;
+using Songdex.Backend.Domain.Model;
 using Songdex.Backend.WebApi.Endpoints.Songs;
 
 namespace Songdex.Backend.WebApi;
@@ -15,7 +18,10 @@ public static class WebApiExtensions
     public static IServiceCollection AddWebApi(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
-        services.AddOpenApiDocument();
+        services.AddOpenApiDocument(options =>
+        {
+            options.PostProcess = document => { document.Info.Title = "Songdex Backend API"; };
+        });
         services.AddCors(options =>
         {
             options.AddPolicy(name: WebApiConstants.AllowSpecificOrigins,
