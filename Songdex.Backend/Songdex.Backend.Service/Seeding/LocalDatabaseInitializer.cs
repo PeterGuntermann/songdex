@@ -10,9 +10,6 @@ public class LocalDatabaseInitializer(
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        // DEBUG ONLY
-        return;
-        
         await using var scope = serviceScopeFactory.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<SongdexDbContext>();
 
