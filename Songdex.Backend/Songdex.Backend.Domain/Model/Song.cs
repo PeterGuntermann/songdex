@@ -2,6 +2,6 @@
 
 public class Song
 {
-    public int Id { get; set; }
-    public string Title { get; set; }
+    public SongId Id { get; init; } = new();
+    public string Title { get; set; } = string.Empty;
 }

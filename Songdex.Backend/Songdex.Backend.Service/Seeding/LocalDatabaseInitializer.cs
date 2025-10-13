@@ -20,7 +20,7 @@ public class LocalDatabaseInitializer(
 
             var songs = new List<Song>
             {
-                new() { Id = 42, Title = "Foobar" }
+                new() { Title = "Foobar" }
             };
             context.Songs.AddRange(songs);
 
