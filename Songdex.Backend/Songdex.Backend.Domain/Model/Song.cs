@@ -3,9 +3,13 @@
 public class Song
 {
     public SongId Id { get; init; } = new();
-    public string Title { get; init; }
+    public string Title { get; init; } = string.Empty;
     public string Artist { get; set; } = string.Empty;
     public string ReleaseYear { get; set; } = string.Empty;
+
+    public Song()
+    {
+    }
 
     public Song(string title)
     {
