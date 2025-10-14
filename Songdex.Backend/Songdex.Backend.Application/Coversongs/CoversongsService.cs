@@ -8,11 +8,6 @@ public class CoversongsService(ISongRepository songRepository) : ICoversongsServ
 {
     public IEnumerable<Song> GetAllSongs()
     {
-        var songs = songRepository.GetAll().Result;
-        return new List<Song>
-        {
-            TestData.AnySong
-        };
+        return songRepository.GetAll().Result;
     }
 }
-

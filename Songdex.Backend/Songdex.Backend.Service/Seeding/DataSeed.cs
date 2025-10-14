@@ -6,6 +6,8 @@ public static class DataSeed
 {
     public static IEnumerable<Song> Songs => new List<Song>
     {
-        new() { Title = "Foobar" }
+        new("1000 und 1 Nacht (Zoom)"),
+        new("Angels", "Robbie Williams"),
+        new("A night like this", "Caro Emerald", 2009)
     };
 }
