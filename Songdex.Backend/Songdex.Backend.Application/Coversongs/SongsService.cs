@@ -4,7 +4,7 @@ using Songdex.Backend.Domain.Services;
 
 namespace Songdex.Backend.Application.Coversongs;
 
-public class CoversongsService(ISongRepository songRepository) : ICoversongsService
+public class SongsService(ISongRepository songRepository) : ISongsService
 {
     public IEnumerable<Song> GetAllSongs()
     {

@@ -2,7 +2,7 @@
 
 namespace Songdex.Backend.Domain.Services;
 
-public interface ICoversongsService
+public interface ISongsService
 {
     IEnumerable<Song> GetAllSongs();
 }

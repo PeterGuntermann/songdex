@@ -8,7 +8,7 @@ public static class ApplicationExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddTransient<ICoversongsService, CoversongsService>();
+        services.AddScoped<ISongsService, SongsService>();
         return services;
     }
 }
