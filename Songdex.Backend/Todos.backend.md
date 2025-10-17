@@ -6,6 +6,7 @@
 - [ ] use cases with result pattern
 - [ ] seed database via initializer class
 - [ ] Formatting, Zeilenlänge, Umbrüche etc.
+- [ ] Integration test von REST endpoint bis Datenbank
 
 ## Features
 
