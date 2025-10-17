@@ -7,7 +7,7 @@
     </tr>
     </thead>
     <tbody>
-      @for (song of songService.songs(); track $index) {
+      @for (song of songStore.allSongs(); track $index) {
         <tr class="hover" (click)="router.navigateByUrl('songs/' + song.id)">
           <td>{{ song.title }}</td>
           <td>{{ song.artist }}</td>

@@ -1,6 +1,7 @@
-import { Component, type OnInit, inject } from '@angular/core';
+import { Component, inject, type OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SongService } from '../services/song.service';
+import { SongStore } from "../store/song.store";
 
 @Component({
   selector: 'app-songlist',
@@ -11,6 +12,8 @@ import { SongService } from '../services/song.service';
 })
 export class SonglistComponent implements OnInit {
   readonly songService = inject(SongService);
+  readonly songStore: SongStore = inject(SongStore);
+
   readonly router = inject(Router);
 
   ngOnInit(): void {

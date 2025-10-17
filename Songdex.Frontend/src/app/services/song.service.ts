@@ -1,19 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { Song } from '../models/song';
-import { generateDummySongs } from '../util/dummy-data';
+import { SongStore } from "../store/song.store";
 
 @Injectable({
   providedIn: 'root',
 })
 export class SongService {
   readonly http = inject(HttpClient);
-
-  readonly songs = signal<Song[]>(generateDummySongs());
+  readonly songStore = inject(SongStore);
 
   getSongById(id: string): Song | undefined {
-    return this.songs().find((song) => song.id === id);
+    return this.songStore.allSongs().find((song) => song.id === id);
   }
 
   getSongs(): Observable<unknown> {
