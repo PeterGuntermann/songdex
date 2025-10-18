@@ -14,7 +14,6 @@ const preset = {
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>/src/**/*.spec.ts'],
-  transformIgnorePatterns: ['node_modules/(?!@sisuite/sec-common)/'],
 } satisfies Config;
 
 export default preset;
