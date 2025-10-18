@@ -6,7 +6,7 @@ import * as path from 'path';
  * For a detailed explanation regarding each configuration property, visit:
  * https://jestjs.io/docs/configuration
  */
-let preset = {
+const preset = {
   ...createCjsPreset(),
   collectCoverage: false,
   coverageDirectory: path.join(__dirname, 'dist/coverage/'),
