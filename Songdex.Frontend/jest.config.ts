@@ -1,6 +1,6 @@
 import type { Config } from 'jest';
 import { createCjsPreset } from 'jest-preset-angular/build/presets/create-cjs-preset';
-import * as path from 'path';
+import * as path from 'node:path';
 
 /**
  * For a detailed explanation regarding each configuration property, visit:
