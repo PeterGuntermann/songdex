@@ -21,7 +21,7 @@ export class SongdetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params.pipe(take(1)).subscribe(({ songId }) => {
-      this.song = this.songService.getSongById(songId);
+      this.song = this.songStore.getSongById(songId);
     });
   }
 }

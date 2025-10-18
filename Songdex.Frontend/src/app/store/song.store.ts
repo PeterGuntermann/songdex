@@ -1,5 +1,5 @@
-import { inject, InjectionToken } from "@angular/core";
-import { signalStore, withState } from '@ngrx/signals';
+import { inject, InjectionToken } from '@angular/core';
+import { signalStore, withMethods, withState } from '@ngrx/signals';
 import { newSong, type Song } from '../models/song';
 import { generateDummySongs } from '../util/dummy-data';
 
@@ -18,9 +18,11 @@ export const SONG_STATE = new InjectionToken<SongState>('SONG_STATE', {
 export const SongStore = signalStore(
   { providedIn: 'root' },
   withState(() => inject(SONG_STATE)),
-  // withComputed({
-  //   songById: (id: string) => this.songs().find((song) => song.id === id);
-  // }),
+  withMethods((store) => ({
+    getSongById(id: string): Song | undefined {
+      return store.allSongs().find((song) => song.id === id);
+    },
+  })),
 );
 
 export type SongStore = InstanceType<typeof SongStore>;
