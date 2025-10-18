@@ -2,7 +2,7 @@
 - [ ] Use signals over observables
 - [ ] use HttpResource api
 - [ ] migrate to standalone
-- [ ] introduce Jest for unit testing
+- [x] introduce Jest for unit testing
 - [ ] introduce Playwright for E2E and integration testing
 - [ ] upgrade Tailwind (https://tailwindcss.com/docs/upgrade-guide)
-- [ ] upgrade Biome
+- [ ] upgrade Biome (https://biomejs.dev/guides/upgrade-to-biome-v2/)
