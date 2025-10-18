@@ -1,11 +1,19 @@
 import type { Routes } from '@angular/router';
-import { PlaygroundComponent } from './playground/playground.component';
-import { SongdetailsComponent } from './songdetails/songdetails.component';
-import { SonglistComponent } from './songlist/songlist.component';
 
 export const routes: Routes = [
-  { path: 'test', component: PlaygroundComponent },
-  { path: 'songs', component: SonglistComponent },
-  { path: 'songs/:songId', component: SongdetailsComponent },
+  {
+    path: 'test',
+    loadComponent: () =>
+      import('./playground/playground.component').then((m) => m.PlaygroundComponent),
+  },
+  {
+    path: 'songs',
+    loadComponent: () => import('./songlist/songlist.component').then((m) => m.SonglistComponent),
+  },
+  {
+    path: 'songs/:songId',
+    loadComponent: () =>
+      import('./songdetails/songdetails.component').then((m) => m.SongdetailsComponent),
+  },
   { path: '**', redirectTo: 'songs' },
 ];
