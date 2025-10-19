@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { newSong } from '../models/song';
 import { SONG_STATE, type SongState, SongStore } from './song.store';
+import { TestSongs } from "./song.store.testdata";
 
 describe('SongStore', () => {
   let store: SongStore;
@@ -11,7 +11,7 @@ describe('SongStore', () => {
         {
           provide: SONG_STATE,
           useValue: {
-            allSongs: [newSong('Foo foo')],
+            allSongs: [TestSongs[0], TestSongs[1]],
           } as SongState,
         },
       ],
@@ -21,6 +21,20 @@ describe('SongStore', () => {
 
   it('should get all songs', () => {
     const result = store.allSongs();
-    expect(result[0].title).toEqual('Foo foo');
+    expect(result).toEqual([TestSongs[0], TestSongs[1]]);
+  });
+
+  it('should get song count', () => {
+    expect(store.songCount()).toBe(2);
+  });
+
+  describe('getSongById', () => {
+    it('should return song if it exists', () => {
+      expect(store.getSongById('1')).toEqual(TestSongs[1]);
+    });
+
+    it('should return undefined if it does not exist', () => {
+      expect(store.getSongById('2')).toBeUndefined();
+    });
   });
 });
