@@ -1,5 +1,5 @@
 import { inject, InjectionToken } from '@angular/core';
-import { signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { newSong, type Song } from '../models/song';
 import { generateDummySongs } from '../util/dummy-data';
 
@@ -24,6 +24,32 @@ export const SongStore = signalStore(
   withMethods((store) => ({
     getSongById(id: string): Song | undefined {
       return store.allSongs().find((song) => song.id === id);
+    },
+
+    addSong(song: Song): void {
+      patchState(store, {
+        allSongs: store.allSongs().some((s) => s.id === song.id)
+          ? store.allSongs()
+          : [...store.allSongs(), song],
+      });
+    },
+
+    deleteSong(id: string): void {
+      patchState(store, {
+        allSongs: store.allSongs().filter((song) => song.id !== id),
+      });
+    },
+
+    updateSong(updatedSong: Song): void {
+      patchState(store, {
+        allSongs: store.allSongs().map((song) => (song.id === updatedSong.id ? updatedSong : song)),
+      });
+    },
+
+    deleteSongs(ids: string[]): void {
+      patchState(store, {
+        allSongs: store.allSongs().filter((song) => !ids.includes(song.id)),
+      });
     },
   })),
 );
