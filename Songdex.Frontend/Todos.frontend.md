@@ -1,8 +1,18 @@
-- [x] Upgrade to Angular 20
+## Features
+
+- [ ] ...
+
+## Technical chore
+
+- [ ] Upgrade to Angular 21
+- [ ] Migrate to standalone
+- [ ] Migrate to Vitest for unit testing (https://vitest.dev/guide/migration.html)
 - [ ] Use signals over observables
-- [ ] use HttpResource api
-- [ ] migrate to standalone
-- [x] introduce Jest for unit testing
-- [ ] introduce Playwright for E2E and integration testing
-- [ ] upgrade Tailwind (https://tailwindcss.com/docs/upgrade-guide)
-- [ ] upgrade Biome (https://biomejs.dev/guides/upgrade-to-biome-v2/)
+- [ ] Upgrade Tailwind (https://tailwindcss.com/docs/upgrade-guide)
+- [ ] Upgrade Biome (https://biomejs.dev/guides/upgrade-to-biome-v2/)
+ 
+
+## To learn something
+
+- [ ] Use HttpResource api
+- [ ] Introduce Playwright for E2E and integration testing
