@@ -4,7 +4,7 @@
 
 ## Technical chore
 
-- [ ] Upgrade to Angular 21
+- [x] Upgrade to Angular 21
 - [ ] Migrate to standalone
 - [ ] Migrate to Vitest for unit testing (https://vitest.dev/guide/migration.html)
 - [ ] Use signals over observables
