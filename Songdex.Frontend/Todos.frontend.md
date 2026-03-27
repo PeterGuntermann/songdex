@@ -1,6 +1,6 @@
 ## Features
 
-- [ ] ...
+- [ ] Get Songs from backend
 
 ## Technical chore
 
@@ -9,7 +9,7 @@
 - [ ] Migrate to Vitest for unit testing (https://vitest.dev/guide/migration.html)
 - [ ] Use signals over observables
 - [ ] Upgrade Tailwind (https://tailwindcss.com/docs/upgrade-guide)
-- [ ] Upgrade Biome (https://biomejs.dev/guides/upgrade-to-biome-v2/)
+- [x] Upgrade Biome (https://biomejs.dev/guides/upgrade-to-biome-v2/)
  
 
 ## To learn something

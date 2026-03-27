@@ -8,8 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "biome:format": "biome format --write ./src",
-    "biome:lint": "biome lint --apply ./src",
-    "biome:check": "biome check --apply ./src"
+    "biome:lint": "biome lint --write ./src",
+    "biome:check": "biome check --write ./src"
   },
   "private": true,
   "dependencies": {
@@ -32,7 +32,7 @@
     "@angular/build": "^21.2.5",
     "@angular/cli": "^21.2.5",
     "@angular/compiler-cli": "^21.2.6",
-    "@biomejs/biome": "1.7.3",
+    "@biomejs/biome": "^2.4.9",
     "@types/jest": "^30.0.0",
     "autoprefixer": "^10.4.21",
     "daisyui": "^4.12.24",

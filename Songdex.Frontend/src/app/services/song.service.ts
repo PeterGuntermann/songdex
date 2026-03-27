@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { SongStore } from "../store/song.store";
+import { Injectable, inject } from '@angular/core';
+import { SongStore } from '../store/song.store';
 
 @Injectable({
   providedIn: 'root',

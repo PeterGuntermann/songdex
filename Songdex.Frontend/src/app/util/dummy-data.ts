@@ -1,4 +1,4 @@
-import { type Song, newSong } from '../models/song';
+import { newSong, type Song } from '../models/song';
 
 export const generateDummySongs = (): Song[] => [
   newSong('Runaway', 'Bon Jovi', 'http://example.com'),

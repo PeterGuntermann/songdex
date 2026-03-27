@@ -1,4 +1,4 @@
-import { inject, InjectionToken } from '@angular/core';
+import { InjectionToken, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { newSong, type Song } from '../models/song';
 import { generateDummySongs } from '../util/dummy-data';
