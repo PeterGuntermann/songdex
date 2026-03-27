@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Songdex.Backend.Domain.Model;
 using Songdex.Backend.Infrastructure.Database;
 
@@ -13,7 +14,9 @@ public class LocalDatabaseInitializer(
         await using var scope = serviceScopeFactory.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<SongdexDbContext>();
 
-        var numberOfSongs = context.Songs.Count();
+        await context.Database.MigrateAsync(cancellationToken);
+        var numberOfSongs = await context.Songs.CountAsync(cancellationToken);
+
         if (numberOfSongs == 0)
         {
             logger.LogInformation("Initializing empty local database...");

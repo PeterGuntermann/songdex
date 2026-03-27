@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 services.AddApplication();
-services.AddInfrastructure();
+services.AddInfrastructure(builder.Configuration);
 services.AddWebApi();
 
 if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
