@@ -72,9 +72,10 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "configPath": "jest.config.ts",
+            "config": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
-            "globalMocks": []
+            "globalMocks": [],
+            "zoneless": false
           }
         }
       }

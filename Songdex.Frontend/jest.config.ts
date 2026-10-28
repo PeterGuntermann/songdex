@@ -1,6 +1,5 @@
 import type { Config } from 'jest';
-import { createCjsPreset } from 'jest-preset-angular/build/presets/create-cjs-preset';
-import * as path from 'node:path';
+import { createCjsPreset } from 'jest-preset-angular/build/presets/create-cjs-preset.js';
 
 /**
  * For a detailed explanation regarding each configuration property, visit:
@@ -9,7 +8,7 @@ import * as path from 'node:path';
 const preset = {
   ...createCjsPreset(),
   collectCoverage: false,
-  coverageDirectory: path.join(__dirname, 'dist/coverage/'),
+  coverageDirectory: '<rootDir>/dist/coverage/',
   coverageReporters: ['html', 'cobertura', 'lcov', 'text-summary'],
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   testEnvironment: 'jsdom',

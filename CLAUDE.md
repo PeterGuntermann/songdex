@@ -13,7 +13,7 @@ Repository layout:
 
 | Path | Role |
 |---|---|
-| `Songdex.Frontend/` | Angular 21 SPA (the active frontend) |
+| `Songdex.Frontend/` | Angular 22 SPA (the active frontend) |
 | `Songdex.Backend/` | .NET 8 Web API, clean-architecture layering, EF Core + SQLite |
 | `docs/` | Requirements and backlog |
 | `archived/` | Dead prototypes (`vanillajs`, `CoversongsAspnetMvc`, `ng13-deployed-to-vercel`) — do not touch |
@@ -59,10 +59,17 @@ npm run biome:lint        # lint only, writes fixes
 npm run biome:format      # format only
 ```
 
-Single test: `jest.config.ts` is self-contained (`createCjsPreset()` from `jest-preset-angular`),
-so `npx jest song.store` filters by path. Note Jest 30 renamed the flag to `--test-path-patterns`
-(plural). Coverage is **off** by default (`collectCoverage: false`) with no thresholds; enable with
-`npx jest --coverage` → `dist/coverage/`.
+Single test: `ng test --test-path-patterns song.store` filters by path (Jest 30 renamed the flag to
+the plural form). Go through `ng test`, not bare `npx jest` — `jest.config.ts` only covers the
+preset; the zone.js setup and global mocks are injected by the builder, so raw Jest finds the
+config but every TestBed spec then fails. Coverage is **off** by default (`collectCoverage: false`)
+with no thresholds; enable with `ng test --coverage` → `dist/coverage/`.
+
+The `test` target in `angular.json` needs `"zoneless": false` — `@angular-builders/jest` v21+
+defaults to a zoneless test environment, which contradicts the deliberate
+`provideZoneChangeDetection()` in `main.ts`. Each run prints a ts-jest `isolatedModules`
+deprecation warning per worker; that comes from the builder passing the option unconditionally and
+cannot be suppressed from this repo.
 
 There is a JetBrains run configuration at `Songdex.Frontend/.run/All Tests.run.xml`.
 
