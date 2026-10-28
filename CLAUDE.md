@@ -135,10 +135,23 @@ In Development, `LocalDatabaseInitializer` (an `IHostedService`, registered only
 ### Full stack (repo root)
 
 ```bash
-pwsh ./build-images-and-run.ps1    # builds both images, then docker compose up -d
+docker compose up --build --detach # builds both images, then starts them
 docker compose up --detach         # backend :5286, frontend :8080
+docker compose build backend       # build a single image without starting anything
 docker compose down -v             # -v also drops the songdex-data volume
 ```
+
+Both services carry a `build:` context next to their `image:` tag, so compose builds what is
+missing and `--build` forces a rebuild of both in parallel. There are no build scripts; the former
+`build-image-*.ps1` / `build-images-and-run.ps1` trio was removed because it duplicated this and
+ignored the exit code of each `docker build`, which let a failed backend build start the stack on
+a stale image.
+
+The backend Dockerfile restores NuGet packages in a dedicated layer and therefore copies the
+`.csproj` files of **Main's transitive graph** (Main, Adapter.In.Web, Adapter.Out.Persistence,
+Application, Common) plus `global.json` and the two `Directory.*.props` before the source. A new
+project in that graph has to be added to that `COPY` list, otherwise the restore fails. The
+subsequent `dotnet publish` runs `--no-restore`.
 
 Compose runs the backend with `ASPNETCORE_ENVIRONMENT=Development` on purpose: that is what
 registers `LocalDatabaseInitializer`, so the composed stack migrates and seeds itself. The SQLite

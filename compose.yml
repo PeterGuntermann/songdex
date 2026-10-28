@@ -1,5 +1,6 @@
 services:
   backend:
+    build: ./Songdex.Backend
     image: songdex-backend:latest
     container_name: backend
     environment:
@@ -13,6 +14,7 @@ services:
       - 5286:8080
 
   frontend:
+    build: ./Songdex.Frontend
     image: songdex-frontend:latest
     container_name: frontend
     # nginx resolves the "backend" upstream while loading its config and refuses to
