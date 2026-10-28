@@ -1,2 +1,5 @@
 .idea
 .vscode
+
+# Crash dumps written by Git Bash / MSYS2 into the current working directory
+*.stackdump
