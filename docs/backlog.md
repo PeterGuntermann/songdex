@@ -421,7 +421,7 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
 | ~~T-18~~ | ~~Migration Jest → Vitest~~ — erledigt: `@angular/build:unit-test` mit Vitest-Runner                 | M     |
 | T-19     | Tailwind 3 → 4                                                                                       | M     |
 | T-20     | Playwright für E2E einführen                                                                         | M     |
-| T-21     | .NET 8 → 9                                                                                           | S     |
+| ~~T-21~~ | ~~.NET 8 → 9~~ — erledigt 2026-10-28: direkt auf .NET 10 (9 ist out of support)                      | S     |
 | T-22     | Backend-Formatierung: Zeilenlänge, Umbrüche                                                          | S     |
 
 ### In Feature-Epics aufgegangen *(ebenfalls aus den Todos-Dateien)*
@@ -446,3 +446,10 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
       (`ISongsService` → `IGetAllSongsUseCase`); `ISongRepository`-Injektion aus dem Web-Adapter
       entfernt; `Songdex.Backend.Architecture.Test` mit ArchUnitNET-Regeln ergänzt. Siehe
       [architecture.md](./architecture.md). **Nicht** mit erledigt: T-3, T-4, T-5, T-6, T-7, T-14.
+- [x] **Backend von .NET 8 auf .NET 10 gehoben** (2026-10-28, T-21) — `TargetFramework` in
+      `Directory.Build.props`, `global.json` auf SDK 10.0.0, EF Core und die Test-Pakete auf die
+      aktuellen Versionen, Dockerfile auf `sdk:10.0` / `aspnet:10.0`. Einzige Codeänderung: das in
+      .NET 10 deprecated `.WithOpenApi()` (`ASPDEPR002`) ist aus den beiden `MapGroup`-Aufrufen
+      entfernt und durch `.WithTags(…)` ersetzt, das die bisherigen OpenAPI-Tags erhält; damit
+      entfällt auch das Paket `Microsoft.AspNetCore.OpenApi`. NSwag bleibt der Generator, xUnit
+      bleibt bei v2. Das erzeugte `swagger.json` ist bis auf die NSwag-Versionszeile unverändert.

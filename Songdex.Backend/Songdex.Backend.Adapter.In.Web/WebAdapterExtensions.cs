@@ -52,14 +52,14 @@ public static class WebAdapterExtensions
 
         app.MapGet("/", () => "Hello World!");
 
-        var songs = app.MapGroup("/api/songs").WithOpenApi();
+        var songs = app.MapGroup("/api/songs").WithTags("SongsApi");
         songs.MapGet("/", SongsApi.GetAllSongs);
         songs.MapGet("/{id}", SongsApi.GetSong);
         songs.MapPost("/", SongsApi.CreateSong);
         songs.MapPut("/{id}", SongsApi.UpdateSong);
         songs.MapDelete("/{id}", SongsApi.DeleteSong);
 
-        var artists = app.MapGroup("/api/artists").WithOpenApi();
+        var artists = app.MapGroup("/api/artists").WithTags("ArtistsApi");
         artists.MapGet("/", ArtistsApi.GetAllArtists);
         artists.MapGet("/{id}", ArtistsApi.GetArtist);
         artists.MapPost("/", ArtistsApi.CreateArtist);

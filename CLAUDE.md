@@ -16,7 +16,7 @@ Repository layout:
 | Path | Role |
 |---|---|
 | `Songdex.Frontend/` | Angular 22 SPA (the active frontend) |
-| `Songdex.Backend/` | .NET 8 Web API, hexagonal (ports & adapters), EF Core + SQLite |
+| `Songdex.Backend/` | .NET 10 Web API, hexagonal (ports & adapters), EF Core + SQLite |
 | `docs/` | Requirements, backlog and the backend architecture |
 | `archived/` | Dead prototypes (`vanillajs`, `CoversongsAspnetMvc`, `ng13-deployed-to-vercel`) — do not touch |
 | `dotnet-cli-generated/` | Untouched scaffolding leftovers |
@@ -94,14 +94,12 @@ dotnet run --project Songdex.Backend.Main        # http://localhost:5286
 
 `dotnet test --filter FullyQualifiedName~SomeTest` filters a single test.
 
-**If only the .NET 10 runtime is installed**, every `dotnet test` / `dotnet run` dies with
-`You must install or update .NET to run this application` — the projects target `net8.0` and
-`global.json`'s `rollForward` only covers the SDK, not the runtime. Prefix with
-`DOTNET_ROLL_FORWARD=LatestMajor` to work around it. (`dotnet ef` cannot be rescued this way; its
-apphost fails to resolve `hostfxr.dll`.)
+If `dotnet ef` aborts with `Failed to resolve hostfxr.dll`, its apphost cannot find the runtime
+because the SDK does not live in the default location. Set `DOTNET_ROOT` to the directory holding
+`dotnet.exe` (here `C:\Users\<user>\.dotnet`) and it works.
 
 `Songdex.Backend.Main` is the composition root and the startup project. Swagger UI is served
-in Development only. `global.json` pins SDK 8.0.0 with `rollForward: latestMajor`.
+in Development only. `global.json` pins SDK 10.0.0 with `rollForward: latestMajor`.
 
 `Directory.Build.props` at `Songdex.Backend/` sets `TargetFramework`, `Nullable` and
 `ImplicitUsings` for every project below it — do not repeat them in individual `.csproj` files.
