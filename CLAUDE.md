@@ -236,8 +236,10 @@ pass your own: `vi.fn<(id: string) => void>()` — the bare `vi.fn()` return typ
 - **All comments in source code are English** — `//`, `///`, `/* */`, XML doc comments, `<!-- -->`
   in `.csproj`/`.props`/templates, and `#` in scripts and dotfiles. This holds for both the backend
   and the frontend, including ArchUnitNET `.Because(…)` strings, which read as prose in the test
-  output. Identifiers, log messages and exception messages are English too. The `docs/` directory
-  and commit messages are exempt — those are German by choice.
+  output. Identifiers, log messages and exception messages are English too.
+- **Commit messages are English**, in the Conventional Commits form the history already uses
+  (`feat:`, `chore(backend):`, `refactor(backend):`). The `docs/` directory is the single
+  exception to the English rule — those files are German by choice.
 - **Biome** replaces ESLint and Prettier entirely (no `.eslintrc`, no `.prettierrc`): single quotes,
   2-space indent, 100-column lines, import organisation on. Run `pnpm run biome:check` before
   committing frontend changes.
