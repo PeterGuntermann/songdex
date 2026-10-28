@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <!-- Composition root: the only project allowed to know all the others. -->
+
+    <PropertyGroup>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Songdex.Backend.Application\Songdex.Backend.Application.csproj" />
+        <ProjectReference Include="..\Songdex.Backend.Adapter.In.Web\Songdex.Backend.Adapter.In.Web.csproj" />
+        <ProjectReference Include="..\Songdex.Backend.Adapter.Out.Persistence\Songdex.Backend.Adapter.Out.Persistence.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.5">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+</Project>

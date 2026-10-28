@@ -1,17 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+    <!-- Domain and ports. Must not reference any adapter or infrastructure technology. -->
 
     <ItemGroup>
-      <ProjectReference Include="..\Songdex.Backend.Domain\Songdex.Backend.Domain.csproj" />
+        <ProjectReference Include="..\Songdex.Backend.Common\Songdex.Backend.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
     </ItemGroup>
 
 </Project>

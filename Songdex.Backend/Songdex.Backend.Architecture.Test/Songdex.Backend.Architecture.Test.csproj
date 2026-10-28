@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      Guards the architecture rules from docs/architecture.md.
+      Deliberately references ALL production projects — only then does ArchUnitNET see every assembly.
+      This project is not part of the production dependency graph.
+    -->
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+        <PackageReference Include="xunit" Version="2.5.3"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
+        <PackageReference Include="TngTech.ArchUnitNET.xUnit" Version="0.13.5"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Songdex.Backend.Common\Songdex.Backend.Common.csproj" />
+        <ProjectReference Include="..\Songdex.Backend.Application\Songdex.Backend.Application.csproj" />
+        <ProjectReference Include="..\Songdex.Backend.Adapter.In.Web\Songdex.Backend.Adapter.In.Web.csproj" />
+        <ProjectReference Include="..\Songdex.Backend.Adapter.Out.Persistence\Songdex.Backend.Adapter.Out.Persistence.csproj" />
+        <ProjectReference Include="..\Songdex.Backend.Main\Songdex.Backend.Main.csproj" />
+    </ItemGroup>
+
+</Project>

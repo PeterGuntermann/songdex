@@ -30,7 +30,7 @@
 > Als Nutzer will ich, dass Frontend und Backend dasselbe Song-Modell verwenden, damit meine Eingaben überhaupt gespeichert werden können.
 
 - [ ] `Song` im Frontend (`models/song.ts`) trägt die Felder aus dem Zielmodell in §3 der Requirements
-- [ ] `Song.cs` in der Domain und `SongEntity.cs` in der Infrastructure tragen dieselben Felder
+- [ ] `Song.cs` in `Application/Domain/Model` und `SongEntity.cs` im Persistenzadapter tragen dieselben Felder
 - [ ] `releaseYear` ist eine Zahl (`int?`), kein String
 - [ ] `link` → aufgeteilt in `referenceLink` und `sourceLink`
 - [ ] EF-Migration erzeugt und gegen eine frische DB geprüft
@@ -395,8 +395,8 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
 
 | ID   | Thema                                                                                                                                                                        | Größe |
 |------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| T-5  | **Sync-over-async beseitigen.** `SongsService.GetAllSongs()` ruft `songRepository.GetAll().Result` — blockierend. Signatur auf `async` umstellen, `ISongsService` mitziehen. | S     |
-| T-6  | **Backend-Testprojekte füllen.** Alle fünf `*.Test`-Projekte enthalten keine einzige `.cs`-Datei. Mindestens Domain und Application abdecken.                                | M     |
+| T-5  | **Sync-over-async beseitigen.** `SongService.GetAllSongs()` ruft `songRepository.GetAll().Result` — blockierend. Signatur auf `async` umstellen, `IGetAllSongsUseCase` mitziehen. | S     |
+| T-6  | **Backend-Testprojekte füllen.** Die vier fachlichen `*.Test`-Projekte enthalten keine einzige `.cs`-Datei (nur `Architecture.Test` ist gefüllt). Mindestens Application abdecken. | M     |
 | T-7  | **Result-Pattern tatsächlich verwenden.** `Common/Result.cs` ist deklariert, aber nirgends benutzt. Use-Cases darauf umstellen. *(aus `Todos.backend.md`)*                   | M     |
 | T-8  | **Integrationstest REST → Datenbank.** *(aus `Todos.backend.md`)*                                                                                                            | M     |
 | T-9  | **Coverage aktivieren.** Läuft nur auf Zuruf (`ng test --coverage`), ohne Schwellwerte. `coverageThresholds` im `test`-Target setzen.                                        | S     |
@@ -441,3 +441,8 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
 - [x] Upgrade auf Biome v2
 - [x] Extension-Methoden für alle Backend-Projekte
 - [x] Seeding über Initializer-Klasse (`LocalDatabaseInitializer.cs` — war in `Todos.backend.md` fälschlich noch offen)
+- [x] **Backend auf hexagonale Architektur umgebaut** (2026-10-28) — Projektschnitt nach
+      `Adapter.In/Out`, `Application` (Domain + Ports), `Common`, `Main`; Ports umbenannt
+      (`ISongsService` → `IGetAllSongsUseCase`); `ISongRepository`-Injektion aus dem Web-Adapter
+      entfernt; `Songdex.Backend.Architecture.Test` mit ArchUnitNET-Regeln ergänzt. Siehe
+      [architecture.md](./architecture.md). **Nicht** mit erledigt: T-3, T-4, T-5, T-6, T-7, T-14.

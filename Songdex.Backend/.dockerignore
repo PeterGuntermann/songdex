@@ -1,0 +1,16 @@
+# Host build artefacts must not enter the image build: they contain Windows
+# paths and would corrupt the restore inside the container.
+**/bin/
+**/obj/
+**/published/
+
+# Local development data
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.user
+
+.idea/
+.vs/
+Dockerfile
+.dockerignore

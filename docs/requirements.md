@@ -41,12 +41,12 @@ Ein Nutzer, ein Rechner, ein Browser. Start über `docker compose up`, Zugriff a
 
 `Song` ist heute **viermal inkonsistent modelliert**:
 
-| Ort                                                              | Felder                                                         |
-|------------------------------------------------------------------|----------------------------------------------------------------|
-| `Songdex.Frontend/src/app/models/song.ts`                        | `id, title, artist, link`                                      |
-| `Songdex.Backend.Domain/Model/Song.cs`                           | `SongId, Title, Artist, ReleaseYear` (Jahr als `string`)       |
-| `Songdex.Backend.Infrastructure/Database/Entities/SongEntity.cs` | `Id(8), Title(200), Artist(200), ReleaseYear(4)`               |
-| Minimal-API-Stubs `Endpoints/Songs/*.cs`                         | nehmen `int id` — `SongId` ist aber ein 8-stelliger **String** |
+| Ort                                                                  | Felder                                                         |
+|----------------------------------------------------------------------|----------------------------------------------------------------|
+| `Songdex.Frontend/src/app/models/song.ts`                            | `id, title, artist, link`                                      |
+| `Songdex.Backend.Application/Domain/Model/Song.cs`                   | `SongId, Title, Artist, ReleaseYear` (Jahr als `string`)       |
+| `Songdex.Backend.Adapter.Out.Persistence/Entities/SongEntity.cs`     | `Id(8), Title(200), Artist(200), ReleaseYear(4)`               |
+| Minimal-API-Stubs `Endpoints/Songs/*.cs`                             | nehmen `int id` — `SongId` ist aber ein 8-stelliger **String** |
 
 Das Frontend kennt `link`, das Backend kennt `releaseYear`. **Die Modelle können nicht round-trippen.** Die Vereinheitlichung ist Vorbedingung für jede echte Integration (→ E1.1).
 
