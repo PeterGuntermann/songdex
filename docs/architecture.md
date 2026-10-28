@@ -162,7 +162,8 @@ Datenbank eine Spalte mehr hat.
 1. Ausgehenden Port in `Application/Port/Out/` definieren — in fachlichen Begriffen, ohne HTTP-,
    Datei- oder SQL-Vokabular.
 2. Neues Adapterprojekt `Songdex.Backend.Adapter.Out.{Name}` anlegen, flach neben den anderen,
-   in die Solution-Folder `src/Adapter/Out` und `test/Adapter/Out` einhängen.
+   in den Solution-Folder `src/Adapter/Out` einhängen; das zugehörige Testprojekt direkt
+   unter `test`.
 3. Port dort implementieren, `Add{Name}Adapter()`-Extension beisteuern, in `Program.cs` aufrufen.
 4. `Directory.Build.props` liefert `TargetFramework` und `Nullable`, `Directory.Packages.props`
    die Paketversionen — beides nicht im neuen `.csproj` wiederholen.
