@@ -50,26 +50,34 @@ look implemented are not. Verify before assuming:
 ### Frontend (`Songdex.Frontend/`)
 
 ```bash
-npm install
-npm start                 # ng serve on http://localhost:4200
-npm run build             # production build to dist/coversongs-frontend
-npm test                  # Jest via @angular-builders/jest
-npm run biome:check       # lint + format + organize imports, writes fixes
-npm run biome:lint        # lint only, writes fixes
-npm run biome:format      # format only
+pnpm install
+pnpm start                 # ng serve on http://localhost:4200
+pnpm run build             # production build to dist/coversongs-frontend
+pnpm test                  # Vitest via @angular/build:unit-test
+pnpm run biome:check       # lint + format + organize imports, writes fixes
+pnpm run biome:lint        # lint only, writes fixes
+pnpm run biome:format      # format only
 ```
 
-Single test: `ng test --test-path-patterns song.store` filters by path (Jest 30 renamed the flag to
-the plural form). Go through `ng test`, not bare `npx jest` — `jest.config.ts` only covers the
-preset; the zone.js setup and global mocks are injected by the builder, so raw Jest finds the
-config but every TestBed spec then fails. Coverage is **off** by default (`collectCoverage: false`)
-with no thresholds; enable with `ng test --coverage` → `dist/coverage/`.
+Tests run on **Vitest** through Angular's first-party `@angular/build:unit-test` builder — there is
+no `vitest.config.ts` and no setup file. The builder derives the Vitest config from the `build`
+target (`runnerConfig` is left at its `false` default), so specs are compiled by the same esbuild
+pipeline as the app. Go through `ng test`, never bare `npx vitest`: without the builder there is no
+config at all and nothing resolves.
 
-The `test` target in `angular.json` needs `"zoneless": false` — `@angular-builders/jest` v21+
-defaults to a zoneless test environment, which contradicts the deliberate
-`provideZoneChangeDetection()` in `main.ts`. Each run prints a ts-jest `isolatedModules`
-deprecation warning per worker; that comes from the builder passing the option unconditionally and
-cannot be suppressed from this repo.
+Because the `build` target lists `zone.js` in `polyfills`, the builder automatically appends
+`zone.js/testing` and initialises the `TestBed` with the zone-based environment. That is what keeps
+the deliberate `provideZoneChangeDetection()` in `main.ts` consistent with the tests — do not drop
+`zone.js` from `polyfills` without also making the app zoneless.
+
+`globals: true` is set by the builder, so `describe`/`it`/`expect`/`vi` need no import;
+`tsconfig.spec.json` pulls the matching types via `"types": ["vitest/globals"]`.
+
+The `test` target pins `"watch": false`, so `ng test` always runs once and exits; the builder would
+otherwise default to watch mode in a TTY. Opt back in per run with `ng test --watch`. Filtering:
+`ng test --include "**/song.store.spec.ts"` by file, `ng test --filter "^SongStore"` by test name.
+Coverage is **off** by default with no thresholds; `ng test --coverage` (provider
+`@vitest/coverage-v8`) writes to `coverage/`.
 
 There is a JetBrains run configuration at `Songdex.Frontend/.run/All Tests.run.xml`.
 

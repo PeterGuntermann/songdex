@@ -70,12 +70,12 @@
           }
         },
         "test": {
-          "builder": "@angular-builders/jest:run",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "config": "jest.config.ts",
+            "buildTarget": "frontend:build:development",
             "tsConfig": "tsconfig.spec.json",
-            "globalMocks": [],
-            "zoneless": false
+            "runner": "vitest",
+            "watch": false
           }
         }
       }

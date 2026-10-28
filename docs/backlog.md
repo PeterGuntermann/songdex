@@ -399,7 +399,7 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
 | T-6 | **Backend-Testprojekte füllen.** Alle fünf `*.Test`-Projekte enthalten keine einzige `.cs`-Datei. Mindestens Domain und Application abdecken. | M |
 | T-7 | **Result-Pattern tatsächlich verwenden.** `Common/Result.cs` ist deklariert, aber nirgends benutzt. Use-Cases darauf umstellen. *(aus `Todos.backend.md`)* | M |
 | T-8 | **Integrationstest REST → Datenbank.** *(aus `Todos.backend.md`)* | M |
-| T-9 | **Coverage aktivieren.** `collectCoverage: false` in `jest.config.ts`, keine Schwellwerte, `setup-jest.ts` ist 0 Bytes. | S |
+| T-9 | **Coverage aktivieren.** Läuft nur auf Zuruf (`ng test --coverage`), ohne Schwellwerte. `coverageThresholds` im `test`-Target setzen. | S |
 | T-10 | **CI einrichten.** Kein `.github/`, kein Workflow. Build, Lint und Tests für beide Teile bei jedem Push. | M |
 | T-11 | **Platzhalter-Tests ersetzen.** Vier der sechs Spec-Dateien im Frontend sind unveränderte CLI-Smoke-Tests („should create"). | S |
 
@@ -418,7 +418,7 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
 |---|---|---|
 | T-16 | Signals statt Observables — `songdetails.component.ts` nutzt noch `ngOnInit` + manuelles `subscribe` | M |
 | T-17 | `httpResource`-API einsetzen | M |
-| T-18 | Migration Jest → Vitest | M |
+| ~~T-18~~ | ~~Migration Jest → Vitest~~ — erledigt: `@angular/build:unit-test` mit Vitest-Runner | M |
 | T-19 | Tailwind 3 → 4 | M |
 | T-20 | Playwright für E2E einführen | M |
 | T-21 | .NET 8 → 9 | S |
