@@ -1,6 +1,6 @@
 # Songdex — Requirements
 
-> Stand: 2026-10-27 · Begleitdokument: [backlog.md](./backlog.md)
+> Stand: 2026-10-28 · Begleitdokument: [backlog.md](./backlog.md)
 
 ## 1. Vision & Abgrenzung
 
@@ -39,16 +39,29 @@ Ein Nutzer, ein Rechner, ein Browser. Start über `docker compose up`, Zugriff a
 
 ### Ausgangslage
 
-`Song` ist heute **viermal inkonsistent modelliert**:
+Seit 2026-10-28 ist `Song` über alle vier Schichten **konsistent modelliert** und kann
+round-trippen — Frontend (`models/song.ts`), Domäne (`Application/Domain/Model/Song.cs`), Entität
+(`Adapter.Out.Persistence/Entities/SongEntity.cs`) und API-Vertrag
+(`Adapter.In.Web/Endpoints/Songs/SongContracts.cs`) tragen dieselben Felder. Damit ist der
+schlanke Teil von E1.1 erledigt: `releaseYear` ist eine Zahl, `link` heißt `referenceLink`, die
+Routen nehmen die 8-stellige String-Id.
 
-| Ort                                                                  | Felder                                                         |
-|----------------------------------------------------------------------|----------------------------------------------------------------|
-| `Songdex.Frontend/src/app/models/song.ts`                            | `id, title, artist, link`                                      |
-| `Songdex.Backend.Application/Domain/Model/Song.cs`                   | `SongId, Title, Artist, ReleaseYear` (Jahr als `string`)       |
-| `Songdex.Backend.Adapter.Out.Persistence/Entities/SongEntity.cs`     | `Id(8), Title(200), Artist(200), ReleaseYear(4)`               |
-| Minimal-API-Stubs `Endpoints/Songs/*.cs`                             | nehmen `int id` — `SongId` ist aber ein 8-stelliger **String** |
+Vollständig ist das Zielmodell damit aber nicht. Gebaut sind **fünf von vierzehn** Song-Feldern,
+und beide Relationen fehlen ganz:
 
-Das Frontend kennt `link`, das Backend kennt `releaseYear`. **Die Modelle können nicht round-trippen.** Die Vereinheitlichung ist Vorbedingung für jede echte Integration (→ E1.1).
+| Gruppe      | Vorhanden                              | Offen                                                                     |
+|-------------|----------------------------------------|---------------------------------------------------------------------------|
+| Identität   | `id`, `title`, `artist`                | —                                                                         |
+| Musikalisch | —                                      | `originalKey`, `preferredKey`, `bpm`, `timeSignature`, `durationSeconds`  |
+| Verweise    | `referenceLink`                        | `sourceLink`, `notes`                                                     |
+| Katalog     | `releaseYear` (`int?`)                 | `genre`, `language`, `album`                                              |
+| Relationen  | —                                      | `tags[]`, `chordsheets[]`                                                 |
+
+Die fehlenden **Song-Felder** sind der Rest von E1.1; jedes berührt Frontend-Modell, Domäne,
+Entität, `SongContracts.cs`, `SongMappings.cs`, `DataSeed.cs` und eine EF-Migration. `Tag`
+(→ E1.7, E1.8) und `Chordsheet` (→ E3.1) existieren als Typen noch nirgends im Code. Die
+musikalischen Felder sind Vorbedingung für FR-2.2 (Filter nach Tonart) und FR-3.4
+(`preferredKey` als Anzeige-Default).
 
 ### Zielmodell
 
@@ -147,4 +160,6 @@ Siehe §6 — Detailtiefe bewusst offen.
 | **ChordPro-Parser**     | Fremdbibliothek (z. B. `chordsheetjs`) oder eigener Parser? Die Bibliothek spart viel Arbeit bei Rendering und Transposition; ein eigener Parser hat mehr Lernwert und keine Abhängigkeit.                                                   | E3.2     |
 | **PDF-Erzeugung**       | Clientseitig (Browser-Druck mit Print-Stylesheet, oder jsPDF/pdfmake) oder serverseitig (QuestPDF im .NET-Backend)? Browser-Druck ist mit Abstand am billigsten, gibt aber weniger Layoutkontrolle.                                          | E4.1     |
 | **Setlist-Detailtiefe** | Braucht eine Setlist Gig-Metadaten (Datum, Ort, Anlass)? Mehrere Sets pro Gig (Set 1 / Pause / Set 2 / Zugaben)? Soll die Gesamtdauer berechnet werden? Setlist-PDF als Booklet mit allen Sheets oder als einseitiger Spickzettel fürs Pult? | E6       |
-| **API-Konsolidierung**  | `CoversongsController` (`/api/coversongs`, funktioniert) und die Minimal-API-Gruppe (`/api/songs`, teils Stubs) existieren parallel. Welche bleibt?                                                                                          | T-Track  |
+
+**Entschieden:** *API-Konsolidierung* (T-3, 2026-10-28) — die Minimal-API-Gruppe `/api/songs`
+bleibt, `CoversongsController` und `/api/coversongs` sind gelöscht.
