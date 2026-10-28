@@ -65,6 +65,7 @@ entsteht über **Solution-Folder** in `Songdex.Backend.sln`. Das vermeidet
 ```
 Songdex.Backend/
 ├── Directory.Build.props          TargetFramework, Nullable, ImplicitUsings — zentral für alle
+├── Directory.Packages.props       Central Package Management: alle Paketversionen — zentral für alle
 ├── Songdex.Backend.sln            Solution-Folder src/ und test/
 ├── Dockerfile, .dockerignore
 ├── Songdex.Backend.Common/
@@ -163,8 +164,22 @@ Datenbank eine Spalte mehr hat.
 2. Neues Adapterprojekt `Songdex.Backend.Adapter.Out.{Name}` anlegen, flach neben den anderen,
    in die Solution-Folder `src/Adapter/Out` und `test/Adapter/Out` einhängen.
 3. Port dort implementieren, `Add{Name}Adapter()`-Extension beisteuern, in `Program.cs` aufrufen.
-4. `Directory.Build.props` liefert `TargetFramework` und `Nullable` — nicht im neuen `.csproj`
-   wiederholen.
+4. `Directory.Build.props` liefert `TargetFramework` und `Nullable`, `Directory.Packages.props`
+   die Paketversionen — beides nicht im neuen `.csproj` wiederholen.
+
+### Ich brauche ein neues NuGet-Paket
+
+Paketversionen werden zentral verwaltet (`ManagePackageVersionsCentrally`), die `.csproj` nennen
+nur noch den Paketnamen:
+
+1. `<PackageVersion Include="…" Version="…" />` in `Directory.Packages.props` eintragen — in die
+   Gruppe *Runtime* oder *Test*, alphabetisch.
+2. `<PackageReference Include="…" />` **ohne** `Version` in das `.csproj` setzen, das es braucht.
+3. Beim Anheben einer Version genügt die Änderung in `Directory.Packages.props`; danach
+   `dotnet restore --force-evaluate`, damit `Songdex.Backend.Main/packages.lock.json` nachzieht.
+
+Ein `Version`-Attribut am `PackageReference` bricht den Build (NU1008). Eine bewusste Abweichung
+für ein einzelnes Projekt liefe über `VersionOverride` — bisher braucht das keines.
 
 ### Ich will Fachlogik testen
 

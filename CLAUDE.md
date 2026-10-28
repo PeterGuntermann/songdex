@@ -104,6 +104,13 @@ in Development only. `global.json` pins SDK 10.0.0 with `rollForward: latestMajo
 `Directory.Build.props` at `Songdex.Backend/` sets `TargetFramework`, `Nullable` and
 `ImplicitUsings` for every project below it — do not repeat them in individual `.csproj` files.
 
+Package versions are managed centrally: `Directory.Packages.props` (same directory) sets
+`ManagePackageVersionsCentrally` and holds every `PackageVersion`. A `.csproj` carries the bare
+`<PackageReference Include="…" />` without a `Version` attribute — adding one fails the build with
+NU1008. After bumping a version there, run `dotnet restore --force-evaluate` so
+`Songdex.Backend.Main/packages.lock.json` (the only lock file, from `RestorePackagesWithLockFile`)
+picks it up.
+
 EF Core migrations live in `Songdex.Backend.Adapter.Out.Persistence/Migrations/`:
 
 ```bash

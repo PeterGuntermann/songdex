@@ -1,0 +1,32 @@
+<Project>
+
+    <!--
+      Central Package Management for every project below Songdex.Backend/.
+      Versions live here only; a .csproj carries the bare <PackageReference Include="..." />.
+      See docs/architecture.md.
+    -->
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+
+    <!-- Runtime: EF Core and the Microsoft.Extensions abstractions ship with the .NET 10 band. -->
+    <ItemGroup>
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.14" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.14" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.14" />
+        <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.14" />
+        <PackageVersion Include="NSwag.AspNetCore" Version="14.7.1" />
+    </ItemGroup>
+
+    <!-- Test: xUnit stays on v2 deliberately. -->
+    <ItemGroup>
+        <PackageVersion Include="coverlet.collector" Version="10.1.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+        <PackageVersion Include="TngTech.ArchUnitNET.xUnit" Version="0.13.5" />
+        <PackageVersion Include="xunit" Version="2.9.3" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+    </ItemGroup>
+
+</Project>

@@ -453,3 +453,9 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
       entfernt und durch `.WithTags(…)` ersetzt, das die bisherigen OpenAPI-Tags erhält; damit
       entfällt auch das Paket `Microsoft.AspNetCore.OpenApi`. NSwag bleibt der Generator, xUnit
       bleibt bei v2. Das erzeugte `swagger.json` ist bis auf die NSwag-Versionszeile unverändert.
+- [x] **Zentrale Paketverwaltung im Backend eingeführt** (2026-10-28) — neues
+      `Songdex.Backend/Directory.Packages.props` mit `ManagePackageVersionsCentrally` und allen
+      zwölf Paketversionen; die neun `.csproj` tragen nur noch `<PackageReference Include="…" />`
+      ohne `Version`. Keine Versionsänderung: `packages.lock.json` löst dieselben 43 Pakete in
+      denselben Versionen auf, der Diff dort ist allein der Formatsprung auf Lock-Version 2.
+      Rezept dafür in [architecture.md](./architecture.md) §5.
