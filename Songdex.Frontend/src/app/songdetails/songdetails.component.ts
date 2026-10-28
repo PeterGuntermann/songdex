@@ -1,7 +1,5 @@
-import { Component, inject, type OnInit } from '@angular/core';
+import { Component, computed, inject, type OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { take } from 'rxjs';
-import type { Song } from '../models/song';
 import { SongService } from '../services/song.service';
 import { SongStore } from '../store/song.store';
 
@@ -13,15 +11,22 @@ import { SongStore } from '../store/song.store';
   styleUrl: './songdetails.component.scss',
 })
 export class SongdetailsComponent implements OnInit {
-  readonly activatedRoute = inject(ActivatedRoute);
-  readonly songService = inject(SongService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly songService = inject(SongService);
   readonly songStore = inject(SongStore);
 
-  song?: Song;
+  private readonly songId = signal('');
+
+  /** Reads through the store, so the song appears as soon as the fetch below lands. */
+  readonly song = computed(() => this.songStore.getSongById(this.songId()));
 
   ngOnInit(): void {
-    this.activatedRoute.params.pipe(take(1)).subscribe(({ songId }) => {
-      this.song = this.songStore.getSongById(songId);
-    });
+    const songId = this.activatedRoute.snapshot.paramMap.get('songId') ?? '';
+    this.songId.set(songId);
+
+    // Deep link: nothing has filled the catalogue yet.
+    if (!this.songStore.getSongById(songId)) {
+      this.songService.fetchSong(songId);
+    }
   }
 }

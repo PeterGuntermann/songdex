@@ -23,30 +23,34 @@ Repository layout:
 
 ## Read this before planning any change
 
-The scaffolding is modern and clean, but the **application is a prototype**. Several things that
-look implemented are not. Verify before assuming:
+The scaffolding is modern and clean, but the **application is an early prototype**. The
+frontend↔backend round trip works end to end since 2026-10-28; most features do not exist yet.
+Verify before assuming:
 
-- **The frontend is not actually connected to the backend.** `src/app/services/song.service.ts`
-  fetches `/api/coversongs` and `console.log`s the result behind a `// TODO: Save to store`. The
-  store never receives it, so the UI always renders generated dummy data from `util/dummy-data.ts`.
-- **Four of five song CRUD endpoints are empty stubs.** Only `GetAllSongs` works. The stubs in
-  `Songdex.Backend.Adapter.In.Web/Endpoints/Songs/` also take `int id`, but `SongId` is an
-  8-character **string** — the signatures are simply wrong.
-- **Two parallel song APIs exist.** `CoversongsController` (`/api/coversongs`, works) and the
-  minimal-API group (`/api/songs`, mostly stubs). One of them is meant to go away.
-- **`/api/artists` has five endpoints but no entity behind them.** Per the requirements, `artist`
-  stays a free-text field on `Song`; these routes are slated for removal.
-- **`Song` is modelled four times, inconsistently.** The frontend has `link`, the backend has
-  `releaseYear` — the models cannot round-trip. See `docs/requirements.md` §3 for the agreed target.
-- **There are no `src/environments/` files.** The API base URL is hardcoded to
-  `http://localhost:5286` in `song.service.ts`, so the Docker image cannot reach the composed
-  backend. This blocks the real frontend↔backend wiring.
-- **Four of the five `Songdex.Backend.*.Test` projects are empty shells** with zero `.cs` files.
-  Only `Songdex.Backend.Architecture.Test` contains tests (the ArchUnitNET rules).
-- **`ISongRepository` only has `GetAll()`** — no Add/Update/Delete.
+- **`/api/songs` is the only API.** All five CRUD endpoints are real minimal endpoints and take a
+  **string** id. `CoversongsController`, `/api/coversongs` and `/api/artists` are gone.
+- **The web adapter has its own contract.** `Endpoints/Songs/SongContracts.cs` maps `Song` ↔
+  `SongResponse`/`SongRequest`. Never serialise the domain object directly — `SongId` would go out
+  as `{"value":"…"}`.
+- **`Song` carries five fields only** (`id`, `title`, `artist`, `releaseYear: int?`,
+  `referenceLink`) and is consistent across frontend, domain, entity and API. The rest of the
+  target model in `docs/requirements.md` §3 — the musical fields, `sourceLink`, `notes`, `genre`,
+  `language`, `album` — is still open (E1.1).
+- **The UI can only read.** `SongService` has `createSong`/`updateSong`/`deleteSong` and they work,
+  but no component calls them; the forms are E1.4–E1.6.
+- **Three of the five `Songdex.Backend.*.Test` projects are empty shells** with zero `.cs` files.
+  Only `Architecture.Test` (ArchUnitNET rules) and `Application.Test` (`SongServiceTest`) are filled.
+  There is no test that exercises an endpoint or the database (T-8).
+- **`Common/Result.cs` is still used nowhere.** The CRUD use cases return `Song?`/`bool` instead,
+  because `Result<T>.IsSuccess() => Value is not null` cannot express a successful `Delete`.
+  Fixing `Result<T>` first is T-7 — do not adopt it as-is.
 - **Legacy `coversongs` naming persists** in the build output path (`dist/coversongs-frontend`,
-  matched by the Dockerfile COPY), `nginx.conf`, the page title and the API path.
+  matched by the Dockerfile COPY), the nginx site file name, the page title and the image names.
 - **`/test` is a daisyUI playground route**, not a feature.
+- **`biome check` reports 15 pre-existing findings** — the playground template, the three
+  `@tailwind` directives in `styles.scss` and the `routerLink` anchor in `songdetails`. Do not add
+  a sixteenth; Biome does not understand Angular bindings, so prefer `href="{{ … }}"` over
+  `[href]` in templates.
 
 ## Commands
 
@@ -133,9 +137,18 @@ In Development, `LocalDatabaseInitializer` (an `IHostedService`, registered only
 ```bash
 pwsh ./build-images-and-run.ps1    # builds both images, then docker compose up -d
 docker compose up --detach         # backend :5286, frontend :8080
+docker compose down -v             # -v also drops the songdex-data volume
 ```
 
-CORS allows `http://localhost:4200` and `http://localhost:8080` only.
+Compose runs the backend with `ASPNETCORE_ENVIRONMENT=Development` on purpose: that is what
+registers `LocalDatabaseInitializer`, so the composed stack migrates and seeds itself. The SQLite
+file lives on the named volume `songdex-data` at `/app/data`, not in the container layer — a
+`docker compose down` without `-v` keeps your songs.
+
+The frontend image serves the SPA through nginx and **proxies `/api/` to `backend:8080`**, so the
+production build uses a relative API base URL (`src/environments/environment.prod.ts`, swapped in
+by `fileReplacements`) and the browser never sees :5286. CORS therefore only matters for
+`ng serve`; it allows `http://localhost:4200` and `http://localhost:8080`.
 
 ## Architecture
 
@@ -204,14 +217,19 @@ bare `<router-outlet/>` with no shell or navigation.
 State lives in `src/app/store/song.store.ts` — a single `signalStore({ providedIn: 'root' })`.
 Two conventions worth preserving:
 
-- Initial state is injected through a `SONG_STATE` `InjectionToken` with a factory default. This is
-  the test seam: specs provide `{ provide: SONG_STATE, useValue: {...} satisfies SongState }`.
-  `song.store.spec.ts` is the one genuinely tested unit in the frontend and the model to copy.
-- Store methods are synchronous `patchState` operations. There is no `rxMethod`, no `withEntities`,
-  no loading/error state yet.
+- Initial state is injected through a `SONG_STATE` `InjectionToken` with a factory default (now
+  empty — the catalogue comes from the backend). This is the test seam: specs provide
+  `{ provide: SONG_STATE, useValue: {...} satisfies SongState }`. `song.store.spec.ts` is the
+  model to copy.
+- Store methods are synchronous `patchState` operations — there is no `rxMethod` and no
+  `withEntities`. **HTTP lives in `SongService`, not in the store**; the service calls the API and
+  then patches, which is what keeps the store trivially testable. `SongState` carries `loading`
+  and `error` alongside `allSongs`.
 
-Mocking convention is `ng-mocks` (`MockProvider`). Four of six spec files are still unmodified CLI
-"should create" smoke tests.
+Mocking convention is `ng-mocks` (`MockProvider`). `MockProvider` stubs are *not* vitest spies, so
+pass your own: `vi.fn<(id: string) => void>()` — the bare `vi.fn()` return type is too loose for
+`Partial<T>` under `strict` and fails with TS2769. Two of six spec files
+(`app.component.spec.ts`, `songlist.component.spec.ts`) are still unmodified CLI smoke tests.
 
 ## Conventions
 
@@ -221,7 +239,7 @@ Mocking convention is `ng-mocks` (`MockProvider`). Four of six spec files are st
   output. Identifiers, log messages and exception messages are English too. The `docs/` directory
   and commit messages are exempt — those are German by choice.
 - **Biome** replaces ESLint and Prettier entirely (no `.eslintrc`, no `.prettierrc`): single quotes,
-  2-space indent, 100-column lines, import organisation on. Run `npm run biome:check` before
+  2-space indent, 100-column lines, import organisation on. Run `pnpm run biome:check` before
   committing frontend changes.
 - **TypeScript is strict** — `strict`, `noImplicitOverride`, `noPropertyAccessFromIndexSignature`,
   `noImplicitReturns`, plus `strictTemplates` and `strictInjectionParameters`. Do not loosen these.
@@ -232,8 +250,8 @@ Mocking convention is `ng-mocks` (`MockProvider`). Four of six spec files are st
   file is intentionally 0 bytes; `styles.scss` holds nothing but the three `@tailwind` directives.
   The daisyUI theme is hardcoded to `dim` in `index.html` and there is no theme switcher.
 - Components still use the four-file layout (`.ts` / `.html` / `.scss` / `.spec.ts`).
-- Source is organised by type (`models/`, `services/`, `store/`, `util/`) plus one folder per
-  feature component. No `core/` / `shared/` / `features/` split, no barrel files.
+- Source is organised by type (`models/`, `services/`, `store/`, `environments/`) plus one folder
+  per feature component. No `core/` / `shared/` / `features/` split, no barrel files.
 
 ## Not present
 

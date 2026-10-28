@@ -1,17 +1,13 @@
-import { generateEightRandomHexDigits } from '../util/random-generator';
-
+/**
+ * Mirrors `SongResponse` of the backend. Ids are assigned by the backend, never here.
+ */
 export type Song = {
   id: string;
   title: string;
   artist: string;
-  link: string;
+  releaseYear: number | null;
+  referenceLink: string | null;
 };
 
-export const newSong = (title: string, artist = '', link = ''): Song => {
-  return {
-    id: generateEightRandomHexDigits(),
-    title,
-    artist,
-    link,
-  };
-};
+/** What the backend accepts on create and update — everything but the id. */
+export type SongDraft = Omit<Song, 'id'>;

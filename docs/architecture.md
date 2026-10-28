@@ -39,7 +39,7 @@ Kompositionswurzel kennt es alles, damit sonst niemand etwas kennen muss.
 |-------------------------------------------|-------------------------------------------------------------------------|--------------------|
 | `Songdex.Backend.Common`                  | technische Hilfsmittel ohne Fachbezug (`Result<T>`)                     | —                  |
 | `Songdex.Backend.Application`             | Domänenmodell, Domain-Services, alle Ports                              | `Common`           |
-| `Songdex.Backend.Adapter.In.Web`          | eingehender Adapter: HTTP, Controller, Minimal-Endpoints, CORS, OpenAPI | `Application`      |
+| `Songdex.Backend.Adapter.In.Web`          | eingehender Adapter: HTTP, Minimal-Endpoints, API-Verträge, CORS, OpenAPI | `Application`    |
 | `Songdex.Backend.Adapter.Out.Persistence` | ausgehender Adapter: EF Core, SQLite, Migrationen, Seeding              | `Application`      |
 | `Songdex.Backend.Main`                    | Kompositionswurzel: `Program.cs`, `appsettings`, Hosting                | alle               |
 
@@ -80,14 +80,14 @@ Songdex.Backend/
 │   │   ├── Model/      Song.cs, SongId.cs
 │   │   └── Service/    SongService.cs
 │   ├── Port/
-│   │   ├── In/         IGetAllSongsUseCase.cs
+│   │   ├── In/         IGetAllSongsUseCase.cs, IGetSongUseCase.cs, ICreateSongUseCase.cs,
+│   │   │               IUpdateSongUseCase.cs, IDeleteSongUseCase.cs
 │   │   └── Out/        ISongRepository.cs
 │   └── ApplicationExtensions.cs
 ├── Songdex.Backend.Adapter.In.Web/
 │   ├── Endpoints/
-│   │   ├── CoversongsController.cs
-│   │   └── Songs/      ArtistsApi.cs, GetAllSongs.cs, GetSong.cs,
-│   │                   CreateSong.cs, UpdateSong.cs, DeleteSong.cs
+│   │   └── Songs/      GetAllSongs.cs, GetSong.cs, CreateSong.cs, UpdateSong.cs,
+│   │                   DeleteSong.cs, SongContracts.cs, SongRequestValidation.cs
 │   └── WebAdapterExtensions.cs
 ├── Songdex.Backend.Adapter.Out.Persistence/
 │   ├── Entities/       SongEntity.cs
@@ -131,7 +131,9 @@ Registriere nie einen Service direkt in `Program.cs`.
 
 **Ports werden pro Use Case geschnitten, Implementierungen pro Aggregat gebündelt.** Ein Aufrufer
 soll nur von dem abhängen, was er benutzt; fünf Klassen mit je einer Methode wären dagegen Ballast.
-`SongService` wird mit E1.2 alle fünf CRUD-Use-Cases implementieren.
+`SongService` implementiert seit E1.2 alle fünf CRUD-Use-Cases. Damit daraus nicht fünf Instanzen
+pro Request werden, registriert `ApplicationExtensions` die Klasse einmal und leitet die fünf
+Interfaces per Factory auf dieselbe Registrierung weiter.
 
 Hombergs' `ILoadSongsPort`-Schema wird bewusst **nicht** übernommen: Das ist Java-Jargon, und der
 Namespace `Port.Out` benennt die Rolle bereits.
@@ -148,6 +150,10 @@ die `.Because(…)`-Texte der Architekturtests. Diese Dokumentation ist die bewu
 3. In `ApplicationExtensions` registrieren.
 4. Endpunkt in `Adapter.In.Web/Endpoints/` schreiben und das **Use-Case-Interface** injizieren.
 5. Route in `WebAdapterExtensions.UseWebAdapter()` eintragen.
+
+Request und Response sind dabei eigene `record`-Typen des Web-Adapters (`Endpoints/Songs/
+SongContracts.cs`), nie das Domänenobjekt: `SongId` ist fachlich ein Wertobjekt, über die Leitung
+aber ein flacher String. Der API-Vertrag soll sich nicht ändern, nur weil das Modell es tut.
 
 Kein Schritt davon fasst den Persistenzadapter an.
 
@@ -234,9 +240,5 @@ benannten Backlog-Einträgen und dürfen nicht als Vorbild für neuen Code diene
 
 | Abweichung                                                                                                                                                                       | Gehört zu |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| Der Web-Adapter serialisiert das Domänenobjekt `Song` direkt, statt auf ein eigenes DTO zu mappen. Dadurch leckt die Modellstruktur (`{"id":{"value":"…"}}`) in den API-Vertrag. | E1.1      |
-| Die Minimal-Endpoint-Stubs nehmen `int id`, obwohl `SongId` ein 8-stelliger String ist.                                                                                          | E1.2      |
-| `SongService.GetAllSongs()` ruft `songRepository.GetAll().Result` — blockierendes Sync-over-async.                                                                               | T-5       |
-| `Common/Result.cs` ist vorhanden, aber von keinem Use Case benutzt.                                                                                                              | T-7       |
-| `/api/coversongs` und `/api/songs` liefern dasselbe nebeneinander; `/api/artists` bedient eine Entität, die es laut Requirements nicht geben soll.                               | T-3, T-4  |
-| Die vier fachlichen Testprojekte sind leere Hüllen. Nur `Architecture.Test` enthält Tests.                                                                                       | T-6       |
+| `Common/Result.cs` ist vorhanden, aber von keinem Use Case benutzt. Die CRUD-Use-Cases geben stattdessen `Song?` bzw. `bool` zurück, weil `Result<T>.IsSuccess() => Value is not null` einen erfolgreichen void-Vorgang (Delete) nicht ausdrücken kann. | T-7       |
+| Drei der fachlichen Testprojekte sind leere Hüllen. Nur `Architecture.Test` und `Application.Test` enthalten Tests.                                                              | T-6, T-8  |

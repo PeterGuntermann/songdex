@@ -2,11 +2,25 @@ services:
   backend:
     image: songdex-backend:latest
     container_name: backend
+    environment:
+      # Development is what registers LocalDatabaseInitializer, which migrates and
+      # seeds the database on startup — and it serves Swagger on :5286/swagger.
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Songdex=Data Source=/app/data/songdex.db
+    volumes:
+      - songdex-data:/app/data
     ports:
       - 5286:8080
 
   frontend:
     image: songdex-frontend:latest
     container_name: frontend
+    # nginx resolves the "backend" upstream while loading its config and refuses to
+    # start if the name is unknown.
+    depends_on:
+      - backend
     ports:
       - 8080:80
+
+volumes:
+  songdex-data:

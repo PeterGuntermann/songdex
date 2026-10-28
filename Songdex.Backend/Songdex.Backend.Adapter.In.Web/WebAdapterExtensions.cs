@@ -22,10 +22,14 @@ public static class WebAdapterExtensions
         });
         services.AddCors(options =>
         {
+            // Only needed when the frontend is served from its own origin, i.e. `ng serve`.
+            // Under Docker Compose nginx proxies /api, so requests are same-origin.
             options.AddPolicy(name: WebAdapterConstants.AllowSpecificOrigins,
-                policy => { policy.WithOrigins("http://localhost:4200", "http://localhost:8080"); });
+                policy => policy
+                    .WithOrigins("http://localhost:4200", "http://localhost:8080")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
         });
-        services.AddControllers();
         return services;
     }
 
@@ -46,10 +50,6 @@ public static class WebAdapterExtensions
         app.UseRouting();
         app.UseCors(WebAdapterConstants.AllowSpecificOrigins);
 
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller}/{action=Index}/{id?}");
-
         app.MapGet("/", () => "Hello World!");
 
         var songs = app.MapGroup("/api/songs").WithTags("SongsApi");
@@ -58,13 +58,6 @@ public static class WebAdapterExtensions
         songs.MapPost("/", SongsApi.CreateSong);
         songs.MapPut("/{id}", SongsApi.UpdateSong);
         songs.MapDelete("/{id}", SongsApi.DeleteSong);
-
-        var artists = app.MapGroup("/api/artists").WithTags("ArtistsApi");
-        artists.MapGet("/", ArtistsApi.GetAllArtists);
-        artists.MapGet("/{id}", ArtistsApi.GetArtist);
-        artists.MapPost("/", ArtistsApi.CreateArtist);
-        artists.MapPut("/{id}", ArtistsApi.UpdateArtist);
-        artists.MapDelete("/{id}", ArtistsApi.DeleteArtist);
 
         return app;
     }

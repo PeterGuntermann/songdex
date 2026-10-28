@@ -1,0 +1,9 @@
+# Build inputs that the image rebuilds itself, plus local tooling state
+node_modules
+dist
+coverage
+.angular
+.idea
+.run
+Dockerfile
+.dockerignore

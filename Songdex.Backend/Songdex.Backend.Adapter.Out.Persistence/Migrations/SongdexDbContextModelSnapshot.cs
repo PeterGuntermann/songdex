@@ -14,7 +14,7 @@ namespace Songdex.Backend.Adapter.Out.Persistence.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.5");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
             modelBuilder.Entity("Songdex.Backend.Adapter.Out.Persistence.Entities.SongEntity", b =>
                 {
@@ -27,10 +27,12 @@ namespace Songdex.Backend.Adapter.Out.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ReleaseYear")
-                        .IsRequired()
-                        .HasMaxLength(4)
+                    b.Property<string>("ReferenceLink")
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("ReleaseYear")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
                         .IsRequired()

@@ -4,10 +4,34 @@ using Songdex.Backend.Application.Port.Out;
 
 namespace Songdex.Backend.Application.Domain.Service;
 
-public class SongService(ISongRepository songRepository) : IGetAllSongsUseCase
+/// <summary>
+/// Bundles all use cases of the song aggregate.
+/// </summary>
+public class SongService(ISongRepository songRepository)
+    : IGetAllSongsUseCase, IGetSongUseCase, ICreateSongUseCase, IUpdateSongUseCase, IDeleteSongUseCase
 {
-    public IEnumerable<Song> GetAllSongs()
+    public Task<IEnumerable<Song>> GetAllSongs()
     {
-        return songRepository.GetAll().Result;
+        return songRepository.GetAll();
+    }
+
+    public Task<Song?> GetSong(SongId id)
+    {
+        return songRepository.GetById(id);
+    }
+
+    public Task<Song> CreateSong(Song song)
+    {
+        return songRepository.Add(song);
+    }
+
+    public async Task<Song?> UpdateSong(Song song)
+    {
+        return await songRepository.Update(song) ? song : null;
+    }
+
+    public Task<bool> DeleteSong(SongId id)
+    {
+        return songRepository.Delete(id);
     }
 }

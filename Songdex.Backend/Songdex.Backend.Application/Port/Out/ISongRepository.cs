@@ -9,4 +9,15 @@ namespace Songdex.Backend.Application.Port.Out;
 public interface ISongRepository
 {
     Task<IEnumerable<Song>> GetAll();
+
+    /// <returns>The song, or <c>null</c> when no song with that id is stored.</returns>
+    Task<Song?> GetById(SongId id);
+
+    Task<Song> Add(Song song);
+
+    /// <returns><c>false</c> when no song with that id is stored.</returns>
+    Task<bool> Update(Song song);
+
+    /// <returns><c>false</c> when no song with that id is stored.</returns>
+    Task<bool> Delete(SongId id);
 }

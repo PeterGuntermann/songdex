@@ -12,6 +12,8 @@ describe('SongStore', () => {
           provide: SONG_STATE,
           useValue: {
             allSongs: [TestSongs[0], TestSongs[1], TestSongs[3]],
+            loading: false,
+            error: null,
           } satisfies SongState,
         },
       ],
@@ -85,6 +87,43 @@ describe('SongStore', () => {
 
     it('should do nothing if no ids are given', () => {
       store.deleteSongs([]);
+      expect(store.allSongs()).toEqual([TestSongs[0], TestSongs[1], TestSongs[3]]);
+    });
+  });
+
+  describe('request state', () => {
+    it('should start out idle', () => {
+      expect(store.loading()).toBe(false);
+      expect(store.error()).toBeNull();
+    });
+
+    it('should clear the previous error when a new request starts', () => {
+      store.setError('earlier failure');
+      store.startLoading();
+      expect(store.loading()).toBe(true);
+      expect(store.error()).toBeNull();
+    });
+
+    it('should replace the catalogue and end the request on setSongs', () => {
+      store.startLoading();
+      store.setSongs([TestSongs[2]]);
+      expect(store.allSongs()).toEqual([TestSongs[2]]);
+      expect(store.loading()).toBe(false);
+      expect(store.error()).toBeNull();
+    });
+
+    it('should end the request without touching the catalogue on finishLoading', () => {
+      store.startLoading();
+      store.finishLoading();
+      expect(store.loading()).toBe(false);
+      expect(store.allSongs()).toEqual([TestSongs[0], TestSongs[1], TestSongs[3]]);
+    });
+
+    it('should end the request and keep the catalogue on setError', () => {
+      store.startLoading();
+      store.setError('backend unreachable');
+      expect(store.loading()).toBe(false);
+      expect(store.error()).toBe('backend unreachable');
       expect(store.allSongs()).toEqual([TestSongs[0], TestSongs[1], TestSongs[3]]);
     });
   });

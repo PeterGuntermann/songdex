@@ -1,11 +1,21 @@
 <div class="p-6">
   <a routerLink="songs">← back</a>
 
-  @if (song) {
+  @if (song(); as song) {
     <section class="prose">
       <h2>{{ song.title }}</h2>
       <h3>{{ song.artist }}</h3>
+      @if (song.releaseYear) {
+        <p>{{ song.releaseYear }}</p>
+      }
+      @if (song.referenceLink) {
+        <p><a href="{{ song.referenceLink }}" target="_blank" rel="noopener">Reference</a></p>
+      }
     </section>
+  } @else if (songStore.loading()) {
+    <p>Loading …</p>
+  } @else if (songStore.error(); as error) {
+    <p role="alert">{{ error }}</p>
   } @else {
     <p>no song</p>
   }

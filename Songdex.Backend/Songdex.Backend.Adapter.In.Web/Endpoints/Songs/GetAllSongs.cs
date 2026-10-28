@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Songdex.Backend.Application.Port.In;
 
 namespace Songdex.Backend.Adapter.In.Web.Endpoints.Songs;
 
 public static partial class SongsApi
 {
-    public static Task<IResult> GetAllSongs(IGetAllSongsUseCase getAllSongs)
+    public static async Task<Ok<IEnumerable<SongResponse>>> GetAllSongs(
+        IGetAllSongsUseCase getAllSongs)
     {
-        return Task.FromResult<IResult>(TypedResults.Ok(getAllSongs.GetAllSongs()));
+        var songs = await getAllSongs.GetAllSongs();
+        return TypedResults.Ok(songs.Select(SongContractMappings.ToResponse));
     }
 }

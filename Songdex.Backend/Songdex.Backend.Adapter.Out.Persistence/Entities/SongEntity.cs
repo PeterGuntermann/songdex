@@ -13,6 +13,8 @@ public class SongEntity
     [MaxLength(200)]
     public string Artist { get; set; } = string.Empty;
 
-    [MaxLength(4)]
-    public string ReleaseYear { get; set; } = string.Empty;
+    public int? ReleaseYear { get; set; }
+
+    [MaxLength(500)]
+    public string? ReferenceLink { get; set; }
 }

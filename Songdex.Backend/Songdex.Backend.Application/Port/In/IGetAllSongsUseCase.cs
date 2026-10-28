@@ -7,5 +7,5 @@ namespace Songdex.Backend.Application.Port.In;
 /// </summary>
 public interface IGetAllSongsUseCase
 {
-    IEnumerable<Song> GetAllSongs();
+    Task<IEnumerable<Song>> GetAllSongs();
 }

@@ -1,6 +1,6 @@
 # Songdex — Backlog
 
-> Stand: 2026-10-27 · Grundlage: [requirements.md](./requirements.md)
+> Stand: 2026-10-28 · Grundlage: [requirements.md](./requirements.md)
 >
 > Priorisierung in **Now / Next / Later**. Größen: **S** ≈ ein Abend, **M** ≈ ein Wochenende, **L** ≈ mehrere Sessions.
 > Der **Tech-Track** wird unabhängig von den Feature-Epics priorisiert.
@@ -25,39 +25,51 @@
 
 > **Warum Enabler-Stories hier drinstehen:** „Katalog ausbauen" ist ohne Durchstich nicht benutzbar. Heute landen Songs nirgends — der einzige HTTP-Call endet in einem `console.log`, die Daten liegen im SignalStore und sind nach einem Reload weg. Ein Katalog mit Tonart, BPM und Tags, den man nicht speichern kann, wäre wertlos. **E1.1–E1.3 sind deshalb Teil dieses Epics, nicht ein Meilenstein davor.**
 
-### E1.1 — Song-Modell vereinheitlichen · M
+### E1.1 — Song-Modell vereinheitlichen · M — *teilweise erledigt (2026-10-28)*
 
 > Als Nutzer will ich, dass Frontend und Backend dasselbe Song-Modell verwenden, damit meine Eingaben überhaupt gespeichert werden können.
 
+Das Modell ist **angeglichen, aber noch nicht vollständig**: Frontend, Domäne, Entität und
+API-Vertrag tragen dieselben fünf Felder (`id`, `title`, `artist`, `releaseYear`, `referenceLink`)
+und können round-trippen. Die musikalischen Felder, `sourceLink`, `notes`, `genre`, `language` und
+`album` aus §3 der Requirements fehlen weiter.
+
 - [ ] `Song` im Frontend (`models/song.ts`) trägt die Felder aus dem Zielmodell in §3 der Requirements
 - [ ] `Song.cs` in `Application/Domain/Model` und `SongEntity.cs` im Persistenzadapter tragen dieselben Felder
-- [ ] `releaseYear` ist eine Zahl (`int?`), kein String
-- [ ] `link` → aufgeteilt in `referenceLink` und `sourceLink`
-- [ ] EF-Migration erzeugt und gegen eine frische DB geprüft
-- [ ] `SongMappings.cs` mappt alle Felder in beide Richtungen
-- [ ] Bestehende Seed-Daten (`DataSeed.cs`) passen zum neuen Modell
+- [x] `releaseYear` ist eine Zahl (`int?`), kein String
+- [x] `link` → `referenceLink` *(`sourceLink` kommt mit den restlichen Feldern)*
+- [x] EF-Migration erzeugt und gegen eine frische DB geprüft *(`AlignSongModel`)*
+- [x] `SongMappings.cs` mappt alle Felder in beide Richtungen
+- [x] Bestehende Seed-Daten (`DataSeed.cs`) passen zum neuen Modell
 
-### E1.2 — CRUD-Endpoints ausimplementieren · M
+### E1.2 — CRUD-Endpoints ausimplementieren · M — *erledigt (2026-10-28)*
 
 > Als Nutzer will ich, dass das Backend Songs anlegen, ändern und löschen kann, damit die UI mehr als nur lesen kann.
 
-- [ ] `GetSong`, `CreateSong`, `UpdateSong`, `DeleteSong` sind implementiert — heute sind alle vier `// TODO`-Stubs
-- [ ] Die Routen nehmen eine **String**-Id entgegen; der heutige `int id` ist schlicht falsch (`SongId` ist ein 8-stelliger String)
-- [ ] `ISongRepository` bekommt `Add`, `Update`, `Delete` — heute kennt es nur `GetAll()`
-- [ ] Statuscodes: 201 mit `Location` beim Anlegen, 404 bei unbekannter Id, 204 beim Löschen
-- [ ] Eingabevalidierung: Titel nicht leer, Längen gemäß Entity
-- [ ] Swagger zeigt alle Endpoints mit korrekten Typen
+- [x] `GetSong`, `CreateSong`, `UpdateSong`, `DeleteSong` sind implementiert — heute sind alle vier `// TODO`-Stubs
+- [x] Die Routen nehmen eine **String**-Id entgegen; der heutige `int id` ist schlicht falsch (`SongId` ist ein 8-stelliger String)
+- [x] `ISongRepository` bekommt `Add`, `Update`, `Delete` — heute kennt es nur `GetAll()`
+- [x] Statuscodes: 201 mit `Location` beim Anlegen, 404 bei unbekannter Id, 204 beim Löschen
+- [x] Eingabevalidierung: Titel nicht leer, Längen gemäß Entity
+- [x] Swagger zeigt alle Endpoints mit korrekten Typen
 
-### E1.3 — Songs vom Backend in den Store laden · M
+Dazu kam ein eigener API-Vertrag im Web-Adapter (`SongContracts.cs`): ohne ihn serialisiert
+`SongId` als `{"value":"…"}` und das Frontend könnte die Antwort nicht lesen.
+
+### E1.3 — Songs vom Backend in den Store laden · M — *erledigt (2026-10-28)*
 
 > Als Nutzer will ich meine echten Songs sehen statt generierter Dummy-Daten.
 
-- [ ] Das `// TODO: Save to store` in `services/song.service.ts` ist aufgelöst — die Antwort landet im `SongStore`
-- [ ] `SongState` bekommt `loading` und `error`
-- [ ] Die Songliste zeigt einen Ladezustand und eine verständliche Fehlermeldung bei nicht erreichbarem Backend
-- [ ] `util/dummy-data.ts` und die Dummy-Initialisierung in `song.store.ts` sind entfernt
-- [ ] Schreibende Store-Methoden rufen das Backend auf, statt nur lokal zu patchen
-- [ ] Der `SONG_STATE`-InjectionToken bleibt als Test-Naht erhalten
+- [x] Das `// TODO: Save to store` in `services/song.service.ts` ist aufgelöst — die Antwort landet im `SongStore`
+- [x] `SongState` bekommt `loading` und `error`
+- [x] Die Songliste zeigt einen Ladezustand und eine verständliche Fehlermeldung bei nicht erreichbarem Backend
+- [x] `util/dummy-data.ts` und die Dummy-Initialisierung in `song.store.ts` sind entfernt
+- [x] Schreibende Store-Methoden rufen das Backend auf, statt nur lokal zu patchen
+- [x] Der `SONG_STATE`-InjectionToken bleibt als Test-Naht erhalten
+
+Der Store bleibt dabei synchron: HTTP lebt im `SongService`, der bei Erfolg `patchState` auslöst
+und bei Fehlern `error` setzt. `createSong`, `updateSong` und `deleteSong` haben vorerst keinen
+UI-Aufrufer — die Formulare sind E1.4–E1.6.
 
 **Hängt an:** E1.1, E1.2 · **Blockiert durch:** T-1 (Environments)
 
@@ -380,28 +392,29 @@ Setlist-Planung ist einer der drei Kernnutzen, aber die Detailtiefe soll erst en
 
 ## Tech-Track
 
-Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenstein 1.**
+Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockierten Meilenstein 1 und sind
+seit dem 2026-10-28 erledigt.**
 
-### Blocker für Meilenstein 1
+### Blocker für Meilenstein 1 — *alle erledigt (2026-10-28)*
 
-| ID      | Thema                                                                                                                                                                                                                                                                                                                            | Größe |
-|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| **T-1** | **Environments einführen.** Es gibt keine `src/environments/`; die API-Basis-URL ist in `services/song.service.ts` hart auf `http://localhost:5286` verdrahtet. **Das Docker-Image kann das Backend damit gar nicht erreichen** — es fällt nur niemandem auf, weil die Antwort ohnehin verworfen wird. Blockiert E1.3 und NFR-7. | S     |
-| **T-2** | **`ISongRepository` um Schreiboperationen erweitern.** Kennt heute nur `GetAll()`. Blockiert E1.2.                                                                                                                                                                                                                               | S     |
-| **T-3** | **Doppelte API konsolidieren.** `CoversongsController` (`/api/coversongs`, funktioniert) und die Minimal-API-Gruppe (`/api/songs`, überwiegend Stubs) existieren parallel. Eine davon gewinnt, die andere verschwindet.                                                                                                          | S     |
-| **T-4** | **`/api/artists`-Stubs entfernen.** Fünf Endpoints für eine Entität, die es nicht gibt und laut Requirements auch nicht geben soll.                                                                                                                                                                                              | S     |
+| ID          | Thema                                                                                                                                                                                                                                      | Größe |
+|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| ~~**T-1**~~ | ~~Environments einführen.~~ `src/environments/environment{,.prod}.ts` angelegt, `fileReplacements` in `angular.json`. Dev zeigt auf `http://localhost:5286`, Prod nutzt eine **relative** Basis-URL, die nginx auf `backend:8080` proxied. | S     |
+| ~~**T-2**~~ | ~~`ISongRepository` um Schreiboperationen erweitern.~~ Kennt jetzt `GetAll`, `GetById`, `Add`, `Update`, `Delete`.                                                                                                                          | S     |
+| ~~**T-3**~~ | ~~Doppelte API konsolidieren.~~ `/api/songs` (Minimal-Endpoints) gewinnt, `CoversongsController` ist gelöscht; damit entfallen auch `AddControllers()` und `MapControllerRoute(…)`.                                                        | S     |
+| ~~**T-4**~~ | ~~`/api/artists`-Stubs entfernen.~~ `ArtistsApi.cs` und die Routengruppe sind gelöscht.                                                                                                                                                     | S     |
 
 ### Qualität & Korrektheit
 
-| ID   | Thema                                                                                                                                                                        | Größe |
-|------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| T-5  | **Sync-over-async beseitigen.** `SongService.GetAllSongs()` ruft `songRepository.GetAll().Result` — blockierend. Signatur auf `async` umstellen, `IGetAllSongsUseCase` mitziehen. | S     |
-| T-6  | **Backend-Testprojekte füllen.** Die vier fachlichen `*.Test`-Projekte enthalten keine einzige `.cs`-Datei (nur `Architecture.Test` ist gefüllt). Mindestens Application abdecken. | M     |
-| T-7  | **Result-Pattern tatsächlich verwenden.** `Common/Result.cs` ist deklariert, aber nirgends benutzt. Use-Cases darauf umstellen. *(aus `Todos.backend.md`)*                   | M     |
-| T-8  | **Integrationstest REST → Datenbank.** *(aus `Todos.backend.md`)*                                                                                                            | M     |
-| T-9  | **Coverage aktivieren.** Läuft nur auf Zuruf (`ng test --coverage`), ohne Schwellwerte. `coverageThresholds` im `test`-Target setzen.                                        | S     |
-| T-10 | **CI einrichten.** Kein `.github/`, kein Workflow. Build, Lint und Tests für beide Teile bei jedem Push.                                                                     | M     |
-| T-11 | **Platzhalter-Tests ersetzen.** Vier der sechs Spec-Dateien im Frontend sind unveränderte CLI-Smoke-Tests („should create").                                                 | S     |
+| ID       | Thema                                                                                                                                                                        | Größe |
+|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| ~~T-5~~  | ~~Sync-over-async beseitigen.~~ erledigt 2026-10-28 mit E1.2: `SongService` ist durchgehend `async`, `IGetAllSongsUseCase` liefert `Task<IEnumerable<Song>>`.                | S     |
+| T-6      | **Backend-Testprojekte füllen.** `Application.Test` ist seit 2026-10-28 gefüllt (`SongServiceTest` gegen ein In-Memory-Repository). Die drei übrigen fachlichen `*.Test`-Projekte enthalten weiterhin keine einzige `.cs`-Datei. | M     |
+| T-7      | **Result-Pattern tatsächlich verwenden.** `Common/Result.cs` ist deklariert, aber nirgends benutzt. Die CRUD-Use-Cases geben stattdessen `Song?`/`bool` zurück — `Result<T>.IsSuccess() => Value is not null` kann einen erfolgreichen `Delete` nicht ausdrücken. Erst `Result<T>` reparieren, dann umstellen. | M     |
+| T-8      | **Integrationstest REST → Datenbank.** Die fünf `/api/songs`-Endpoints sind bisher nur von Hand per curl geprüft. *(aus `Todos.backend.md`)*                                 | M     |
+| T-9      | **Coverage aktivieren.** Läuft nur auf Zuruf (`ng test --coverage`), ohne Schwellwerte. `coverageThresholds` im `test`-Target setzen.                                        | S     |
+| T-10     | **CI einrichten.** Kein `.github/`, kein Workflow. Build, Lint und Tests für beide Teile bei jedem Push.                                                                     | M     |
+| T-11     | **Platzhalter-Tests ersetzen.** `song.service.spec.ts` und `songdetails.component.spec.ts` sind seit 2026-10-28 echte Tests. Offen bleiben `app.component.spec.ts` und `songlist.component.spec.ts`.                           | S     |
 
 ### Defekte
 
@@ -453,6 +466,17 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
       entfernt und durch `.WithTags(…)` ersetzt, das die bisherigen OpenAPI-Tags erhält; damit
       entfällt auch das Paket `Microsoft.AspNetCore.OpenApi`. NSwag bleibt der Generator, xUnit
       bleibt bei v2. Das erzeugte `swagger.json` ist bis auf die NSwag-Versionszeile unverändert.
+- [x] **Frontend und Backend verdrahtet** (2026-10-28) — E1.2, E1.3, T-1 bis T-5 und der
+      schlanke Teil von E1.1. Die UI zeigt ausschließlich Backend-Daten; `util/dummy-data.ts` und
+      `util/random-generator.ts` sind gelöscht, die bisherigen Dummys sind als acht Songs in
+      `DataSeed.cs` eingezogen (die fünfzehn `x`/`x`-Platzhalter bewusst nicht — sie waren
+      Füllmaterial für eine lange Liste und hätten in einer persistenten Datenbank keinen Zweck).
+      Im Compose proxied nginx `/api/` auf `backend:8080`, das Frontend arbeitet dort mit einer
+      relativen Basis-URL und braucht kein CORS. Nebenbei repariert: Der Frontend-Dockerfile kopierte
+      eine nicht existierende `package-lock.json` — das Image hat nie gebaut; das Backend lief im
+      Compose als `Production` und hat deshalb weder migriert noch geseedet, und die SQLite-Datei
+      lag im Container-Layer statt auf einem Volume (NFR-3, NFR-8). **Nicht** mit erledigt: T-6
+      (drei leere Testprojekte), T-7, T-8, T-11 (zwei Platzhalter-Specs), T-12 bis T-15.
 - [x] **Zentrale Paketverwaltung im Backend eingeführt** (2026-10-28) — neues
       `Songdex.Backend/Directory.Packages.props` mit `ManagePackageVersionsCentrally` und allen
       zwölf Paketversionen; die neun `.csproj` tragen nur noch `<PackageReference Include="…" />`
