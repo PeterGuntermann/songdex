@@ -7,15 +7,15 @@
 
 ## Überblick
 
-| Epic | Thema | Priorität |
-|---|---|---|
-| [E1](#e1--katalog--datenmodell) | Katalog & Datenmodell | **Now** — Meilenstein 1 |
-| [E2](#e2--entdeckung) | Entdeckung | **Now** — Meilenstein 1 |
-| [E3](#e3--chordsheets--editor) | Chordsheets & Editor | Next |
-| [E4](#e4--pdf-export) | PDF-Export | Next |
-| [E5](#e5--import-export--backup) | Import, Export & Backup | Next |
-| [E6](#e6--setlists) | Setlists | Later — nicht ausspezifiziert |
-| [T](#tech-track) | Tech-Track | laufend |
+| Epic                             | Thema                   | Priorität                     |
+|----------------------------------|-------------------------|-------------------------------|
+| [E1](#e1--katalog--datenmodell)  | Katalog & Datenmodell   | **Now** — Meilenstein 1       |
+| [E2](#e2--entdeckung)            | Entdeckung              | **Now** — Meilenstein 1       |
+| [E3](#e3--chordsheets--editor)   | Chordsheets & Editor    | Next                          |
+| [E4](#e4--pdf-export)            | PDF-Export              | Next                          |
+| [E5](#e5--import-export--backup) | Import, Export & Backup | Next                          |
+| [E6](#e6--setlists)              | Setlists                | Later — nicht ausspezifiziert |
+| [T](#tech-track)                 | Tech-Track              | laufend                       |
 
 ---
 
@@ -384,55 +384,55 @@ Unabhängig von den Feature-Epics priorisiert. **T-1 bis T-4 blockieren Meilenst
 
 ### Blocker für Meilenstein 1
 
-| ID | Thema | Größe |
-|---|---|---|
-| **T-1** | **Environments einführen.** Es gibt keine `src/environments/`; die API-Basis-URL ist in `services/song.service.ts` hart auf `http://localhost:5286` verdrahtet. **Das Docker-Image kann das Backend damit gar nicht erreichen** — es fällt nur niemandem auf, weil die Antwort ohnehin verworfen wird. Blockiert E1.3 und NFR-7. | S |
-| **T-2** | **`ISongRepository` um Schreiboperationen erweitern.** Kennt heute nur `GetAll()`. Blockiert E1.2. | S |
-| **T-3** | **Doppelte API konsolidieren.** `CoversongsController` (`/api/coversongs`, funktioniert) und die Minimal-API-Gruppe (`/api/songs`, überwiegend Stubs) existieren parallel. Eine davon gewinnt, die andere verschwindet. | S |
-| **T-4** | **`/api/artists`-Stubs entfernen.** Fünf Endpoints für eine Entität, die es nicht gibt und laut Requirements auch nicht geben soll. | S |
+| ID      | Thema                                                                                                                                                                                                                                                                                                                            | Größe |
+|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| **T-1** | **Environments einführen.** Es gibt keine `src/environments/`; die API-Basis-URL ist in `services/song.service.ts` hart auf `http://localhost:5286` verdrahtet. **Das Docker-Image kann das Backend damit gar nicht erreichen** — es fällt nur niemandem auf, weil die Antwort ohnehin verworfen wird. Blockiert E1.3 und NFR-7. | S     |
+| **T-2** | **`ISongRepository` um Schreiboperationen erweitern.** Kennt heute nur `GetAll()`. Blockiert E1.2.                                                                                                                                                                                                                               | S     |
+| **T-3** | **Doppelte API konsolidieren.** `CoversongsController` (`/api/coversongs`, funktioniert) und die Minimal-API-Gruppe (`/api/songs`, überwiegend Stubs) existieren parallel. Eine davon gewinnt, die andere verschwindet.                                                                                                          | S     |
+| **T-4** | **`/api/artists`-Stubs entfernen.** Fünf Endpoints für eine Entität, die es nicht gibt und laut Requirements auch nicht geben soll.                                                                                                                                                                                              | S     |
 
 ### Qualität & Korrektheit
 
-| ID | Thema | Größe |
-|---|---|---|
-| T-5 | **Sync-over-async beseitigen.** `SongsService.GetAllSongs()` ruft `songRepository.GetAll().Result` — blockierend. Signatur auf `async` umstellen, `ISongsService` mitziehen. | S |
-| T-6 | **Backend-Testprojekte füllen.** Alle fünf `*.Test`-Projekte enthalten keine einzige `.cs`-Datei. Mindestens Domain und Application abdecken. | M |
-| T-7 | **Result-Pattern tatsächlich verwenden.** `Common/Result.cs` ist deklariert, aber nirgends benutzt. Use-Cases darauf umstellen. *(aus `Todos.backend.md`)* | M |
-| T-8 | **Integrationstest REST → Datenbank.** *(aus `Todos.backend.md`)* | M |
-| T-9 | **Coverage aktivieren.** Läuft nur auf Zuruf (`ng test --coverage`), ohne Schwellwerte. `coverageThresholds` im `test`-Target setzen. | S |
-| T-10 | **CI einrichten.** Kein `.github/`, kein Workflow. Build, Lint und Tests für beide Teile bei jedem Push. | M |
-| T-11 | **Platzhalter-Tests ersetzen.** Vier der sechs Spec-Dateien im Frontend sind unveränderte CLI-Smoke-Tests („should create"). | S |
+| ID   | Thema                                                                                                                                                                        | Größe |
+|------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| T-5  | **Sync-over-async beseitigen.** `SongsService.GetAllSongs()` ruft `songRepository.GetAll().Result` — blockierend. Signatur auf `async` umstellen, `ISongsService` mitziehen. | S     |
+| T-6  | **Backend-Testprojekte füllen.** Alle fünf `*.Test`-Projekte enthalten keine einzige `.cs`-Datei. Mindestens Domain und Application abdecken.                                | M     |
+| T-7  | **Result-Pattern tatsächlich verwenden.** `Common/Result.cs` ist deklariert, aber nirgends benutzt. Use-Cases darauf umstellen. *(aus `Todos.backend.md`)*                   | M     |
+| T-8  | **Integrationstest REST → Datenbank.** *(aus `Todos.backend.md`)*                                                                                                            | M     |
+| T-9  | **Coverage aktivieren.** Läuft nur auf Zuruf (`ng test --coverage`), ohne Schwellwerte. `coverageThresholds` im `test`-Target setzen.                                        | S     |
+| T-10 | **CI einrichten.** Kein `.github/`, kein Workflow. Build, Lint und Tests für beide Teile bei jedem Push.                                                                     | M     |
+| T-11 | **Platzhalter-Tests ersetzen.** Vier der sechs Spec-Dateien im Frontend sind unveränderte CLI-Smoke-Tests („should create").                                                 | S     |
 
 ### Defekte
 
-| ID | Thema | Größe |
-|---|---|---|
-| T-12 | **Zurück-Link ist relativ.** `routerLink="songs"` in `songdetails.component.html` löst von `/songs/:id` zu `/songs/:id/songs` auf. | S |
-| T-13 | **Tastaturbedienung der Songliste.** Zeilennavigation hängt an `(click)` auf `<tr>` ohne Tastatur-Äquivalent (`songlist.component.html`). Verletzt NFR-5. | S |
-| T-14 | **Legacy-Namensgebung `coversongs`.** Zieht sich durch `dist/coversongs-frontend` (angular.json + Dockerfile), `nginx.conf`, Seitentitel und API-Pfad. | S |
-| T-15 | **Playground-Route entfernen.** `/test` ist eine daisyUI-Spielwiese, die nicht in die ausgelieferte App gehört. | S |
+| ID   | Thema                                                                                                                                                     | Größe |
+|------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| T-12 | **Zurück-Link ist relativ.** `routerLink="songs"` in `songdetails.component.html` löst von `/songs/:id` zu `/songs/:id/songs` auf.                        | S     |
+| T-13 | **Tastaturbedienung der Songliste.** Zeilennavigation hängt an `(click)` auf `<tr>` ohne Tastatur-Äquivalent (`songlist.component.html`). Verletzt NFR-5. | S     |
+| T-14 | **Legacy-Namensgebung `coversongs`.** Zieht sich durch `dist/coversongs-frontend` (angular.json + Dockerfile), `nginx.conf`, Seitentitel und API-Pfad.    | S     |
+| T-15 | **Playground-Route entfernen.** `/test` ist eine daisyUI-Spielwiese, die nicht in die ausgelieferte App gehört.                                           | S     |
 
 ### Lernthemen *(aus `Todos.frontend.md` / `Todos.backend.md`)*
 
-| ID | Thema | Größe |
-|---|---|---|
-| T-16 | Signals statt Observables — `songdetails.component.ts` nutzt noch `ngOnInit` + manuelles `subscribe` | M |
-| T-17 | `httpResource`-API einsetzen | M |
-| ~~T-18~~ | ~~Migration Jest → Vitest~~ — erledigt: `@angular/build:unit-test` mit Vitest-Runner | M |
-| T-19 | Tailwind 3 → 4 | M |
-| T-20 | Playwright für E2E einführen | M |
-| T-21 | .NET 8 → 9 | S |
-| T-22 | Backend-Formatierung: Zeilenlänge, Umbrüche | S |
+| ID       | Thema                                                                                                | Größe |
+|----------|------------------------------------------------------------------------------------------------------|-------|
+| T-16     | Signals statt Observables — `songdetails.component.ts` nutzt noch `ngOnInit` + manuelles `subscribe` | M     |
+| T-17     | `httpResource`-API einsetzen                                                                         | M     |
+| ~~T-18~~ | ~~Migration Jest → Vitest~~ — erledigt: `@angular/build:unit-test` mit Vitest-Runner                 | M     |
+| T-19     | Tailwind 3 → 4                                                                                       | M     |
+| T-20     | Playwright für E2E einführen                                                                         | M     |
+| T-21     | .NET 8 → 9                                                                                           | S     |
+| T-22     | Backend-Formatierung: Zeilenlänge, Umbrüche                                                          | S     |
 
 ### In Feature-Epics aufgegangen *(ebenfalls aus den Todos-Dateien)*
 
-| Ursprüngliche Zeile | Jetzt |
-|---|---|
-| „Get Songs from backend" *(frontend)* | E1.3 |
-| „add minimal endpoints to WebApi" *(backend)* | E1.2, T-3 |
-| „list songs" *(backend)* | E1.3 |
-| „add song" *(backend)* | E1.4 |
-| „custom tags" *(backend)* | E1.7, E1.8 |
+| Ursprüngliche Zeile                           | Jetzt      |
+|-----------------------------------------------|------------|
+| „Get Songs from backend" *(frontend)*         | E1.3       |
+| „add minimal endpoints to WebApi" *(backend)* | E1.2, T-3  |
+| „list songs" *(backend)*                      | E1.3       |
+| „add song" *(backend)*                        | E1.4       |
+| „custom tags" *(backend)*                     | E1.7, E1.8 |
 
 ### Bereits erledigt *(zur Dokumentation beim Konsolidieren der Todos-Dateien)*
 
