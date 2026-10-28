@@ -59,14 +59,19 @@ umgeht die gesamte Fachlogik. Genau das war vor dem Umbau in `Endpoints/Songs/*`
 ## 3. Projektstruktur
 
 Im Dateisystem liegen alle `.csproj` flach nebeneinander; die Baumansicht in Rider/Visual Studio
-entsteht über **Solution-Folder** in `Songdex.Backend.sln`. Das vermeidet
+entsteht über **Solution-Folder** in `Songdex.Backend.slnx`. Das vermeidet
 `..\..\..\`-Projektreferenzen und dreifach wiederholte Pfadsegmente.
+
+Die Solution liegt im XML-Format `.slnx` (SDK ≥ 9.0.200, Rider ≥ 2025.1, Visual Studio ≥ 17.14).
+Ordner und Projekte stehen dort unter ihrem Klarnamen statt hinter GUIDs, Build-Konfigurationen
+sind implizit — ein Umhängen in der Baumansicht ist damit eine Zeile und kein GUID-Abgleich über
+drei Abschnitte.
 
 ```
 Songdex.Backend/
 ├── Directory.Build.props          TargetFramework, Nullable, ImplicitUsings — zentral für alle
 ├── Directory.Packages.props       Central Package Management: alle Paketversionen — zentral für alle
-├── Songdex.Backend.sln            Solution-Folder src/ und test/
+├── Songdex.Backend.slnx           Solution-Folder src/ und test/
 ├── Dockerfile, .dockerignore
 ├── Songdex.Backend.Common/
 │   └── Result.cs

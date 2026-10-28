@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/items/">
+    <File Path=".dockerignore" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Dockerfile" />
+    <File Path="global.json" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="Songdex.Backend.Application/Songdex.Backend.Application.csproj" />
+    <Project Path="Songdex.Backend.Common/Songdex.Backend.Common.csproj" />
+    <Project Path="Songdex.Backend.Main/Songdex.Backend.Main.csproj" />
+  </Folder>
+  <Folder Name="/src/Adapter/" />
+  <Folder Name="/src/Adapter/In/">
+    <Project Path="Songdex.Backend.Adapter.In.Web/Songdex.Backend.Adapter.In.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/Adapter/Out/">
+    <Project Path="Songdex.Backend.Adapter.Out.Persistence/Songdex.Backend.Adapter.Out.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="Songdex.Backend.Adapter.In.Web.Test/Songdex.Backend.Adapter.In.Web.Test.csproj" />
+    <Project Path="Songdex.Backend.Adapter.Out.Persistence.Test/Songdex.Backend.Adapter.Out.Persistence.Test.csproj" />
+    <Project Path="Songdex.Backend.Application.Test/Songdex.Backend.Application.Test.csproj" />
+    <Project Path="Songdex.Backend.Architecture.Test/Songdex.Backend.Architecture.Test.csproj" />
+    <Project Path="Songdex.Backend.Common.Test/Songdex.Backend.Common.Test.csproj" />
+  </Folder>
+</Solution>

@@ -87,8 +87,8 @@ There is a JetBrains run configuration at `Songdex.Frontend/.run/All Tests.run.x
 ### Backend (`Songdex.Backend/`)
 
 ```bash
-dotnet build Songdex.Backend.sln
-dotnet test  Songdex.Backend.sln
+dotnet build Songdex.Backend.slnx
+dotnet test  Songdex.Backend.slnx
 dotnet run --project Songdex.Backend.Main        # http://localhost:5286
 ```
 
@@ -155,7 +155,7 @@ Main ──────────────┬──────────
 ```
 
 All `.csproj` sit flat in `Songdex.Backend/`; the tree view in the IDE comes from solution folders
-(`src/…`, `test/…`) in `Songdex.Backend.sln`. Dependencies point inward only; `Main` is the sole
+(`src/…`, `test/…`) in `Songdex.Backend.slnx`. Dependencies point inward only; `Main` is the sole
 project that knows everything, because it is the composition root.
 
 - `Songdex.Backend.Application` holds `Domain/Model`, `Domain/Service`, `Port/In` (use cases) and
