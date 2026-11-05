@@ -11,8 +11,6 @@ should be built** — they replaced the former `Todos.frontend.md` / `Todos.back
 `docs/architecture.md` is the source of truth for **how the backend is structured**; it is binding
 and enforced by tests.
 
-`archived/` holds dead prototypes — do not touch.
-
 Frontend-specific guidance lives in `Songdex.Frontend/CLAUDE.md`, backend-specific guidance in
 `Songdex.Backend/CLAUDE.md`; each loads when you work on files in that directory.
 
