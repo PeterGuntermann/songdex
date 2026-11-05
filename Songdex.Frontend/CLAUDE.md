@@ -26,8 +26,6 @@ Coverage is **off** by default with no thresholds; `ng test --coverage` (provide
 
 ## Architecture — standalone Angular, NgRx SignalStore
 
-`provideZoneChangeDetection()` is kept deliberately — the app is **not** zoneless.
-
 State lives in `src/app/store/song.store.ts` — a single `signalStore({ providedIn: 'root' })`.
 Two conventions worth preserving:
 
@@ -54,3 +52,5 @@ pass your own: `vi.fn<(id: string) => void>()` — the bare `vi.fn()` return typ
 - **Styling is Tailwind 3 + daisyUI utility classes in templates only.** Every component `.scss`
   file is intentionally 0 bytes; `styles.scss` holds nothing but the three `@tailwind` directives.
   The daisyUI theme is hardcoded to `dim` in `index.html` and there is no theme switcher.
+- **Biome** replaces ESLint and Prettier entirely (no `.eslintrc`, no `.prettierrc`). Run
+  `pnpm run biome:check` before committing frontend changes.

@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Songdex is a single-user, locally hosted catalogue for cover songs. See `docs/requirements.md` for
 vision, scope boundaries and the target domain model, and `docs/backlog.md` for the prioritised
-story backlog and the technical track. **Those two documents are the source of truth for what
-should be built** — they replaced the former `Todos.frontend.md` / `Todos.backend.md` checklists.
+story backlog and the technical track.
+**Those two documents are the source of truth for what should be built**.
 `docs/architecture.md` is the source of truth for **how the backend is structured**; it is binding
 and enforced by tests.
 
@@ -20,8 +20,6 @@ The scaffolding is modern and clean, but the **application is an early prototype
 frontend↔backend round trip works end to end since 2026-10-28; most features do not exist yet.
 Verify before assuming:
 
-- **`/api/songs` is the only API.** All five CRUD endpoints are real minimal endpoints and take a
-  **string** id. `CoversongsController`, `/api/coversongs` and `/api/artists` are gone.
 - **The web adapter has its own contract.** `Endpoints/Songs/SongContracts.cs` maps `Song` ↔
   `SongResponse`/`SongRequest`. Never serialise the domain object directly — `SongId` would go out
   as `{"value":"…"}`.
@@ -78,5 +76,3 @@ by `fileReplacements`) and the browser never sees :5286. CORS therefore only mat
 - **Commit messages are English**, in the Conventional Commits form the history already uses
   (`feat:`, `chore(backend):`, `refactor(backend):`). The `docs/` directory is the single
   exception to the English rule — those files are German by choice.
-- **Biome** replaces ESLint and Prettier entirely (no `.eslintrc`, no `.prettierrc`). Run
-  `pnpm run biome:check` before committing frontend changes.
