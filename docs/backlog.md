@@ -1,6 +1,6 @@
 # Songdex — Backlog
 
-> Stand: 2026-10-28 · Grundlage: [requirements.md](./requirements.md)
+> Stand: 2026-11-08 · Grundlage: [requirements.md](./requirements.md)
 >
 > Priorisierung in **Now / Next / Later**. Größen: **S** ≈ ein Abend, **M** ≈ ein Wochenende, **L** ≈ mehrere Sessions.
 > Der **Tech-Track** wird unabhängig von den Feature-Epics priorisiert.
@@ -16,6 +16,7 @@
 | [E5](#e5--import-export--backup) | Import, Export & Backup | Next                          |
 | [E6](#e6--setlists)              | Setlists                | Later — nicht ausspezifiziert |
 | [T](#tech-track)                 | Tech-Track              | laufend                       |
+| [Parkplatz](#parkplatz--ideen-für-irgendwann) | Ideen für irgendwann | zuletzt — nicht in den Requirements |
 
 ---
 
@@ -23,24 +24,26 @@
 
 **Priorität: Now** · Meilenstein 1 zusammen mit E2
 
-> **Warum Enabler-Stories hier drinstehen:** „Katalog ausbauen" ist ohne Durchstich nicht benutzbar. Heute landen Songs nirgends — der einzige HTTP-Call endet in einem `console.log`, die Daten liegen im SignalStore und sind nach einem Reload weg. Ein Katalog mit Tonart, BPM und Tags, den man nicht speichern kann, wäre wertlos. **E1.1–E1.3 sind deshalb Teil dieses Epics, nicht ein Meilenstein davor.**
+> **Warum Enabler-Stories hier drinstehen:** „Katalog ausbauen" ist ohne Durchstich nicht benutzbar. Heute landen Songs nirgends — der einzige HTTP-Call endet in einem `console.log`, die Daten liegen im SignalStore und sind nach einem Reload weg. Ein Katalog mit Genre, Sprache und Tags, den man nicht speichern kann, wäre wertlos. **E1.1–E1.3 sind deshalb Teil dieses Epics, nicht ein Meilenstein davor.**
 
-### E1.1 — Song-Modell vereinheitlichen · M — *teilweise erledigt (2026-10-28)*
+### E1.1 — Song-Modell vereinheitlichen · M — *erledigt (2026-11-08)*
 
 > Als Nutzer will ich, dass Frontend und Backend dasselbe Song-Modell verwenden, damit meine Eingaben überhaupt gespeichert werden können.
 
-Das Modell ist **angeglichen, aber noch nicht vollständig**: Frontend, Domäne, Entität und
-API-Vertrag tragen dieselben fünf Felder (`id`, `title`, `artist`, `releaseYear`, `referenceLink`)
-und können round-trippen. Die musikalischen Felder, `sourceLink`, `notes`, `genre`, `language` und
-`album` aus §3 der Requirements fehlen weiter.
+Frontend, Domäne, Entität und API-Vertrag tragen dieselben **neun Felder** (`id`, `title`,
+`artist`, `releaseYear`, `referenceLink`, `notes`, `genre`, `language`, `album`) und können
+round-trippen. Die musikalischen Felder und `sourceLink` sind bewusst gestrichen (siehe
+Requirements §6 und [Parkplatz](#parkplatz--ideen-für-irgendwann)). `genre`, `language` und
+`album` sind Freitext, `notes` hat höchstens 4000 Zeichen.
 
-- [ ] `Song` im Frontend (`models/song.ts`) trägt die Felder aus dem Zielmodell in §3 der Requirements
-- [ ] `Song.cs` in `Application/Domain/Model` und `SongEntity.cs` im Persistenzadapter tragen dieselben Felder
+- [x] `Song` im Frontend (`models/song.ts`) trägt die Felder aus dem Zielmodell in §3 der Requirements
+- [x] `Song.cs` in `Application/Domain/Model` und `SongEntity.cs` im Persistenzadapter tragen dieselben Felder
 - [x] `releaseYear` ist eine Zahl (`int?`), kein String
-- [x] `link` → `referenceLink` *(`sourceLink` kommt mit den restlichen Feldern)*
-- [x] EF-Migration erzeugt und gegen eine frische DB geprüft *(`AlignSongModel`)*
+- [x] `link` → `referenceLink`
+- [x] EF-Migrationen erzeugt und gegen eine frische DB geprüft *(`AlignSongModel`, `CompleteSongModel`)*
 - [x] `SongMappings.cs` mappt alle Felder in beide Richtungen
 - [x] Bestehende Seed-Daten (`DataSeed.cs`) passen zum neuen Modell
+- [x] Längenvalidierung der neuen Felder in `SongRequestValidation.cs`
 
 ### E1.2 — CRUD-Endpoints ausimplementieren · M — *erledigt (2026-10-28)*
 
@@ -77,10 +80,10 @@ UI-Aufrufer — die Formulare sind E1.4–E1.6.
 
 > Als Nutzer will ich einen neuen Song über ein Formular erfassen.
 
-- [ ] Formular mit allen Feldern aus dem Zielmodell, gruppiert nach Identität / Musikalisch / Verweise / Katalog
+- [ ] Formular mit allen Feldern aus dem Zielmodell, gruppiert nach Identität / Verweise / Katalog
 - [ ] Nur der Titel ist Pflicht
 - [ ] Validierung mit Feldfehlern; Speichern ist bei Fehlern blockiert
-- [ ] Tonart-Felder als Auswahlliste, nicht als Freitext
+- [ ] Genre und Sprache bieten die bereits vorhandenen Werte zur Autovervollständigung an
 - [ ] Nach dem Speichern: Weiterleitung auf die Detailseite des neuen Songs
 - [ ] Abbrechen verwirft ohne Nachfrage, wenn nichts eingegeben wurde — mit Nachfrage, wenn doch
 
@@ -155,7 +158,7 @@ UI-Aufrufer — die Formulare sind E1.4–E1.6.
 
 > Als Nutzer will ich die Liste nach Tags und Attributen eingrenzen.
 
-- [ ] Filter nach Tags (Mehrfachauswahl), Tonart, Genre, Jahrzehnt und Sprache
+- [ ] Filter nach Tags (Mehrfachauswahl), Genre, Jahrzehnt und Sprache
 - [ ] Filter sind untereinander UND-verknüpft, Mehrfachauswahl innerhalb eines Filters ist ODER
 - [ ] Aktive Filter werden als entfernbare Chips angezeigt
 - [ ] „Alle Filter zurücksetzen"
@@ -204,7 +207,7 @@ UI-Aufrufer — die Formulare sind E1.4–E1.6.
 
 **Priorität: Next**
 
-> Offene Entscheidung vorab klären: eigener ChordPro-Parser oder Fremdbibliothek (siehe Requirements §6). Die Antwort verschiebt den Aufwand von E3.2, E3.5 und E3.6 erheblich.
+> Offene Entscheidung vorab klären: eigener ChordPro-Parser oder Fremdbibliothek (siehe Requirements §6). Die Antwort verschiebt den Aufwand von E3.2 und E3.6 erheblich.
 
 ### E3.1 — Chordsheet-Entität & API · M
 
@@ -249,29 +252,19 @@ UI-Aufrufer — die Formulare sind E1.4–E1.6.
 - [ ] Duplizieren schlägt einen freien Namen vor
 - [ ] Löschen fragt nach
 
-### E3.5 — Wunsch-Tonart als Default · S
-
-> Als Nutzer will ich, dass ein Sheet automatisch in meiner Tonart erscheint.
-
-- [ ] Ist `preferredKey` gesetzt und weicht von `originalKey` ab, wird die Anzeige transponiert
-- [ ] Die angezeigte Tonart und die Abweichung zum Original sind sichtbar („E → G, +3")
-- [ ] Der gespeicherte ChordPro-Text bleibt unverändert im Original
-
-**Hängt an:** E3.2
-
 ### E3.6 — Spontan transponieren · M
 
 > Als Nutzer will ich ein Sheet kurzfristig höher oder tiefer anzeigen lassen.
 
 - [ ] ± Halbton-Schaltflächen in der Sheet-Ansicht
-- [ ] Zurücksetzen auf die Wunsch-Tonart
+- [ ] Zurücksetzen auf die Originaltonart des Sheets
 - [ ] Enharmonische Verwechslung wird sinnvoll gewählt (Fis statt Ges, je nach Zieltonart)
 - [ ] Slash-Akkorde (`D/F#`) werden in beiden Teilen transponiert
 - [ ] Erweiterte Akkorde (`Cmaj7`, `F#m7b5`, `Esus4`) bleiben intakt
 - [ ] Die spontane Transposition wird **nicht** gespeichert
 - [ ] Unit-Tests über alle zwölf Halbtöne
 
-**Hängt an:** E3.5
+**Hängt an:** E3.2
 
 ### E3.7 — Lesemodus · S
 
@@ -383,7 +376,6 @@ Setlist-Planung ist einer der drei Kernnutzen, aber die Detailtiefe soll erst en
 
 - Braucht eine Setlist Gig-Metadaten (Datum, Ort, Anlass) oder reicht ein Name?
 - Mehrere Sets pro Gig (Set 1 / Pause / Set 2 / Zugaben) oder eine flache Liste?
-- Soll die Gesamtdauer aus `durationSeconds` berechnet werden? Dann muss das Feld verlässlich gepflegt sein.
 - Setlist-PDF: Booklet mit allen Sheets in Reihenfolge, oder einseitiger Spickzettel mit Titel und Tonart fürs Pult? (Beim PDF-Export wurde zunächst nur das Einzel-Sheet beauftragt.)
 - Bleiben gespielte Setlists als Historie erhalten?
 - Welche Sheet-Variante zieht eine Setlist, wenn ein Song mehrere hat?
@@ -483,3 +475,40 @@ seit dem 2026-10-28 erledigt.**
       ohne `Version`. Keine Versionsänderung: `packages.lock.json` löst dieselben 43 Pakete in
       denselben Versionen auf, der Diff dort ist allein der Formatsprung auf Lock-Version 2.
       Rezept dafür in [architecture.md](./architecture.md) §5.
+- [x] **Song-Modell vervollständigt** (2026-11-08, E1.1) — `notes`, `genre`, `language` und
+      `album` sind in allen vier Schichten ergänzt (Migration `CompleteSongModel`, Validierung,
+      Seed, Detailansicht). Die Gruppe „Musikalisch“ und `sourceLink` sind bewusst gestrichen und
+      stehen im Parkplatz.
+
+---
+
+## Parkplatz — Ideen für irgendwann
+
+**Priorität: zuletzt** · bewusst **nicht** in den Requirements
+
+Alles hier ist aus dem Zielbild gestrichen (2026-11-08, siehe Requirements §6) und wird weder
+geplant noch geschätzt. Es steht hier nur, damit die Überlegungen nicht verloren gehen. Wer einen
+Punkt aufgreift, nimmt ihn **zuerst** in die Requirements auf und schneidet dann echte Stories.
+
+**Musikalische Song-Felder** — `originalKey`, `preferredKey`, `bpm`, `timeSignature`,
+`durationSeconds` als Felder am Song, jeweils mit Migration und Durchstich durch alle Schichten.
+Die Tonart-Felder bräuchten im Formular eine Auswahlliste statt Freitext.
+
+**Herkunft des Sheets** — `sourceLink` am Song oder besser am Chordsheet, falls E3.1 steht.
+
+**Tonart-Filter** — Filter nach Tonart in E2.2 (Mehrfachauswahl, ODER innerhalb des Filters).
+*Hängt an:* `originalKey` bzw. `preferredKey`.
+
+**Wunsch-Tonart als Default** *(früher E3.5 · S)*
+
+> Als Nutzer will ich, dass ein Sheet automatisch in meiner Tonart erscheint.
+
+- [ ] Ist `preferredKey` gesetzt und weicht von `originalKey` ab, wird die Anzeige transponiert
+- [ ] Die angezeigte Tonart und die Abweichung zum Original sind sichtbar („E → G, +3")
+- [ ] Der gespeicherte ChordPro-Text bleibt unverändert im Original
+
+*Hängt an:* E3.2, `originalKey`, `preferredKey`. E3.6 funktioniert auch ohne — dort startet die
+Anzeige in der Originaltonart des Sheets.
+
+**Setlist-Gesamtdauer** — Soll die Gesamtdauer einer Setlist aus `durationSeconds` berechnet
+werden? Dann muss das Feld verlässlich gepflegt sein. *Betrifft:* E6.

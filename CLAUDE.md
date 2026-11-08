@@ -23,10 +23,11 @@ Verify before assuming:
 - **The web adapter has its own contract.** `Endpoints/Songs/SongContracts.cs` maps `Song` ↔
   `SongResponse`/`SongRequest`. Never serialise the domain object directly — `SongId` would go out
   as `{"value":"…"}`.
-- **`Song` carries five fields only** (`id`, `title`, `artist`, `releaseYear: int?`,
-  `referenceLink`) and is consistent across frontend, domain, entity and API. The rest of the
-  target model in `docs/requirements.md` §3 — the musical fields, `sourceLink`, `notes`, `genre`,
-  `language`, `album` — is still open (E1.1).
+- **`Song` carries nine fields** (`id`, `title`, `artist`, `releaseYear: int?`, `referenceLink`,
+  `notes`, `genre`, `language`, `album`) and is consistent across frontend, domain, entity and API
+  (E1.1 is done). The musical fields (keys, bpm, time signature, duration) and `sourceLink` were
+  dropped from the target model on purpose; they live in the backlog's "Parkplatz" only — do not
+  add them. What is still missing are the relations `tags[]` (E1.7) and `chordsheets[]` (E3.1).
 - **The UI can only read.** `SongService` has `createSong`/`updateSong`/`deleteSong` and they work,
   but no component calls them; the forms are E1.4–E1.6.
 - **Three of the five `Songdex.Backend.*.Test` projects are empty shells** with zero `.cs` files.
