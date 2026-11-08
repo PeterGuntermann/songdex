@@ -1,0 +1,156 @@
+<div class="mx-auto max-w-2xl p-6">
+  <h2 class="mb-4 text-2xl font-bold">New song</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex flex-col gap-6">
+    <fieldset class="flex flex-col gap-3">
+      <legend class="mb-2 text-lg font-semibold">Identity</legend>
+
+      <label class="form-control w-full">
+        <span class="label-text mb-1">Title *</span>
+        <input
+          type="text"
+          formControlName="title"
+          class="input input-bordered w-full"
+          [class.input-error]="errorFor('title')"
+          [attr.aria-invalid]="errorFor('title') ? 'true' : null"
+        />
+        @if (errorFor('title'); as error) {
+          <span class="mt-1 text-sm text-error" role="alert">{{ error }}</span>
+        }
+      </label>
+
+      <label class="form-control w-full">
+        <span class="label-text mb-1">Artist</span>
+        <input
+          type="text"
+          formControlName="artist"
+          class="input input-bordered w-full"
+          [class.input-error]="errorFor('artist')"
+        />
+        @if (errorFor('artist'); as error) {
+          <span class="mt-1 text-sm text-error" role="alert">{{ error }}</span>
+        }
+      </label>
+    </fieldset>
+
+    <fieldset class="flex flex-col gap-3">
+      <legend class="mb-2 text-lg font-semibold">References</legend>
+
+      <label class="form-control w-full">
+        <span class="label-text mb-1">Reference link</span>
+        <input
+          type="url"
+          formControlName="referenceLink"
+          placeholder="https://"
+          class="input input-bordered w-full"
+          [class.input-error]="errorFor('referenceLink')"
+        />
+        @if (errorFor('referenceLink'); as error) {
+          <span class="mt-1 text-sm text-error" role="alert">{{ error }}</span>
+        }
+      </label>
+
+      <label class="form-control w-full">
+        <span class="label-text mb-1">Notes</span>
+        <textarea
+          formControlName="notes"
+          rows="4"
+          class="textarea textarea-bordered w-full"
+          [class.textarea-error]="errorFor('notes')"
+        ></textarea>
+        @if (errorFor('notes'); as error) {
+          <span class="mt-1 text-sm text-error" role="alert">{{ error }}</span>
+        }
+      </label>
+    </fieldset>
+
+    <fieldset class="flex flex-col gap-3">
+      <legend class="mb-2 text-lg font-semibold">Catalogue</legend>
+
+      <label class="form-control w-full">
+        <span class="label-text mb-1">Release year</span>
+        <input
+          type="number"
+          formControlName="releaseYear"
+          class="input input-bordered w-full"
+          [class.input-error]="errorFor('releaseYear')"
+        />
+        @if (errorFor('releaseYear'); as error) {
+          <span class="mt-1 text-sm text-error" role="alert">{{ error }}</span>
+        }
+      </label>
+
+      <label class="form-control w-full">
+        <span class="label-text mb-1">Genre</span>
+        <input
+          type="text"
+          formControlName="genre"
+          list="genre-options"
+          class="input input-bordered w-full"
+          [class.input-error]="errorFor('genre')"
+        />
+        <datalist id="genre-options">
+          @for (genre of songStore.genres(); track genre) {
+            <option value="{{ genre }}"></option>
+          }
+        </datalist>
+        @if (errorFor('genre'); as error) {
+          <span class="mt-1 text-sm text-error" role="alert">{{ error }}</span>
+        }
+      </label>
+
+      <label class="form-control w-full">
+        <span class="label-text mb-1">Language</span>
+        <input
+          type="text"
+          formControlName="language"
+          list="language-options"
+          class="input input-bordered w-full"
+          [class.input-error]="errorFor('language')"
+        />
+        <datalist id="language-options">
+          @for (language of songStore.languages(); track language) {
+            <option value="{{ language }}"></option>
+          }
+        </datalist>
+        @if (errorFor('language'); as error) {
+          <span class="mt-1 text-sm text-error" role="alert">{{ error }}</span>
+        }
+      </label>
+
+      <label class="form-control w-full">
+        <span class="label-text mb-1">Album</span>
+        <input
+          type="text"
+          formControlName="album"
+          class="input input-bordered w-full"
+          [class.input-error]="errorFor('album')"
+        />
+        @if (errorFor('album'); as error) {
+          <span class="mt-1 text-sm text-error" role="alert">{{ error }}</span>
+        }
+      </label>
+    </fieldset>
+
+    @if (saveError(); as error) {
+      <div role="alert" class="alert alert-error">
+        <span>{{ error }}</span>
+      </div>
+    }
+
+    <div class="flex justify-end gap-2">
+      <button type="button" class="btn" (click)="cancel()">Cancel</button>
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || saving()">
+        @if (saving()) {
+          <span class="loading loading-spinner loading-sm"></span>
+        }
+        Save
+      </button>
+    </div>
+  </form>
+
+  <app-confirm-dialog
+    heading="Discard this song?"
+    message="Your input has not been saved and will be lost."
+  />
+</div>

@@ -49,6 +49,14 @@ pass your own: `vi.fn<(id: string) => void>()` — the bare `vi.fn()` return typ
 - **DI uses the `inject()` function**, never constructor injection.
 - **Templates use `@if` / `@for`**, not `*ngIf` / `*ngFor`, and read store signals directly rather
   than going through `AsyncPipe`.
+- **Forms are typed Reactive Forms** (`NonNullableFormBuilder`); `songform/` is the model to copy.
+  The text-length limits live in `SongLimits` (`models/song.ts`) and mirror
+  `SongRequestValidation.cs` in the backend.
+- **Confirmations use `shared/confirm-dialog`** (`open(): Promise<boolean>`), not `window.confirm`.
+  jsdom does not implement `<dialog>` modals; specs call `stubDialog()` from `dialog.testing.ts`.
+- **`SongService.createSong` returns a cold `Observable<Song>`**, because the caller needs the new
+  id. `updateSong` and `deleteSong` still return `void`; change them the same way when E1.5/E1.6
+  need a result.
 - **Styling is Tailwind 3 + daisyUI utility classes in templates only.** Every component `.scss`
   file is intentionally 0 bytes; `styles.scss` holds nothing but the three `@tailwind` directives.
   The daisyUI theme is hardcoded to `dim` in `index.html` and there is no theme switcher.

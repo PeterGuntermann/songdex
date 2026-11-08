@@ -91,6 +91,37 @@ describe('SongStore', () => {
     });
   });
 
+  describe('autocompletion sources', () => {
+    it('should list the distinct genres and languages sorted', () => {
+      store.setSongs([
+        { ...TestSongs[0], genre: 'Rock', language: 'German' },
+        { ...TestSongs[1], genre: 'Pop', language: 'English' },
+        { ...TestSongs[2], genre: 'Rock', language: 'German' },
+      ]);
+
+      expect(store.genres()).toEqual(['Pop', 'Rock']);
+      expect(store.languages()).toEqual(['English', 'German']);
+    });
+
+    it('should skip null and blank values and fold values that differ only in case', () => {
+      store.setSongs([
+        { ...TestSongs[0], genre: null },
+        { ...TestSongs[1], genre: '  ' },
+        { ...TestSongs[2], genre: 'Pop' },
+        { ...TestSongs[3], genre: ' pop ' },
+      ]);
+
+      expect(store.genres()).toEqual(['Pop']);
+    });
+
+    it('should be empty for an empty catalogue', () => {
+      store.setSongs([]);
+
+      expect(store.genres()).toEqual([]);
+      expect(store.languages()).toEqual([]);
+    });
+  });
+
   describe('request state', () => {
     it('should start out idle', () => {
       expect(store.loading()).toBe(false);

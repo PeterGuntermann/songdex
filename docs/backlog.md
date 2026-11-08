@@ -76,16 +76,24 @@ UI-Aufrufer — die Formulare sind E1.4–E1.6.
 
 **Hängt an:** E1.1, E1.2 · **Blockiert durch:** T-1 (Environments)
 
-### E1.4 — Song anlegen · M
+### E1.4 — Song anlegen · M — *erledigt (2026-11-08)*
 
 > Als Nutzer will ich einen neuen Song über ein Formular erfassen.
 
-- [ ] Formular mit allen Feldern aus dem Zielmodell, gruppiert nach Identität / Verweise / Katalog
-- [ ] Nur der Titel ist Pflicht
-- [ ] Validierung mit Feldfehlern; Speichern ist bei Fehlern blockiert
-- [ ] Genre und Sprache bieten die bereits vorhandenen Werte zur Autovervollständigung an
-- [ ] Nach dem Speichern: Weiterleitung auf die Detailseite des neuen Songs
-- [ ] Abbrechen verwirft ohne Nachfrage, wenn nichts eingegeben wurde — mit Nachfrage, wenn doch
+- [x] Formular mit allen Feldern aus dem Zielmodell, gruppiert nach Identität / Verweise / Katalog
+- [x] Nur der Titel ist Pflicht
+- [x] Validierung mit Feldfehlern; Speichern ist bei Fehlern blockiert
+- [x] Genre und Sprache bieten die bereits vorhandenen Werte zur Autovervollständigung an
+- [x] Nach dem Speichern: Weiterleitung auf die Detailseite des neuen Songs
+- [x] Abbrechen verwirft ohne Nachfrage, wenn nichts eingegeben wurde — mit Nachfrage, wenn doch
+
+Umgesetzt mit typisierten Reactive Forms (`songform/`, Route `songs/new`). Die Bestätigungsfrage
+ist eine wiederverwendbare `ConfirmDialogComponent` (`shared/confirm-dialog/`) auf einem nativen
+`<dialog>`; `open()` liefert ein `Promise<boolean>`, damit E1.5 (Verlassen-Nachfrage) und E1.6
+(Löschen) sie weiterverwenden können. `SongService.createSong` gibt jetzt ein `Observable<Song>`
+zurück, weil das Formular die neue Id für die Weiterleitung braucht. Die Längenlimits stehen als
+`SongLimits` in `models/song.ts` und müssen zu `SongRequestValidation.cs` passen. Einstieg ist der
+Button „New song“ in der Songliste; die eigentliche Navigation kommt mit E1.9.
 
 ### E1.5 — Song bearbeiten · S
 

@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from '../../environments/environment';
+import type { Song } from '../models/song';
 import { SONG_STATE, type SongState, SongStore } from '../store/song.store';
 import { TestSongs } from '../store/song.store.testdata';
 import { SongService } from './song.service';
@@ -91,15 +92,58 @@ describe('SongService', () => {
   });
 
   describe('createSong', () => {
-    it('should post the draft without an id and store what comes back', () => {
-      const { id, ...draft } = TestSongs[2];
+    const { id, ...draft } = TestSongs[2];
+
+    it('should send nothing until the caller subscribes', () => {
       service.createSong(draft);
 
+      httpMock.expectNone(songsUrl);
+      expect(store.loading()).toBe(false);
+    });
+
+    it('should post the draft without an id, store what comes back and emit it', () => {
+      const created: Song[] = [];
+      service.createSong(draft).subscribe((song) => created.push(song));
+
+      expect(store.loading()).toBe(true);
       const request = httpMock.expectOne({ method: 'POST', url: songsUrl });
       expect(request.request.body).toEqual(draft);
       request.flush(TestSongs[2]);
 
       expect(store.allSongs()).toEqual([TestSongs[2]]);
+      expect(store.loading()).toBe(false);
+      expect(created).toEqual([TestSongs[2]]);
+    });
+
+    it('should report the validation problems of a rejected draft and fail the stream', () => {
+      let failed = false;
+      service.createSong(draft).subscribe({ error: () => (failed = true) });
+
+      httpMock.expectOne({ method: 'POST', url: songsUrl }).flush(
+        {
+          errors: {
+            Title: ['Title is required.'],
+            Notes: ['Notes must not exceed 4000 characters.'],
+          },
+        },
+        { status: 400, statusText: 'Bad Request' },
+      );
+
+      expect(failed).toBe(true);
+      expect(store.error()).toBe(
+        'The backend rejected the song: Title is required. Notes must not exceed 4000 characters.',
+      );
+      expect(store.allSongs()).toEqual([]);
+    });
+
+    it('should fall back to the status for a 400 without problem details', () => {
+      service.createSong(draft).subscribe({ error: () => undefined });
+
+      httpMock
+        .expectOne({ method: 'POST', url: songsUrl })
+        .flush('bad', { status: 400, statusText: 'Bad Request' });
+
+      expect(store.error()).toBe('The backend responded with 400 Bad Request.');
     });
   });
 

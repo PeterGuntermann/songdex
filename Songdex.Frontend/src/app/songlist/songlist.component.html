@@ -10,8 +10,18 @@
       <button type="button" class="btn btn-sm" (click)="songService.fetchSongs()">Retry</button>
     </div>
   } @else if (songStore.songCount() === 0) {
-    <p class="p-4 opacity-70">No songs yet.</p>
+    <div class="flex items-center gap-4 p-4">
+      <p class="opacity-70">No songs yet.</p>
+      <button type="button" class="btn btn-primary btn-sm" (click)="router.navigateByUrl('/songs/new')">
+        New song
+      </button>
+    </div>
   } @else {
+    <div class="flex justify-end p-2">
+      <button type="button" class="btn btn-primary btn-sm" (click)="router.navigateByUrl('/songs/new')">
+        New song
+      </button>
+    </div>
     <table class="table table-sm table-zebra">
       <thead>
       <tr>

@@ -1,4 +1,4 @@
-import { InjectionToken, inject } from '@angular/core';
+import { computed, InjectionToken, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import type { Song } from '../models/song';
 
@@ -18,11 +18,30 @@ export const SONG_STATE = new InjectionToken<SongState>('SONG_STATE', {
   factory: () => initialState,
 });
 
+/**
+ * The distinct, non-blank values of one text field, sorted. Values that differ only in case count
+ * as one; the first spelling wins.
+ */
+function distinctValues(songs: Song[], pick: (song: Song) => string | null): string[] {
+  const seen = new Map<string, string>();
+  for (const song of songs) {
+    const value = pick(song)?.trim();
+    if (value && !seen.has(value.toLowerCase())) {
+      seen.set(value.toLowerCase(), value);
+    }
+  }
+  return [...seen.values()].sort((a, b) => a.localeCompare(b));
+}
+
 export const SongStore = signalStore(
   { providedIn: 'root' },
   withState(() => inject(SONG_STATE)),
   withComputed((store) => ({
     songCount: () => store.allSongs().length,
+    /** Genres already in the catalogue, for autocompletion. */
+    genres: computed(() => distinctValues(store.allSongs(), (song) => song.genre)),
+    /** Languages already in the catalogue, for autocompletion. */
+    languages: computed(() => distinctValues(store.allSongs(), (song) => song.language)),
   })),
   withMethods((store) => ({
     getSongById(id: string): Song | undefined {
