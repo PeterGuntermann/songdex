@@ -17,4 +17,16 @@ public class SongEntity
 
     [MaxLength(500)]
     public string? ReferenceLink { get; set; }
+
+    [MaxLength(4000)]
+    public string? Notes { get; set; }
+
+    [MaxLength(100)]
+    public string? Genre { get; set; }
+
+    [MaxLength(50)]
+    public string? Language { get; set; }
+
+    [MaxLength(200)]
+    public string? Album { get; set; }
 }

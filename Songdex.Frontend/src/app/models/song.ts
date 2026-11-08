@@ -7,6 +7,10 @@ export type Song = {
   artist: string;
   releaseYear: number | null;
   referenceLink: string | null;
+  notes: string | null;
+  genre: string | null;
+  language: string | null;
+  album: string | null;
 };
 
 /** What the backend accepts on create and update — everything but the id. */

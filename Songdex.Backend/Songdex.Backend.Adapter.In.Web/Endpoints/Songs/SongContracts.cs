@@ -11,7 +11,11 @@ public record SongResponse(
     string Title,
     string Artist,
     int? ReleaseYear,
-    string? ReferenceLink);
+    string? ReferenceLink,
+    string? Notes,
+    string? Genre,
+    string? Language,
+    string? Album);
 
 /// <summary>
 /// What the API accepts. Carries no id — it comes from the route on update and is assigned by
@@ -21,7 +25,11 @@ public record SongRequest(
     string? Title,
     string? Artist,
     int? ReleaseYear,
-    string? ReferenceLink);
+    string? ReferenceLink,
+    string? Notes,
+    string? Genre,
+    string? Language,
+    string? Album);
 
 public static class SongContractMappings
 {
@@ -31,7 +39,11 @@ public static class SongContractMappings
             song.Title,
             song.Artist,
             song.ReleaseYear,
-            song.ReferenceLink);
+            song.ReferenceLink,
+            song.Notes,
+            song.Genre,
+            song.Language,
+            song.Album);
 
     /// <summary>
     /// Builds a domain object from a request. Pass <paramref name="id"/> to address an existing
@@ -44,8 +56,13 @@ public static class SongContractMappings
             Title = request.Title?.Trim() ?? string.Empty,
             Artist = request.Artist?.Trim() ?? string.Empty,
             ReleaseYear = request.ReleaseYear,
-            ReferenceLink = string.IsNullOrWhiteSpace(request.ReferenceLink)
-                ? null
-                : request.ReferenceLink.Trim(),
+            ReferenceLink = NullIfBlank(request.ReferenceLink),
+            Notes = NullIfBlank(request.Notes),
+            Genre = NullIfBlank(request.Genre),
+            Language = NullIfBlank(request.Language),
+            Album = NullIfBlank(request.Album),
         };
+
+    private static string? NullIfBlank(string? value)
+        => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

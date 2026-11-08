@@ -7,4 +7,8 @@ public class Song
     public string Artist { get; init; } = string.Empty;
     public int? ReleaseYear { get; init; }
     public string? ReferenceLink { get; init; }
+    public string? Notes { get; init; }
+    public string? Genre { get; init; }
+    public string? Language { get; init; }
+    public string? Album { get; init; }
 }

@@ -5,11 +5,23 @@
     <section class="prose">
       <h2>{{ song.title }}</h2>
       <h3>{{ song.artist }}</h3>
+      @if (song.album) {
+        <p>Album: {{ song.album }}</p>
+      }
       @if (song.releaseYear) {
         <p>{{ song.releaseYear }}</p>
       }
+      @if (song.genre) {
+        <p>Genre: {{ song.genre }}</p>
+      }
+      @if (song.language) {
+        <p>Language: {{ song.language }}</p>
+      }
       @if (song.referenceLink) {
         <p><a href="{{ song.referenceLink }}" target="_blank" rel="noopener">Reference</a></p>
+      }
+      @if (song.notes) {
+        <p class="whitespace-pre-line">{{ song.notes }}</p>
       }
     </section>
   } @else if (songStore.loading()) {

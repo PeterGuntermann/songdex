@@ -13,6 +13,10 @@ public static class SongMappings
             Artist = entity.Artist,
             ReleaseYear = entity.ReleaseYear,
             ReferenceLink = entity.ReferenceLink,
+            Notes = entity.Notes,
+            Genre = entity.Genre,
+            Language = entity.Language,
+            Album = entity.Album,
         };
 
     public static SongEntity ToDatabaseEntity(Song song)
@@ -23,6 +27,10 @@ public static class SongMappings
             Artist = song.Artist,
             ReleaseYear = song.ReleaseYear,
             ReferenceLink = song.ReferenceLink,
+            Notes = song.Notes,
+            Genre = song.Genre,
+            Language = song.Language,
+            Album = song.Album,
         };
 
     /// <summary>
@@ -34,5 +42,9 @@ public static class SongMappings
         target.Artist = song.Artist;
         target.ReleaseYear = song.ReleaseYear;
         target.ReferenceLink = song.ReferenceLink;
+        target.Notes = song.Notes;
+        target.Genre = song.Genre;
+        target.Language = song.Language;
+        target.Album = song.Album;
     }
 }

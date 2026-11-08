@@ -5,6 +5,10 @@ public static partial class SongsApi
     private const int MaxTitleLength = 200;
     private const int MaxArtistLength = 200;
     private const int MaxReferenceLinkLength = 500;
+    private const int MaxNotesLength = 4000;
+    private const int MaxGenreLength = 100;
+    private const int MaxLanguageLength = 50;
+    private const int MaxAlbumLength = 200;
 
     /// <summary>
     /// Mirrors the length limits of the persistence entity. Returns the problem details for a
@@ -24,18 +28,25 @@ public static partial class SongsApi
                 [$"Title must not exceed {MaxTitleLength} characters."];
         }
 
-        if (request.Artist?.Trim().Length > MaxArtistLength)
-        {
-            errors[nameof(SongRequest.Artist)] =
-                [$"Artist must not exceed {MaxArtistLength} characters."];
-        }
-
-        if (request.ReferenceLink?.Trim().Length > MaxReferenceLinkLength)
-        {
-            errors[nameof(SongRequest.ReferenceLink)] =
-                [$"Reference link must not exceed {MaxReferenceLinkLength} characters."];
-        }
+        CheckMaxLength(errors, nameof(SongRequest.Artist), "Artist", request.Artist, MaxArtistLength);
+        CheckMaxLength(
+            errors, nameof(SongRequest.ReferenceLink), "Reference link", request.ReferenceLink,
+            MaxReferenceLinkLength);
+        CheckMaxLength(errors, nameof(SongRequest.Notes), "Notes", request.Notes, MaxNotesLength);
+        CheckMaxLength(errors, nameof(SongRequest.Genre), "Genre", request.Genre, MaxGenreLength);
+        CheckMaxLength(
+            errors, nameof(SongRequest.Language), "Language", request.Language, MaxLanguageLength);
+        CheckMaxLength(errors, nameof(SongRequest.Album), "Album", request.Album, MaxAlbumLength);
 
         return errors.Count == 0 ? null : errors;
+    }
+
+    private static void CheckMaxLength(
+        Dictionary<string, string[]> errors, string key, string label, string? value, int max)
+    {
+        if (value?.Trim().Length > max)
+        {
+            errors[key] = [$"{label} must not exceed {max} characters."];
+        }
     }
 }
