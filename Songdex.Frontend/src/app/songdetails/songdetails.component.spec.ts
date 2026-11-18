@@ -1,5 +1,5 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { MockProvider } from 'ng-mocks';
 import type { Mock } from 'vitest';
 import { SongService } from '../services/song.service';
@@ -62,5 +62,17 @@ describe('SongdetailsComponent', () => {
     TestBed.inject(SongStore).addSong(TestSongs[1]);
 
     expect(component.song()).toEqual(TestSongs[1]);
+  });
+
+  it('should open the edit form from the edit button', async () => {
+    await setup('1', idle([TestSongs[1]]));
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    const button = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button'),
+    ).find((b) => b.textContent?.trim() === 'Edit');
+    button?.click();
+
+    expect(navigate).toHaveBeenCalledWith(['/songs', '1', 'edit']);
   });
 });

@@ -54,9 +54,12 @@ pass your own: `vi.fn<(id: string) => void>()` — the bare `vi.fn()` return typ
   `SongRequestValidation.cs` in the backend.
 - **Confirmations use `shared/confirm-dialog`** (`open(): Promise<boolean>`), not `window.confirm`.
   jsdom does not implement `<dialog>` modals; specs call `stubDialog()` from `dialog.testing.ts`.
-- **`SongService.createSong` returns a cold `Observable<Song>`**, because the caller needs the new
-  id. `updateSong` and `deleteSong` still return `void`; change them the same way when E1.5/E1.6
-  need a result.
+- **`SongService.createSong` and `updateSong(id, draft)` return a cold `Observable<Song>`**,
+  because the form needs the result to navigate. `deleteSong` still returns `void`; change it the
+  same way when E1.6 needs a result.
+- **Leaving a form with unsaved input goes through `unsavedChangesGuard`** (`CanDeactivate`,
+  `shared/unsaved-changes.guard.ts`): the component implements `ConfirmsLeave.confirmLeave()`, and
+  its cancel button only navigates. Do not ask a second time in the component.
 - **Styling is Tailwind 3 + daisyUI utility classes in templates only.** Every component `.scss`
   file is intentionally 0 bytes; `styles.scss` holds nothing but the three `@tailwind` directives.
   The daisyUI theme is hardcoded to `dim` in `index.html` and there is no theme switcher.

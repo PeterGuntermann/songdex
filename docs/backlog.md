@@ -95,13 +95,29 @@ zurück, weil das Formular die neue Id für die Weiterleitung braucht. Die Läng
 `SongLimits` in `models/song.ts` und müssen zu `SongRequestValidation.cs` passen. Einstieg ist der
 Button „New song“ in der Songliste; die eigentliche Navigation kommt mit E1.9.
 
-### E1.5 — Song bearbeiten · S
+### E1.5 — Song bearbeiten · S — *erledigt (2026-11-18)*
 
 > Als Nutzer will ich die Daten eines bestehenden Songs korrigieren.
 
-- [ ] Dasselbe Formular wie E1.4, vorbefüllt
-- [ ] Nur geänderte Felder werden übertragen oder es geht ein vollständiges Update raus — die Entscheidung ist dokumentiert
-- [ ] Nicht gespeicherte Änderungen lösen beim Verlassen eine Nachfrage aus
+- [x] Dasselbe Formular wie E1.4, vorbefüllt
+- [x] Nur geänderte Felder werden übertragen oder es geht ein vollständiges Update raus — die Entscheidung ist dokumentiert
+- [x] Nicht gespeicherte Änderungen lösen beim Verlassen eine Nachfrage aus
+
+**Entscheidung: vollständiges Update.** Gespeichert wird per `PUT /api/songs/{id}` mit dem ganzen
+Entwurf; ein geleertes Feld wird damit gelöscht. Der Endpoint existierte bereits, das Backend bleibt
+unverändert. Ein `PATCH` mit Diff hätte einen neuen Use Case und die Unterscheidung „auf `null`
+setzen“ vs. „nicht mitgeschickt“ gebraucht — bei einem einzigen Nutzer ohne gleichzeitige
+Bearbeitung kein Gewinn. Es gilt: der letzte Speichervorgang gewinnt.
+
+Umgesetzt in `songform/` unter der Route `songs/:songId/edit`; der Parameter schaltet in den
+Bearbeitungsmodus. Einstieg ist der Button „Edit“ auf der Detailseite, Speichern und Abbrechen
+führen dorthin zurück. Ein Deep Link lädt den Katalog (für die Autovervollständigung) bzw. nur den
+Song nach. `SongService.updateSong(id, draft)` liefert jetzt wie `createSong` ein kaltes
+`Observable<Song>`. Die Verlassen-Nachfrage ist der `unsavedChangesGuard` (`CanDeactivate`,
+`shared/unsaved-changes.guard.ts`) und gilt für jede In-App-Navigation — auch für `songs/new`;
+Abbrechen navigiert nur noch und überlässt die Frage dem Guard. Als Änderung zählt die Abweichung
+des normalisierten Entwurfs vom Ausgangsstand, nicht `dirty`; Zurückgetipptes fragt also nicht.
+Neu laden oder Tab schließen ist bewusst nicht abgedeckt (kein `beforeunload`).
 
 ### E1.6 — Song löschen · S
 

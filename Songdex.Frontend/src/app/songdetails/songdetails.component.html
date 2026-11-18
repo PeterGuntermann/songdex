@@ -2,6 +2,9 @@
   <a routerLink="songs">← back</a>
 
   @if (song(); as song) {
+    <div class="flex justify-end">
+      <button type="button" class="btn btn-sm" (click)="edit(song.id)">Edit</button>
+    </div>
     <section class="prose">
       <h2>{{ song.title }}</h2>
       <h3>{{ song.artist }}</h3>

@@ -1,5 +1,5 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { MockProvider } from 'ng-mocks';
 import { Observable, of, throwError } from 'rxjs';
 import type { Mock } from 'vitest';
@@ -14,21 +14,33 @@ describe('SongformComponent', () => {
   let fixture: ComponentFixture<SongformComponent>;
   let component: SongformComponent;
   let createSong: Mock<(draft: SongDraft) => Observable<Song>>;
+  let updateSong: Mock<(id: string, draft: SongDraft) => Observable<Song>>;
   let fetchSongs: Mock<() => void>;
+  let fetchSong: Mock<(id: string) => void>;
   let navigate: Mock<Router['navigate']>;
 
-  const setup = async (allSongs: Song[] = [TestSongs[3]]) => {
+  type Options = Partial<SongState> & { songId?: string };
+
+  const setup = async (allSongs: Song[] = [TestSongs[3]], options: Options = {}) => {
+    const { songId, ...state } = options;
     stubDialog();
     createSong = vi.fn<(draft: SongDraft) => Observable<Song>>(() => of(TestSongs[2]));
+    updateSong = vi.fn<(id: string, draft: SongDraft) => Observable<Song>>((id, draft) =>
+      of({ id, ...draft }),
+    );
     fetchSongs = vi.fn<() => void>();
+    fetchSong = vi.fn<(id: string) => void>();
     await TestBed.configureTestingModule({
       imports: [SongformComponent],
       providers: [
         provideRouter([]),
-        MockProvider(SongService, { createSong, fetchSongs }),
+        MockProvider(SongService, { createSong, updateSong, fetchSongs, fetchSong }),
+        MockProvider(ActivatedRoute, {
+          snapshot: { paramMap: convertToParamMap(songId ? { songId } : {}) },
+        } as Partial<ActivatedRoute>),
         {
           provide: SONG_STATE,
-          useValue: { allSongs, loading: false, error: null } satisfies SongState,
+          useValue: { allSongs, loading: false, error: null, ...state } satisfies SongState,
         },
       ],
     }).compileComponents();
@@ -46,6 +58,8 @@ describe('SongformComponent', () => {
       (b) => b.textContent?.trim() === 'Cancel',
     );
   const dialog = () => el().querySelector<HTMLDialogElement>('dialog');
+  // The confirm dialog carries a form of its own.
+  const songForm = () => el().querySelector('form[novalidate]');
 
   describe('layout', () => {
     it('should group the fields into identity, references and catalogue', async () => {
@@ -253,50 +267,246 @@ describe('SongformComponent', () => {
   });
 
   describe('cancel', () => {
-    it('should leave without asking when nothing was entered', async () => {
+    // The question itself is asked by the leave guard; see 'leaving' below.
+    it('should go back to the list', async () => {
       await setup();
 
       cancelButton()?.click();
       await fixture.whenStable();
 
-      expect(dialog()?.hasAttribute('open')).toBe(false);
       expect(navigate).toHaveBeenCalledWith(['/songs']);
     });
+  });
 
-    it('should leave without asking when the input was deleted again', async () => {
+  describe('leaving', () => {
+    it('should let go without asking when nothing was entered', async () => {
+      await setup();
+
+      expect(component.confirmLeave()).toBe(true);
+      expect(dialog()?.hasAttribute('open')).toBe(false);
+    });
+
+    it('should let go without asking when the input was deleted again', async () => {
       await setup();
       component.form.controls.title.setValue('Typo');
       component.form.controls.title.setValue('  ');
 
-      await component.cancel();
-
-      expect(navigate).toHaveBeenCalledWith(['/songs']);
+      expect(component.confirmLeave()).toBe(true);
     });
 
-    it('should ask first when something was entered, and leave on confirmation', async () => {
+    it('should ask first when something was entered, and let go on confirmation', async () => {
       await setup();
       component.form.controls.album.setValue('Grace');
 
-      const done = component.cancel();
+      const answer = component.confirmLeave();
       expect(dialog()?.hasAttribute('open')).toBe(true);
-      expect(navigate).not.toHaveBeenCalled();
 
       dialog()?.close('confirm');
-      await done;
 
-      expect(navigate).toHaveBeenCalledWith(['/songs']);
+      expect(await answer).toBe(true);
     });
 
     it('should stay on the form when the question is dismissed', async () => {
       await setup();
       component.form.controls.releaseYear.setValue(1994);
 
-      const done = component.cancel();
+      const answer = component.confirmLeave();
       dialog()?.close('cancel');
-      await done;
+
+      expect(await answer).toBe(false);
+      expect(component.form.controls.releaseYear.value).toBe(1994);
+    });
+
+    it('should not ask again once the input has been saved', async () => {
+      await setup();
+      component.form.controls.title.setValue('Song 2');
+
+      component.submit();
+
+      expect(component.confirmLeave()).toBe(true);
+    });
+
+    it('should keep asking when saving failed', async () => {
+      await setup();
+      createSong.mockReturnValue(throwError(() => new Error('500')));
+      component.form.controls.title.setValue('Song 2');
+
+      component.submit();
+
+      expect(component.confirmLeave()).toBeInstanceOf(Promise);
+    });
+  });
+
+  describe('edit mode', () => {
+    const song = TestSongs[3];
+    const { id, ...draftOfSong } = song;
+    const editSetup = (allSongs: Song[] = [TestSongs[1], song], options: Options = {}) =>
+      setup(allSongs, { songId: id, ...options });
+
+    it('should show the same form, prefilled with the song from the store', async () => {
+      await editSetup();
+
+      expect(el().querySelector('h2')?.textContent).toBe('Edit song');
+      expect(component.form.getRawValue()).toEqual({
+        title: 'Song 3',
+        artist: 'Artist 3',
+        referenceLink: 'http://example.com',
+        notes: 'First line\nSecond line',
+        releaseYear: null,
+        genre: 'Pop',
+        language: 'English',
+        album: 'Album 3',
+      });
+      expect(el().querySelector<HTMLInputElement>('input[formControlName="title"]')?.value).toBe(
+        'Song 3',
+      );
+      expect(fetchSong).not.toHaveBeenCalled();
+      expect(fetchSongs).not.toHaveBeenCalled();
+    });
+
+    it('should turn missing optional values into empty fields', async () => {
+      await editSetup([TestSongs[1]], { songId: '1' });
+
+      expect(component.form.controls.album.value).toBe('');
+      expect(component.form.controls.releaseYear.value).toBe(1999);
+    });
+
+    it('should load the catalogue on a deep link and fill the form once it arrives', async () => {
+      await editSetup([], { loading: true });
+      expect(el().textContent).toContain('Loading song');
+      expect(songForm()).toBeNull();
+
+      TestBed.inject(SongStore).setSongs([TestSongs[1], song]);
+      fixture.detectChanges();
+
+      expect(songForm()).not.toBeNull();
+      expect(component.form.controls.title.value).toBe('Song 3');
+    });
+
+    it('should start loading the catalogue on a deep link', async () => {
+      await editSetup([]);
+
+      expect(fetchSongs).toHaveBeenCalled();
+    });
+
+    it('should fetch only the song when the catalogue is there without it', async () => {
+      await editSetup([TestSongs[1]]);
+
+      expect(fetchSong).toHaveBeenCalledWith(id);
+      expect(fetchSongs).not.toHaveBeenCalled();
+    });
+
+    it('should report a song that does not exist', async () => {
+      await editSetup([TestSongs[1]], { error: 'This song no longer exists.' });
+
+      expect(songForm()).toBeNull();
+      expect(el().querySelector('[role="alert"]')?.textContent).toContain(
+        'This song no longer exists.',
+      );
+    });
+
+    it('should report a song that is missing from a loaded catalogue', async () => {
+      await editSetup([TestSongs[1]]);
+
+      expect(songForm()).toBeNull();
+      expect(el().textContent).toContain('This song no longer exists.');
+    });
+
+    it('should not overwrite the input when the stored song changes later', async () => {
+      await editSetup();
+      component.form.controls.title.setValue('Mine');
+
+      TestBed.inject(SongStore).updateSong({ ...song, title: 'Theirs' });
+      fixture.detectChanges();
+
+      expect(component.form.controls.title.value).toBe('Mine');
+    });
+
+    it('should send the full draft, not only the changed field', async () => {
+      await editSetup();
+      component.form.controls.title.setValue(' Renamed ');
+
+      component.submit();
+
+      expect(updateSong).toHaveBeenCalledWith(id, { ...draftOfSong, title: 'Renamed' });
+      expect(createSong).not.toHaveBeenCalled();
+    });
+
+    it('should clear a field that was emptied', async () => {
+      await editSetup();
+      component.form.controls.album.setValue('');
+
+      component.submit();
+
+      expect(updateSong.mock.calls[0][1].album).toBeNull();
+    });
+
+    it('should go back to the detail page after saving', async () => {
+      await editSetup();
+      component.form.controls.title.setValue('Renamed');
+
+      component.submit();
+
+      expect(navigate).toHaveBeenCalledWith(['/songs', id]);
+      expect(component.confirmLeave()).toBe(true);
+    });
+
+    it('should stay on the form and show the error when the backend refuses', async () => {
+      await editSetup();
+      const store = TestBed.inject(SongStore);
+      updateSong.mockImplementation(() => {
+        store.setError('This song no longer exists.');
+        return throwError(() => new Error('404'));
+      });
+      component.form.controls.title.setValue('Renamed');
+
+      component.submit();
+      fixture.detectChanges();
 
       expect(navigate).not.toHaveBeenCalled();
-      expect(component.form.controls.releaseYear.value).toBe(1994);
+      expect(songForm()).not.toBeNull();
+      expect(el().textContent).toContain('This song no longer exists.');
+    });
+
+    it('should go back to the detail page on cancel', async () => {
+      await editSetup();
+
+      await component.cancel();
+
+      expect(navigate).toHaveBeenCalledWith(['/songs', id]);
+    });
+
+    it('should let go without asking while the song is unchanged', async () => {
+      await editSetup();
+
+      expect(component.confirmLeave()).toBe(true);
+    });
+
+    it('should let go without asking when a change was reverted', async () => {
+      await editSetup();
+      component.form.controls.genre.setValue('Rock');
+      component.form.controls.genre.setValue(' Pop ');
+
+      expect(component.confirmLeave()).toBe(true);
+    });
+
+    it('should ask about changed values, naming them as changes', async () => {
+      await editSetup();
+      component.form.controls.notes.setValue('');
+
+      const answer = component.confirmLeave();
+      fixture.detectChanges();
+
+      expect(dialog()?.hasAttribute('open')).toBe(true);
+      expect(dialog()?.textContent).toContain('Discard your changes?');
+      dialog()?.close('cancel');
+      expect(await answer).toBe(false);
+    });
+
+    it('should let go without asking while the song is still loading', async () => {
+      await editSetup([], { loading: true });
+
+      expect(component.confirmLeave()).toBe(true);
     });
   });
 });

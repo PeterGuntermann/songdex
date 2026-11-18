@@ -54,16 +54,24 @@ export class SongService {
     );
   }
 
-  updateSong(song: Song): void {
-    this.songStore.startLoading();
-    const { id, ...draft } = song;
-    this.http.put<Song>(`${this.songsUrl}/${id}`, draft).subscribe({
-      next: (updated) => {
+  /**
+   * Cold, like `createSong`. Always a full update: the draft replaces every field of the song, so
+   * a field left out would be cleared. Returns the song as the backend stored it.
+   */
+  updateSong(id: string, draft: SongDraft): Observable<Song> {
+    return defer(() => {
+      this.songStore.startLoading();
+      return this.http.put<Song>(`${this.songsUrl}/${id}`, draft);
+    }).pipe(
+      tap((updated) => {
         this.songStore.updateSong(updated);
         this.songStore.finishLoading();
-      },
-      error: (error: HttpErrorResponse) => this.songStore.setError(this.describe(error)),
-    });
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.songStore.setError(this.describe(error));
+        return throwError(() => error);
+      }),
+    );
   }
 
   deleteSong(id: string): void {

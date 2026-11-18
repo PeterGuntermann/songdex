@@ -1,5 +1,5 @@
 import { Component, computed, inject, type OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SongService } from '../services/song.service';
 import { SongStore } from '../store/song.store';
 
@@ -12,6 +12,7 @@ import { SongStore } from '../store/song.store';
 })
 export class SongdetailsComponent implements OnInit {
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly songService = inject(SongService);
   readonly songStore = inject(SongStore);
 
@@ -28,5 +29,9 @@ export class SongdetailsComponent implements OnInit {
     if (!this.songStore.getSongById(songId)) {
       this.songService.fetchSong(songId);
     }
+  }
+
+  edit(songId: string): void {
+    void this.router.navigate(['/songs', songId, 'edit']);
   }
 }

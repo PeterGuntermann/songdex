@@ -1,4 +1,5 @@
 import type { Routes } from '@angular/router';
+import { unsavedChangesGuard } from './shared/unsaved-changes.guard';
 
 export const routes: Routes = [
   {
@@ -14,11 +15,18 @@ export const routes: Routes = [
     // Must stay above `songs/:songId`, which would otherwise swallow "new".
     path: 'songs/new',
     loadComponent: () => import('./songform/songform.component').then((m) => m.SongformComponent),
+    canDeactivate: [unsavedChangesGuard],
   },
   {
     path: 'songs/:songId',
     loadComponent: () =>
       import('./songdetails/songdetails.component').then((m) => m.SongdetailsComponent),
+  },
+  {
+    // The same form as `songs/new`; the `songId` parameter switches it into edit mode.
+    path: 'songs/:songId/edit',
+    loadComponent: () => import('./songform/songform.component').then((m) => m.SongformComponent),
+    canDeactivate: [unsavedChangesGuard],
   },
   { path: '**', redirectTo: 'songs' },
 ];

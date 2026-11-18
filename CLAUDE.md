@@ -28,9 +28,9 @@ Verify before assuming:
   (E1.1 is done). The musical fields (keys, bpm, time signature, duration) and `sourceLink` were
   dropped from the target model on purpose; they live in the backlog's "Parkplatz" only — do not
   add them. What is still missing are the relations `tags[]` (E1.7) and `chordsheets[]` (E3.1).
-- **The UI can read and create.** The song form (`songform/`, route `songs/new`, E1.4) calls
-  `SongService.createSong`. `updateSong` and `deleteSong` work, but no component calls them yet;
-  those forms are E1.5/E1.6.
+- **The UI can read, create and edit.** The song form (`songform/`) serves both `songs/new`
+  (E1.4, `createSong`) and `songs/:songId/edit` (E1.5, `updateSong`, always a full PUT); both
+  routes carry `unsavedChangesGuard`. `deleteSong` works, but no component calls it yet (E1.6).
 - **Three of the five `Songdex.Backend.*.Test` projects are empty shells** with zero `.cs` files.
   Only `Architecture.Test` (ArchUnitNET rules) and `Application.Test` (`SongServiceTest`) are filled.
   There is no test that exercises an endpoint or the database (T-8).

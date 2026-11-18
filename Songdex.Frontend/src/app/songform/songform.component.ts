@@ -1,4 +1,13 @@
-import { Component, inject, type OnInit, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  type OnInit,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
 import {
   type AbstractControl,
   NonNullableFormBuilder,
@@ -6,10 +15,11 @@ import {
   type ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
-import { type SongDraft, SongLimits } from '../models/song';
+import { ActivatedRoute, Router } from '@angular/router';
+import { type Song, type SongDraft, SongLimits } from '../models/song';
 import { SongService } from '../services/song.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import type { ConfirmsLeave } from '../shared/unsaved-changes.guard';
 import { SongStore } from '../store/song.store';
 
 type FieldName =
@@ -48,6 +58,14 @@ function nullIfBlank(value: string): string | null {
   return trimmed.length === 0 ? null : trimmed;
 }
 
+function sameDraft(a: SongDraft, b: SongDraft): boolean {
+  return (Object.keys(a) as (keyof SongDraft)[]).every((key) => a[key] === b[key]);
+}
+
+/**
+ * Creates a song on `songs/new` and edits one on `songs/:songId/edit`. Saving an edit always sends
+ * the full draft (PUT), never only the changed fields.
+ */
 @Component({
   selector: 'app-songform',
   standalone: true,
@@ -55,15 +73,31 @@ function nullIfBlank(value: string): string | null {
   templateUrl: './songform.component.html',
   styleUrl: './songform.component.scss',
 })
-export class SongformComponent implements OnInit {
+export class SongformComponent implements OnInit, ConfirmsLeave {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly router = inject(Router);
   private readonly songService = inject(SongService);
   readonly songStore = inject(SongStore);
 
+  /** The song being edited, or `null` when a new one is created. */
+  private readonly songId = inject(ActivatedRoute).snapshot.paramMap.get('songId');
+  readonly editing = this.songId !== null;
+
   readonly limits = SongLimits;
   readonly saving = signal(false);
   readonly saveError = signal<string | null>(null);
+  /** Whether the form can be shown — in edit mode only once it has been filled with the song. */
+  readonly ready = signal(!this.editing);
+
+  readonly heading = this.editing ? 'Edit song' : 'New song';
+  readonly leaveHeading = this.editing ? 'Discard your changes?' : 'Discard this song?';
+  readonly leaveMessage = this.editing
+    ? 'Your changes have not been saved and will be lost.'
+    : 'Your input has not been saved and will be lost.';
+
+  private readonly song = computed(() =>
+    this.songId === null ? undefined : this.songStore.getSongById(this.songId),
+  );
 
   private readonly confirmDialog = viewChild.required(ConfirmDialogComponent);
 
@@ -88,10 +122,31 @@ export class SongformComponent implements OnInit {
     album: ['', Validators.maxLength(SongLimits.album)],
   });
 
+  /**
+   * The normalised draft the form started from. Unsaved changes are measured against it rather
+   * than with `dirty`, so input that was typed and reverted again counts as no change.
+   */
+  private baseline = this.toDraft();
+
+  constructor() {
+    // Fills the form once the song is in the store — at once, or when a deep-link fetch lands.
+    // Only once: later store updates (such as our own save) must not overwrite the user's input.
+    effect(() => {
+      const song = this.song();
+      if (song && !untracked(this.ready)) {
+        untracked(() => this.fill(song));
+      }
+    });
+  }
+
   ngOnInit(): void {
-    // Deep link to /songs/new: the catalogue is needed for the autocompletion.
-    if (this.songStore.songCount() === 0 && !this.songStore.loading()) {
-      this.songService.fetchSongs();
+    if (this.songStore.songCount() === 0) {
+      // Deep link: the catalogue is needed for the autocompletion and holds the song to edit.
+      if (!this.songStore.loading()) {
+        this.songService.fetchSongs();
+      }
+    } else if (this.songId !== null && !this.song()) {
+      this.songService.fetchSong(this.songId);
     }
   }
 
@@ -134,9 +189,16 @@ export class SongformComponent implements OnInit {
 
     this.saving.set(true);
     this.saveError.set(null);
-    this.songService.createSong(this.toDraft()).subscribe({
+    const draft = this.toDraft();
+    const request =
+      this.songId === null
+        ? this.songService.createSong(draft)
+        : this.songService.updateSong(this.songId, draft);
+    request.subscribe({
       next: (song) => {
         this.saving.set(false);
+        // Saved: nothing left for the leave guard to ask about.
+        this.baseline = draft;
         void this.router.navigate(['/songs', song.id]);
       },
       error: () => {
@@ -146,18 +208,33 @@ export class SongformComponent implements OnInit {
     });
   }
 
-  /** Leaves silently when nothing was entered, otherwise asks first. */
+  /** Back to where the form was opened from; the leave guard asks if there is unsaved input. */
   async cancel(): Promise<void> {
-    if (this.hasInput() && !(await this.confirmDialog().open())) {
-      return;
-    }
-    await this.router.navigate(['/songs']);
+    await this.router.navigate(this.songId === null ? ['/songs'] : ['/songs', this.songId]);
   }
 
-  /** Stricter than `dirty`: text that was typed and deleted again counts as nothing entered. */
-  private hasInput(): boolean {
-    const { releaseYear, ...texts } = this.form.getRawValue();
-    return releaseYear !== null || Object.values(texts).some((value) => value.trim().length > 0);
+  /** Called by `unsavedChangesGuard` on every navigation away from the form. */
+  confirmLeave(): boolean | Promise<boolean> {
+    return this.hasUnsavedChanges() ? this.confirmDialog().open() : true;
+  }
+
+  private hasUnsavedChanges(): boolean {
+    return this.ready() && !sameDraft(this.toDraft(), this.baseline);
+  }
+
+  private fill(song: Song): void {
+    this.form.reset({
+      title: song.title,
+      artist: song.artist,
+      referenceLink: song.referenceLink ?? '',
+      notes: song.notes ?? '',
+      releaseYear: song.releaseYear,
+      genre: song.genre ?? '',
+      language: song.language ?? '',
+      album: song.album ?? '',
+    });
+    this.baseline = this.toDraft();
+    this.ready.set(true);
   }
 
   private toDraft(): SongDraft {

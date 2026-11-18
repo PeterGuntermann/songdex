@@ -148,17 +148,45 @@ describe('SongService', () => {
   });
 
   describe('updateSong', () => {
-    it('should put the draft to the id route and replace the stored song', () => {
-      store.setSongs([TestSongs[1]]);
-      const changed = { ...TestSongs[1], title: 'Renamed' };
+    const { id, ...draft } = { ...TestSongs[1], title: 'Renamed' };
+    const changed: Song = { id, ...draft };
 
-      service.updateSong(changed);
+    it('should send nothing until the caller subscribes', () => {
+      service.updateSong(id, draft);
 
+      httpMock.expectNone(`${songsUrl}/1`);
+      expect(store.loading()).toBe(false);
+    });
+
+    it('should put the full draft to the id route, replace the stored song and emit it', () => {
+      store.setSongs([TestSongs[0], TestSongs[1]]);
+      const updated: Song[] = [];
+
+      service.updateSong(id, draft).subscribe((song) => updated.push(song));
+
+      expect(store.loading()).toBe(true);
       const request = httpMock.expectOne({ method: 'PUT', url: `${songsUrl}/1` });
+      expect(request.request.body).toEqual(draft);
       expect(request.request.body).not.toHaveProperty('id');
       request.flush(changed);
 
-      expect(store.allSongs()).toEqual([changed]);
+      expect(store.allSongs()).toEqual([TestSongs[0], changed]);
+      expect(store.loading()).toBe(false);
+      expect(updated).toEqual([changed]);
+    });
+
+    it('should keep the stored song, report the error and fail the stream on failure', () => {
+      store.setSongs([TestSongs[1]]);
+      let failed = false;
+
+      service.updateSong(id, draft).subscribe({ error: () => (failed = true) });
+      httpMock
+        .expectOne({ method: 'PUT', url: `${songsUrl}/1` })
+        .flush(null, { status: 404, statusText: 'Not Found' });
+
+      expect(failed).toBe(true);
+      expect(store.allSongs()).toEqual([TestSongs[1]]);
+      expect(store.error()).toBe('This song no longer exists.');
     });
   });
 
