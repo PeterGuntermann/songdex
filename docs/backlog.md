@@ -119,14 +119,23 @@ Abbrechen navigiert nur noch und überlässt die Frage dem Guard. Als Änderung 
 des normalisierten Entwurfs vom Ausgangsstand, nicht `dirty`; Zurückgetipptes fragt also nicht.
 Neu laden oder Tab schließen ist bewusst nicht abgedeckt (kein `beforeunload`).
 
-### E1.6 — Song löschen · S
+### E1.6 — Song löschen · S — *erledigt (2026-11-18), bis auf die Chordsheets*
 
 > Als Nutzer will ich einen Song aus dem Katalog entfernen.
 
-- [ ] Löschen ist aus Liste und Detailansicht erreichbar
-- [ ] Bestätigungsdialog nennt den Titel des Songs
+- [x] Löschen ist aus Liste und Detailansicht erreichbar
+- [x] Bestätigungsdialog nennt den Titel des Songs
 - [ ] Zugehörige Chordsheets werden mitgelöscht (sobald E3.1 steht)
-- [ ] Nach dem Löschen: zurück zur Liste
+- [x] Nach dem Löschen: zurück zur Liste
+
+Beide Einstiege nutzen dieselbe `SongdeleteComponent` (`songdelete/`): Button, `ConfirmDialog` mit
+Titel und Aufruf von `SongService.deleteSong`, das jetzt wie `createSong`/`updateSong` ein kaltes
+`Observable` liefert. Ihr Host stoppt die Klick-Propagation, damit der Button in der klickbaren
+Tabellenzeile den Song nicht öffnet. Aus der Detailansicht geht es nach dem Löschen zur Liste; in
+der Liste bleibt man einfach stehen. Ein Fehlschlag erscheint in der Liste als Meldung über der
+Tabelle — Laden und Fehler verdrängen die Tabelle nicht mehr, sobald Songs da sind —, in der
+Detailansicht als eigene Meldung (nicht `store.error`, das noch von einer früheren Anfrage stammen
+kann). Das Backend löscht bislang nur den Song; die Kaskade auf die Sheets ist Teil von E3.1.
 
 ### E1.7 — Tags zuweisen · M
 

@@ -191,25 +191,38 @@ describe('SongService', () => {
   });
 
   describe('deleteSong', () => {
-    it('should remove the song from the store on success', () => {
-      store.setSongs([TestSongs[0], TestSongs[1]]);
-
+    it('should send nothing until the caller subscribes', () => {
       service.deleteSong('1');
+
+      httpMock.expectNone(`${songsUrl}/1`);
+      expect(store.loading()).toBe(false);
+    });
+
+    it('should remove the song from the store on success and then emit', () => {
+      store.setSongs([TestSongs[0], TestSongs[1]]);
+      let songsWhenDone: unknown;
+
+      service.deleteSong('1').subscribe(() => (songsWhenDone = store.allSongs()));
+      expect(store.loading()).toBe(true);
       httpMock
         .expectOne({ method: 'DELETE', url: `${songsUrl}/1` })
         .flush(null, { status: 204, statusText: 'No Content' });
 
       expect(store.allSongs()).toEqual([TestSongs[0]]);
+      expect(store.loading()).toBe(false);
+      expect(songsWhenDone).toEqual([TestSongs[0]]);
     });
 
-    it('should keep the song and report the error on failure', () => {
+    it('should keep the song, report the error and fail the stream on failure', () => {
       store.setSongs([TestSongs[0], TestSongs[1]]);
+      let failed = false;
 
-      service.deleteSong('1');
+      service.deleteSong('1').subscribe({ error: () => (failed = true) });
       httpMock
         .expectOne({ method: 'DELETE', url: `${songsUrl}/1` })
         .flush(null, { status: 404, statusText: 'Not Found' });
 
+      expect(failed).toBe(true);
       expect(store.allSongs()).toEqual([TestSongs[0], TestSongs[1]]);
       expect(store.error()).toBe('This song no longer exists.');
     });

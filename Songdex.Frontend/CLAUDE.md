@@ -54,9 +54,12 @@ pass your own: `vi.fn<(id: string) => void>()` — the bare `vi.fn()` return typ
   `SongRequestValidation.cs` in the backend.
 - **Confirmations use `shared/confirm-dialog`** (`open(): Promise<boolean>`), not `window.confirm`.
   jsdom does not implement `<dialog>` modals; specs call `stubDialog()` from `dialog.testing.ts`.
-- **`SongService.createSong` and `updateSong(id, draft)` return a cold `Observable<Song>`**,
-  because the form needs the result to navigate. `deleteSong` still returns `void`; change it the
-  same way when E1.6 needs a result.
+- **The writing `SongService` methods return cold observables** — `createSong` and
+  `updateSong(id, draft)` an `Observable<Song>`, `deleteSong` an `Observable<void>` — because the
+  callers navigate or report on the result. They still patch the store and set `error` themselves.
+- **Delete through `SongdeleteComponent`** (`songdelete/`), not with a second dialog of your own.
+  Its host stops click propagation so it can sit in a clickable row; it reports via
+  `deleted`/`failed` outputs.
 - **Leaving a form with unsaved input goes through `unsavedChangesGuard`** (`CanDeactivate`,
   `shared/unsaved-changes.guard.ts`): the component implements `ConfirmsLeave.confirmLeave()`, and
   its cancel button only navigates. Do not ask a second time in the component.

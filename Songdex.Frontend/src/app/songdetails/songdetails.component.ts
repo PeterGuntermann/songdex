@@ -1,12 +1,13 @@
 import { Component, computed, inject, type OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SongService } from '../services/song.service';
+import { SongdeleteComponent } from '../songdelete/songdelete.component';
 import { SongStore } from '../store/song.store';
 
 @Component({
   selector: 'app-songdetails',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, SongdeleteComponent],
   templateUrl: './songdetails.component.html',
   styleUrl: './songdetails.component.scss',
 })
@@ -17,6 +18,8 @@ export class SongdetailsComponent implements OnInit {
   readonly songStore = inject(SongStore);
 
   private readonly songId = signal('');
+  /** Kept here rather than read from the store, whose `error` may stem from an earlier request. */
+  readonly deleteError = signal<string | null>(null);
 
   /** Reads through the store, so the song appears as soon as the fetch below lands. */
   readonly song = computed(() => this.songStore.getSongById(this.songId()));
@@ -33,5 +36,9 @@ export class SongdetailsComponent implements OnInit {
 
   edit(songId: string): void {
     void this.router.navigate(['/songs', songId, 'edit']);
+  }
+
+  backToList(): void {
+    void this.router.navigate(['/songs']);
   }
 }

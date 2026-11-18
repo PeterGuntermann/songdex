@@ -1,8 +1,10 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { MockProvider } from 'ng-mocks';
 import type { Mock } from 'vitest';
 import { SongService } from '../services/song.service';
+import { SongdeleteComponent } from '../songdelete/songdelete.component';
 import { SONG_STATE, type SongState, SongStore } from '../store/song.store';
 import { TestSongs } from '../store/song.store.testdata';
 
@@ -74,5 +76,38 @@ describe('SongdetailsComponent', () => {
     button?.click();
 
     expect(navigate).toHaveBeenCalledWith(['/songs', '1', 'edit']);
+  });
+
+  describe('delete', () => {
+    const deleteControl = (): SongdeleteComponent =>
+      fixture.debugElement.query(By.directive(SongdeleteComponent)).componentInstance;
+
+    it('should offer to delete the song shown', async () => {
+      await setup('1', idle([TestSongs[1]]));
+
+      expect(deleteControl().song()).toEqual(TestSongs[1]);
+    });
+
+    it('should go back to the list once the song is deleted', async () => {
+      await setup('1', idle([TestSongs[1]]));
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      deleteControl().deleted.emit();
+
+      expect(navigate).toHaveBeenCalledWith(['/songs']);
+    });
+
+    it('should stay and show why the song could not be deleted', async () => {
+      await setup('1', idle([TestSongs[1]]));
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      deleteControl().failed.emit('The backend cannot be reached. Is it running?');
+      fixture.detectChanges();
+
+      expect(navigate).not.toHaveBeenCalled();
+      expect(
+        (fixture.nativeElement as HTMLElement).querySelector('[role="alert"]')?.textContent,
+      ).toContain('The backend cannot be reached.');
+    });
   });
 });

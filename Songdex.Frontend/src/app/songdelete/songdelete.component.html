@@ -1,0 +1,18 @@
+<button
+  type="button"
+  class="btn btn-sm btn-outline btn-error"
+  [disabled]="deleting()"
+  (click)="delete()"
+>
+  @if (deleting()) {
+    <span class="loading loading-spinner loading-xs"></span>
+  }
+  Delete
+</button>
+
+<app-confirm-dialog
+  heading="Delete this song?"
+  message="“{{ song().title }}” will be removed from the catalogue. This cannot be undone."
+  confirmLabel="Delete"
+  cancelLabel="Keep"
+/>

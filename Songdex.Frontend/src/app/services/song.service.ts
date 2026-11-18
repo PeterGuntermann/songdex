@@ -74,15 +74,21 @@ export class SongService {
     );
   }
 
-  deleteSong(id: string): void {
-    this.songStore.startLoading();
-    this.http.delete<void>(`${this.songsUrl}/${id}`).subscribe({
-      next: () => {
+  /** Cold, like `createSong`. Emits once the song is gone from the backend and the store. */
+  deleteSong(id: string): Observable<void> {
+    return defer(() => {
+      this.songStore.startLoading();
+      return this.http.delete<void>(`${this.songsUrl}/${id}`);
+    }).pipe(
+      tap(() => {
         this.songStore.deleteSong(id);
         this.songStore.finishLoading();
-      },
-      error: (error: HttpErrorResponse) => this.songStore.setError(this.describe(error)),
-    });
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.songStore.setError(this.describe(error));
+        return throwError(() => error);
+      }),
+    );
   }
 
   private describe(error: HttpErrorResponse): string {

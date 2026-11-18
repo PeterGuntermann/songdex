@@ -1,22 +1,13 @@
 <section class="max-h-screen p-2">
-  @if (songStore.loading()) {
-    <div class="flex items-center gap-2 p-4">
-      <span class="loading loading-spinner"></span>
-      <span>Loading songs …</span>
-    </div>
-  } @else if (songStore.error(); as error) {
+  <!-- An error sits above the table, so a failed delete does not hide the catalogue. -->
+  @if (songStore.error(); as error) {
     <div role="alert" class="alert alert-error">
       <span>{{ error }}</span>
       <button type="button" class="btn btn-sm" (click)="songService.fetchSongs()">Retry</button>
     </div>
-  } @else if (songStore.songCount() === 0) {
-    <div class="flex items-center gap-4 p-4">
-      <p class="opacity-70">No songs yet.</p>
-      <button type="button" class="btn btn-primary btn-sm" (click)="router.navigateByUrl('/songs/new')">
-        New song
-      </button>
-    </div>
-  } @else {
+  }
+
+  @if (songStore.songCount() > 0) {
     <div class="flex justify-end p-2">
       <button type="button" class="btn btn-primary btn-sm" (click)="router.navigateByUrl('/songs/new')">
         New song
@@ -28,6 +19,7 @@
         <th>Title</th>
         <th>Artist</th>
         <th>Year</th>
+        <th><span class="sr-only">Actions</span></th>
       </tr>
       </thead>
       <tbody>
@@ -36,9 +28,22 @@
             <td>{{ song.title }}</td>
             <td>{{ song.artist }}</td>
             <td>{{ song.releaseYear }}</td>
+            <td class="text-right"><app-songdelete [song]="song" /></td>
           </tr>
         }
       </tbody>
     </table>
+  } @else if (songStore.loading()) {
+    <div class="flex items-center gap-2 p-4">
+      <span class="loading loading-spinner"></span>
+      <span>Loading songs …</span>
+    </div>
+  } @else if (!songStore.error()) {
+    <div class="flex items-center gap-4 p-4">
+      <p class="opacity-70">No songs yet.</p>
+      <button type="button" class="btn btn-primary btn-sm" (click)="router.navigateByUrl('/songs/new')">
+        New song
+      </button>
+    </div>
   }
 </section>

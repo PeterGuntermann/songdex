@@ -2,9 +2,15 @@
   <a routerLink="songs">← back</a>
 
   @if (song(); as song) {
-    <div class="flex justify-end">
+    <div class="flex justify-end gap-2">
       <button type="button" class="btn btn-sm" (click)="edit(song.id)">Edit</button>
+      <app-songdelete [song]="song" (deleted)="backToList()" (failed)="deleteError.set($event)" />
     </div>
+    @if (deleteError(); as error) {
+      <div role="alert" class="alert alert-error mt-2">
+        <span>{{ error }}</span>
+      </div>
+    }
     <section class="prose">
       <h2>{{ song.title }}</h2>
       <h3>{{ song.artist }}</h3>

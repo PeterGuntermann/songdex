@@ -1,12 +1,13 @@
 import { Component, inject, type OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SongService } from '../services/song.service';
+import { SongdeleteComponent } from '../songdelete/songdelete.component';
 import { SongStore } from '../store/song.store';
 
 @Component({
   selector: 'app-songlist',
   standalone: true,
-  imports: [],
+  imports: [SongdeleteComponent],
   templateUrl: './songlist.component.html',
   styleUrl: './songlist.component.scss',
 })
