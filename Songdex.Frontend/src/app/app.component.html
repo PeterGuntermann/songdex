@@ -1,1 +1,14 @@
+<header class="navbar border-b border-base-300 bg-base-200 px-4">
+  <!-- The static href only satisfies Biome; RouterLink overrides it and navigates without a reload. -->
+  <a routerLink="/songs" href="/songs" class="flex items-center">
+    <img
+      src="assets/Songdex-Logo-transparent.png"
+      alt="Songdex"
+      width="300"
+      height="102"
+      class="h-10 w-auto"
+    />
+  </a>
+</header>
+
 <router-outlet/>

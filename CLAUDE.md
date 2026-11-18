@@ -39,7 +39,7 @@ Verify before assuming:
   because `Result<T>.IsSuccess() => Value is not null` cannot express a successful `Delete`.
   Fixing `Result<T>` first is T-7 — do not adopt it as-is.
 - **Legacy `coversongs` naming persists** in the build output path (`dist/coversongs-frontend`,
-  matched by the Dockerfile COPY), the nginx site file name, the page title and the image names.
+  matched by the Dockerfile COPY), the nginx site file name and the image names.
 - **`/test` is a daisyUI playground route**, not a feature.
 - **`biome check` reports 15 pre-existing findings** — the playground template, the three
   `@tailwind` directives in `styles.scss` and the `routerLink` anchor in `songdetails`. Do not add

@@ -1,5 +1,7 @@
 # Songdex
 
+<img src="Songdex.Frontend/src/assets/Songdex-Logo-transparent.png" alt="Songdex logo" width="300">
+
 An interactive list with popular songs to cover.
 
 ## Documentation
