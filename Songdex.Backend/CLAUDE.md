@@ -50,7 +50,7 @@ the composition root.
   injects a `Port/Out` interface bypasses the application — that is a rule violation, not a
   shortcut.
 - `Songdex.Backend.Adapter.Out.Persistence` implements `Port/Out`. `SongdexDbContext` and
-  `SongEntity` must not leave it.
+  the entities (`SongEntity`, `TagEntity`) must not leave it.
 - The two adapters do not reference each other.
 
 Each project contributes one `Add*`/`Use*` extension that `Program.cs` composes (`AddApplication`,

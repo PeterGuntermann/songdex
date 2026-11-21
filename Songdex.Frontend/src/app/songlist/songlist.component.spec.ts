@@ -51,6 +51,16 @@ describe('SonglistComponent', () => {
     expect(navigateByUrl).toHaveBeenCalledWith('/songs/new');
   });
 
+  it('should show the tags of each song as chips', async () => {
+    await setup([TestSongs[0], TestSongs[3]]);
+
+    const rows = Array.from(el().querySelectorAll('tbody tr'));
+    const badges = (row: Element) =>
+      Array.from(row.querySelectorAll('.badge')).map((b) => b.textContent?.trim());
+    expect(badges(rows[0])).toEqual([]);
+    expect(badges(rows[1])).toEqual(['Acoustic', 'Rehearsed']);
+  });
+
   it('should offer to create a song above the table', async () => {
     await setup([TestSongs[0]]);
 

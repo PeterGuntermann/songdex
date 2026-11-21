@@ -77,25 +77,27 @@ Songdex.Backend/
 │   └── Result.cs
 ├── Songdex.Backend.Application/
 │   ├── Domain/
-│   │   ├── Model/      Song.cs, SongId.cs
-│   │   └── Service/    SongService.cs
+│   │   ├── Model/      Song.cs, SongId.cs, Tag.cs, TagId.cs
+│   │   └── Service/    SongService.cs, TagService.cs
 │   ├── Port/
 │   │   ├── In/         IGetAllSongsUseCase.cs, IGetSongUseCase.cs, ICreateSongUseCase.cs,
-│   │   │               IUpdateSongUseCase.cs, IDeleteSongUseCase.cs
-│   │   └── Out/        ISongRepository.cs
+│   │   │               IUpdateSongUseCase.cs, IDeleteSongUseCase.cs,
+│   │   │               IGetAllTagsUseCase.cs, ICreateTagUseCase.cs
+│   │   └── Out/        ISongRepository.cs, ITagRepository.cs
 │   └── ApplicationExtensions.cs
 ├── Songdex.Backend.Adapter.In.Web/
 │   ├── Endpoints/
-│   │   └── Songs/      GetAllSongs.cs, GetSong.cs, CreateSong.cs, UpdateSong.cs,
-│   │                   DeleteSong.cs, SongContracts.cs, SongRequestValidation.cs
+│   │   ├── Songs/      GetAllSongs.cs, GetSong.cs, CreateSong.cs, UpdateSong.cs,
+│   │   │               DeleteSong.cs, SongContracts.cs, SongRequestValidation.cs
+│   │   └── Tags/       GetAllTags.cs, CreateTag.cs, TagContracts.cs, TagRequestValidation.cs
 │   └── WebAdapterExtensions.cs
 ├── Songdex.Backend.Adapter.Out.Persistence/
-│   ├── Entities/       SongEntity.cs
-│   ├── Mappings/       SongMappings.cs
+│   ├── Entities/       SongEntity.cs, TagEntity.cs
+│   ├── Mappings/       SongMappings.cs, TagMappings.cs
 │   ├── Migrations/
 │   ├── Seeding/        DataSeed.cs, LocalDatabaseInitializer.cs
 │   ├── SongdexDbContext.cs
-│   ├── SongRepository.cs
+│   ├── SongRepository.cs, TagRepository.cs
 │   └── PersistenceAdapterExtensions.cs
 ├── Songdex.Backend.Main/
 │   ├── Program.cs, appsettings*.json, Properties/
@@ -133,7 +135,12 @@ Registriere nie einen Service direkt in `Program.cs`.
 soll nur von dem abhängen, was er benutzt; fünf Klassen mit je einer Methode wären dagegen Ballast.
 `SongService` implementiert seit E1.2 alle fünf CRUD-Use-Cases. Damit daraus nicht fünf Instanzen
 pro Request werden, registriert `ApplicationExtensions` die Klasse einmal und leitet die fünf
-Interfaces per Factory auf dieselbe Registrierung weiter.
+Interfaces per Factory auf dieselbe Registrierung weiter. `TagService` (seit E1.7) folgt demselben
+Muster.
+
+Ein Domain-Service darf mehrere ausgehende Ports benutzen: `SongService` braucht neben
+`ISongRepository` auch `ITagRepository`, weil das Anlegen unbekannter Tags beim Speichern eines
+Songs eine fachliche Regel ist und nicht in den Persistenzadapter gehört.
 
 Hombergs' `ILoadSongsPort`-Schema wird bewusst **nicht** übernommen: Das ist Java-Jargon, und der
 Namespace `Port.Out` benennt die Rolle bereits.
@@ -217,7 +224,7 @@ alle fünf Produktivprojekte und ist selbst kein Teil des Produktiv-Abhängigkei
 | 4 | `Adapter.In.*` hängt nicht von `Application.Port.Out` ab                                                                                           | `IncomingAdaptersUseOnlyIncomingPorts`     |
 | 5 | `Application.Port.*` enthält ausschließlich Interfaces                                                                                             | `PortsContainOnlyInterfaces`               |
 | 6 | Jede Klasse in `Application.Domain.Service` implementiert mindestens ein `Port.In`-Interface                                                       | `DomainServicesImplementAnIncomingPort`    |
-| 7 | `SongdexDbContext` und `SongEntity` werden nur innerhalb von `Adapter.Out.Persistence` verwendet                                                   | `PersistenceDetailsStayInsideTheirAdapter` |
+| 7 | `SongdexDbContext`, `SongEntity` und `TagEntity` werden nur innerhalb von `Adapter.Out.Persistence` verwendet                                      | `PersistenceDetailsStayInsideTheirAdapter` |
 | + | `Common` hängt von nichts im Projekt ab                                                                                                            | `CommonDependsOnNothingInsideTheProject`   |
 
 **Regel 2 ist der eigentliche Zugewinn gegenüber den Projektreferenzen.** EF Core ist in

@@ -137,16 +137,35 @@ Tabelle — Laden und Fehler verdrängen die Tabelle nicht mehr, sobald Songs da
 Detailansicht als eigene Meldung (nicht `store.error`, das noch von einer früheren Anfrage stammen
 kann). Das Backend löscht bislang nur den Song; die Kaskade auf die Sheets ist Teil von E3.1.
 
-### E1.7 — Tags zuweisen · M
+### E1.7 — Tags zuweisen · M — *erledigt (2026-11-21)*
 
 > Als Nutzer will ich Songs mit freien Tags versehen, um sie später wiederzufinden.
 
-- [ ] `Tag`-Entität (`id`, `name`) mit m:n-Beziehung zum Song, inkl. Migration
-- [ ] API für Tags: auflisten, anlegen, zuweisen, entfernen
-- [ ] Im Song-Formular: Tags hinzufügen mit Autovervollständigung aus bestehenden Tags
-- [ ] Ein unbekannter Tag-Name legt den Tag an
-- [ ] Tag-Namen sind eindeutig, Vergleich ohne Beachtung von Groß-/Kleinschreibung
-- [ ] Tags werden in Liste und Detailansicht als Chips angezeigt
+- [x] `Tag`-Entität (`id`, `name`) mit m:n-Beziehung zum Song, inkl. Migration *(`AddTags`)*
+- [x] API für Tags: auflisten, anlegen, zuweisen, entfernen
+- [x] Im Song-Formular: Tags hinzufügen mit Autovervollständigung aus bestehenden Tags
+- [x] Ein unbekannter Tag-Name legt den Tag an
+- [x] Tag-Namen sind eindeutig, Vergleich ohne Beachtung von Groß-/Kleinschreibung
+- [x] Tags werden in Liste und Detailansicht als Chips angezeigt
+
+**Entscheidung: Zuweisen und Entfernen laufen über den Song.** `SongRequest` trägt `tags` als
+Liste von **Namen**, `SongResponse` die Tags als `{id, name}`, nach Name sortiert. Wie bei E1.5
+ersetzt der Request die gesamte Tag-Menge; eigene Endpoints zum Zuweisen/Entfernen einzelner Tags
+gibt es nicht, weil das Formular ohnehin den ganzen Entwurf speichert. Eigenständig sind nur
+`GET /api/tags` (alle Tags, auch unbenutzte) und `POST /api/tags` (201, 409 bei vorhandenem Namen).
+
+`SongService` löst die Namen auf: trimmen, leere verwerfen, nur in der Schreibweise abweichende
+zusammenlegen, vorhandene Tags samt ihrer Schreibweise übernehmen, unbekannte anlegen. Verglichen
+wird über `Tag.Normalize` (`ToUpperInvariant`); die Spalte `NormalizedName` trägt den
+Unique-Index, weil SQLites `NOCASE` nur ASCII faltet. Tag-Namen sind höchstens 50 Zeichen lang.
+Die Zuordnung liegt in der Join-Tabelle `SongTags`; wird ein Song gelöscht, verschwinden seine
+Zeilen dort, die Tags bleiben (Aufräumen ist E1.8).
+
+Im Frontend editiert `TaginputComponent` (`taginput/`, ein `ControlValueAccessor` für `string[]`)
+die Tags als Chips; Enter, Komma, „Add“ oder die Auswahl eines Vorschlags fügen hinzu. Die
+Vorschläge kommen aus dem neuen `TagStore`, den `TagService.fetchTags()` bei jedem Öffnen des
+Formulars auffrischt — ein Fehlschlag bleibt still, das Formular funktioniert ohne Vorschläge.
+Noch Getipptes wird beim Speichern übernommen und zählt für die Verlassen-Nachfrage.
 
 ### E1.8 — Tags verwalten · S
 

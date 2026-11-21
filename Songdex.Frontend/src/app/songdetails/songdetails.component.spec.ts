@@ -51,6 +51,21 @@ describe('SongdetailsComponent', () => {
     expect(fetchSong).not.toHaveBeenCalled();
   });
 
+  it('should show the tags as chips', async () => {
+    await setup('3', idle([TestSongs[3]]));
+
+    const badges = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('[aria-label="Tags"] .badge'),
+    ).map((b) => b.textContent?.trim());
+    expect(badges).toEqual(['Acoustic', 'Rehearsed']);
+  });
+
+  it('should leave out the tag row for a song without tags', async () => {
+    await setup('1', idle([TestSongs[1]]));
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('[aria-label="Tags"]')).toBeNull();
+  });
+
   it('should fetch the song when the store does not have it yet', async () => {
     await setup('1', idle([]));
 

@@ -133,6 +133,11 @@
         </label>
       </fieldset>
 
+      <fieldset class="flex flex-col gap-3">
+        <legend class="mb-2 text-lg font-semibold">Tags</legend>
+        <app-taginput formControlName="tags" [suggestions]="tagStore.tagNames()" />
+      </fieldset>
+
       @if (saveError(); as error) {
         <div role="alert" class="alert alert-error">
           <span>{{ error }}</span>

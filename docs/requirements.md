@@ -48,16 +48,17 @@ E1.1 erledigt.
 Bewusst **nicht** Teil des Modells sind die musikalischen Felder (`originalKey`, `preferredKey`,
 `bpm`, `timeSignature`, `durationSeconds`) und `sourceLink` — siehe „Entschieden“ in §6.
 
-Offen sind nur noch die beiden Relationen:
+Offen ist nur noch eine Relation:
 
 | Gruppe     | Vorhanden                                                         | Offen                    |
 |------------|-------------------------------------------------------------------|--------------------------|
 | Identität  | `id`, `title`, `artist`                                           | —                        |
 | Verweise   | `referenceLink`, `notes`                                          | —                        |
 | Katalog    | `releaseYear` (`int?`), `genre`, `language`, `album`              | —                        |
-| Relationen | —                                                                 | `tags[]`, `chordsheets[]`|
+| Relationen | `tags[]` (seit E1.7)                                              | `chordsheets[]`          |
 
-`Tag` (→ E1.7, E1.8) und `Chordsheet` (→ E3.1) existieren als Typen noch nirgends im Code.
+`Tag` ist seit E1.7 eine eigene Entität; die Verwaltung (Umbenennen, Löschen, Zusammenführen)
+folgt mit E1.8. `Chordsheet` (→ E3.1) existiert als Typ noch nirgends im Code.
 
 ### Zielmodell
 

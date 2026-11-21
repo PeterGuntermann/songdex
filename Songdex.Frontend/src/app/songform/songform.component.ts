@@ -18,9 +18,12 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { type Song, type SongDraft, SongLimits } from '../models/song';
 import { SongService } from '../services/song.service';
+import { TagService } from '../services/tag.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import type { ConfirmsLeave } from '../shared/unsaved-changes.guard';
 import { SongStore } from '../store/song.store';
+import { TagStore } from '../store/tag.store';
+import { TaginputComponent } from '../taginput/taginput.component';
 
 type FieldName =
   | 'title'
@@ -59,7 +62,13 @@ function nullIfBlank(value: string): string | null {
 }
 
 function sameDraft(a: SongDraft, b: SongDraft): boolean {
-  return (Object.keys(a) as (keyof SongDraft)[]).every((key) => a[key] === b[key]);
+  const sameTags = a.tags.length === b.tags.length && a.tags.every((tag, i) => tag === b.tags[i]);
+  return (
+    sameTags &&
+    (Object.keys(a) as (keyof SongDraft)[])
+      .filter((key) => key !== 'tags')
+      .every((key) => a[key] === b[key])
+  );
 }
 
 /**
@@ -69,7 +78,7 @@ function sameDraft(a: SongDraft, b: SongDraft): boolean {
 @Component({
   selector: 'app-songform',
   standalone: true,
-  imports: [ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [ReactiveFormsModule, ConfirmDialogComponent, TaginputComponent],
   templateUrl: './songform.component.html',
   styleUrl: './songform.component.scss',
 })
@@ -77,7 +86,9 @@ export class SongformComponent implements OnInit, ConfirmsLeave {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly router = inject(Router);
   private readonly songService = inject(SongService);
+  private readonly tagService = inject(TagService);
   readonly songStore = inject(SongStore);
+  readonly tagStore = inject(TagStore);
 
   /** The song being edited, or `null` when a new one is created. */
   private readonly songId = inject(ActivatedRoute).snapshot.paramMap.get('songId');
@@ -100,6 +111,8 @@ export class SongformComponent implements OnInit, ConfirmsLeave {
   );
 
   private readonly confirmDialog = viewChild.required(ConfirmDialogComponent);
+  /** Absent while the form is not shown yet. */
+  private readonly tagInput = viewChild(TaginputComponent);
 
   readonly form = this.fb.group({
     title: ['', [notBlank, Validators.maxLength(SongLimits.title)]],
@@ -120,6 +133,7 @@ export class SongformComponent implements OnInit, ConfirmsLeave {
     genre: ['', Validators.maxLength(SongLimits.genre)],
     language: ['', Validators.maxLength(SongLimits.language)],
     album: ['', Validators.maxLength(SongLimits.album)],
+    tags: this.fb.control<string[]>([]),
   });
 
   /**
@@ -140,6 +154,9 @@ export class SongformComponent implements OnInit, ConfirmsLeave {
   }
 
   ngOnInit(): void {
+    // Always refreshed: tags may have been created by saving another song since the last visit.
+    this.tagService.fetchTags();
+
     if (this.songStore.songCount() === 0) {
       // Deep link: the catalogue is needed for the autocompletion and holds the song to edit.
       if (!this.songStore.loading()) {
@@ -179,6 +196,10 @@ export class SongformComponent implements OnInit, ConfirmsLeave {
   }
 
   submit(): void {
+    // A name still in the tag field counts as meant to be added; one that is too long blocks.
+    if (this.tagInput()?.commitPending() === false) {
+      return;
+    }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -219,7 +240,10 @@ export class SongformComponent implements OnInit, ConfirmsLeave {
   }
 
   private hasUnsavedChanges(): boolean {
-    return this.ready() && !sameDraft(this.toDraft(), this.baseline);
+    return (
+      this.ready() &&
+      (!sameDraft(this.toDraft(), this.baseline) || this.tagInput()?.hasPending() === true)
+    );
   }
 
   private fill(song: Song): void {
@@ -232,6 +256,7 @@ export class SongformComponent implements OnInit, ConfirmsLeave {
       genre: song.genre ?? '',
       language: song.language ?? '',
       album: song.album ?? '',
+      tags: song.tags.map((tag) => tag.name),
     });
     this.baseline = this.toDraft();
     this.ready.set(true);
@@ -248,6 +273,7 @@ export class SongformComponent implements OnInit, ConfirmsLeave {
       genre: nullIfBlank(value.genre),
       language: nullIfBlank(value.language),
       album: nullIfBlank(value.album),
+      tags: value.tags,
     };
   }
 }

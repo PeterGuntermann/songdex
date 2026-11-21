@@ -14,6 +14,13 @@
     <section class="prose">
       <h2>{{ song.title }}</h2>
       <h3>{{ song.artist }}</h3>
+      @if (song.tags.length > 0) {
+        <ul class="not-prose flex list-none flex-wrap gap-2 p-0" aria-label="Tags">
+          @for (tag of song.tags; track tag.id) {
+            <li class="badge badge-primary">{{ tag.name }}</li>
+          }
+        </ul>
+      }
       @if (song.album) {
         <p>Album: {{ song.album }}</p>
       }

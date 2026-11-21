@@ -1,0 +1,47 @@
+<div class="flex flex-col gap-2">
+  @if (tags().length > 0) {
+    <ul class="flex flex-wrap gap-2" aria-label="Assigned tags">
+      @for (tag of tags(); track tag) {
+        <li class="badge badge-primary gap-1 py-3">
+          <span>{{ tag }}</span>
+          <button
+            type="button"
+            class="btn btn-circle btn-ghost btn-xs"
+            attr.aria-label="Remove tag {{ tag }}"
+            [disabled]="disabled()"
+            (click)="remove(tag)"
+          >
+            ✕
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="join w-full">
+    <input
+      type="text"
+      list="tag-options"
+      placeholder="Add a tag …"
+      aria-label="New tag"
+      class="input join-item input-bordered w-full"
+      [class.input-error]="error()"
+      [formControl]="pending"
+      (input)="onInput($event)"
+      (keydown.enter)="onEnter($event)"
+      (blur)="onTouched()"
+    />
+    <button type="button" class="btn join-item" [disabled]="disabled()" (click)="commitPending()">
+      Add
+    </button>
+  </div>
+  <datalist id="tag-options">
+    @for (option of options(); track option) {
+      <option value="{{ option }}"></option>
+    }
+  </datalist>
+
+  @if (error(); as error) {
+    <span class="text-sm text-error" role="alert">{{ error }}</span>
+  }
+</div>

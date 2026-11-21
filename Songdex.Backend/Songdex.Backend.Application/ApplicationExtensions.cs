@@ -16,6 +16,10 @@ public static class ApplicationExtensions
         services.AddScoped<ICreateSongUseCase>(sp => sp.GetRequiredService<SongService>());
         services.AddScoped<IUpdateSongUseCase>(sp => sp.GetRequiredService<SongService>());
         services.AddScoped<IDeleteSongUseCase>(sp => sp.GetRequiredService<SongService>());
+
+        services.AddScoped<TagService>();
+        services.AddScoped<IGetAllTagsUseCase>(sp => sp.GetRequiredService<TagService>());
+        services.AddScoped<ICreateTagUseCase>(sp => sp.GetRequiredService<TagService>());
         return services;
     }
 }

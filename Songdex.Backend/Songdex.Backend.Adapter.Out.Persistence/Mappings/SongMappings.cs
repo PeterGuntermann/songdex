@@ -17,8 +17,13 @@ public static class SongMappings
             Genre = entity.Genre,
             Language = entity.Language,
             Album = entity.Album,
+            Tags = entity.Tags.Select(TagMappings.ToDomainObject).ToList(),
         };
 
+    /// <summary>
+    /// Leaves <see cref="SongEntity.Tags"/> empty: tags are shared rows, so the repository attaches
+    /// the stored ones instead of creating a copy per song.
+    /// </summary>
     public static SongEntity ToDatabaseEntity(Song song)
         => new()
         {
@@ -34,7 +39,7 @@ public static class SongMappings
         };
 
     /// <summary>
-    /// Copies everything but the id onto an entity already tracked by the context.
+    /// Copies everything but the id and the tags onto an entity already tracked by the context.
     /// </summary>
     public static void CopyInto(Song song, SongEntity target)
     {

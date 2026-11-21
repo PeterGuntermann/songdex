@@ -52,6 +52,10 @@ pass your own: `vi.fn<(id: string) => void>()` — the bare `vi.fn()` return typ
 - **Forms are typed Reactive Forms** (`NonNullableFormBuilder`); `songform/` is the model to copy.
   The text-length limits live in `SongLimits` (`models/song.ts`) and mirror
   `SongRequestValidation.cs` in the backend.
+- **Tags are edited through `TaginputComponent`** (`taginput/`), a `ControlValueAccessor` over a
+  `string[]` of names (`SongDraft.tags`); a `Song` carries `Tag` objects instead. Suggestions
+  come from `TagStore` (own `TAG_STATE` seam), filled by `TagService.fetchTags()`, which fails
+  silently. Name limit and case-insensitive comparison live in `models/tag.ts`.
 - **Confirmations use `shared/confirm-dialog`** (`open(): Promise<boolean>`), not `window.confirm`.
   jsdom does not implement `<dialog>` modals; specs call `stubDialog()` from `dialog.testing.ts`.
 - **The writing `SongService` methods return cold observables** — `createSong` and

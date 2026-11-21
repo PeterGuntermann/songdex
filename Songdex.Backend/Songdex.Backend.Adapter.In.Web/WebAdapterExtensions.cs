@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Songdex.Backend.Adapter.In.Web.Endpoints.Songs;
+using Songdex.Backend.Adapter.In.Web.Endpoints.Tags;
 
 namespace Songdex.Backend.Adapter.In.Web;
 
@@ -58,6 +59,10 @@ public static class WebAdapterExtensions
         songs.MapPost("/", SongsApi.CreateSong);
         songs.MapPut("/{id}", SongsApi.UpdateSong);
         songs.MapDelete("/{id}", SongsApi.DeleteSong);
+
+        var tags = app.MapGroup("/api/tags").WithTags("TagsApi");
+        tags.MapGet("/", TagsApi.GetAllTags);
+        tags.MapPost("/", TagsApi.CreateTag);
 
         return app;
     }

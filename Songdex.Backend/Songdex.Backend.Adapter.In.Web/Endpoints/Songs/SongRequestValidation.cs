@@ -1,3 +1,5 @@
+using Songdex.Backend.Adapter.In.Web.Endpoints.Tags;
+
 namespace Songdex.Backend.Adapter.In.Web.Endpoints.Songs;
 
 public static partial class SongsApi
@@ -37,6 +39,16 @@ public static partial class SongsApi
         CheckMaxLength(
             errors, nameof(SongRequest.Language), "Language", request.Language, MaxLanguageLength);
         CheckMaxLength(errors, nameof(SongRequest.Album), "Album", request.Album, MaxAlbumLength);
+
+        var tagErrors = (request.Tags ?? [])
+            .Select(TagsApi.ValidateName)
+            .OfType<string>()
+            .Distinct()
+            .ToArray();
+        if (tagErrors.Length > 0)
+        {
+            errors[nameof(SongRequest.Tags)] = tagErrors;
+        }
 
         return errors.Count == 0 ? null : errors;
     }

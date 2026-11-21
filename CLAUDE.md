@@ -27,7 +27,10 @@ Verify before assuming:
   `notes`, `genre`, `language`, `album`) and is consistent across frontend, domain, entity and API
   (E1.1 is done). The musical fields (keys, bpm, time signature, duration) and `sourceLink` were
   dropped from the target model on purpose; they live in the backlog's "Parkplatz" only — do not
-  add them. What is still missing are the relations `tags[]` (E1.7) and `chordsheets[]` (E3.1).
+  add them. Since E1.7 a song also carries `tags[]` — a separate `Tag` entity (`id`, `name`),
+  m:n via the join table `SongTags`. Tags travel **as names** in `SongRequest` and replace the
+  song's whole tag set; `SongService` creates unknown names and matches known ones ignoring case
+  (`Tag.Normalize`, unique index on `NormalizedName`). Still missing is `chordsheets[]` (E3.1).
 - **The UI covers full CRUD.** The song form (`songform/`) serves both `songs/new` (E1.4,
   `createSong`) and `songs/:songId/edit` (E1.5, `updateSong`, always a full PUT); both routes
   carry `unsavedChangesGuard`. Deleting (E1.6) goes through `songdelete/`, used in the list and on

@@ -29,4 +29,6 @@ public class SongEntity
 
     [MaxLength(200)]
     public string? Album { get; set; }
+
+    public List<TagEntity> Tags { get; set; } = [];
 }

@@ -16,6 +16,21 @@ namespace Songdex.Backend.Adapter.Out.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
+            modelBuilder.Entity("SongEntityTagEntity", b =>
+                {
+                    b.Property<string>("SongsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TagsId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("SongsId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("SongTags", (string)null);
+                });
+
             modelBuilder.Entity("Songdex.Backend.Adapter.Out.Persistence.Entities.SongEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -58,6 +73,45 @@ namespace Songdex.Backend.Adapter.Out.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Songs");
+                });
+
+            modelBuilder.Entity("Songdex.Backend.Adapter.Out.Persistence.Entities.TagEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique();
+
+                    b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("SongEntityTagEntity", b =>
+                {
+                    b.HasOne("Songdex.Backend.Adapter.Out.Persistence.Entities.SongEntity", null)
+                        .WithMany()
+                        .HasForeignKey("SongsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Songdex.Backend.Adapter.Out.Persistence.Entities.TagEntity", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -18,6 +18,7 @@ public static class PersistenceAdapterExtensions
         services.AddDbContext<SongdexDbContext>(options => options.UseSqlite(connectionString));
 
         services.AddScoped<ISongRepository, SongRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
         return services;
     }
 

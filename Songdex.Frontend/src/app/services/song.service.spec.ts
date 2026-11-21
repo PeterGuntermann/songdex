@@ -5,7 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import type { Song } from '../models/song';
 import { SONG_STATE, type SongState, SongStore } from '../store/song.store';
-import { TestSongs } from '../store/song.store.testdata';
+import { draftOf, songFrom, TestSongs } from '../store/song.store.testdata';
 import { SongService } from './song.service';
 
 describe('SongService', () => {
@@ -92,7 +92,7 @@ describe('SongService', () => {
   });
 
   describe('createSong', () => {
-    const { id, ...draft } = TestSongs[2];
+    const draft = draftOf(TestSongs[2]);
 
     it('should send nothing until the caller subscribes', () => {
       service.createSong(draft);
@@ -148,8 +148,9 @@ describe('SongService', () => {
   });
 
   describe('updateSong', () => {
-    const { id, ...draft } = { ...TestSongs[1], title: 'Renamed' };
-    const changed: Song = { id, ...draft };
+    const id = TestSongs[1].id;
+    const draft = { ...draftOf(TestSongs[1]), title: 'Renamed' };
+    const changed: Song = songFrom(id, draft);
 
     it('should send nothing until the caller subscribes', () => {
       service.updateSong(id, draft);

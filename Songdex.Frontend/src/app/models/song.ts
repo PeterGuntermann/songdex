@@ -1,3 +1,5 @@
+import type { Tag } from './tag';
+
 /**
  * Mirrors `SongResponse` of the backend. Ids are assigned by the backend, never here.
  */
@@ -11,6 +13,8 @@ export type Song = {
   genre: string | null;
   language: string | null;
   album: string | null;
+  /** Sorted by name. */
+  tags: Tag[];
 };
 
 /**
@@ -27,5 +31,8 @@ export const SongLimits = {
   album: 200,
 } as const;
 
-/** What the backend accepts on create and update — everything but the id. */
-export type SongDraft = Omit<Song, 'id'>;
+/**
+ * What the backend accepts on create and update — everything but the id. Tags go out as names
+ * and replace the song's whole tag set; the backend creates the tags it does not know yet.
+ */
+export type SongDraft = Omit<Song, 'id' | 'tags'> & { tags: string[] };

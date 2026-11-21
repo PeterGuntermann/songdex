@@ -4,11 +4,20 @@ import { MockProvider } from 'ng-mocks';
 import { Observable, of, throwError } from 'rxjs';
 import type { Mock } from 'vitest';
 import type { Song, SongDraft } from '../models/song';
+import type { Tag } from '../models/tag';
 import { SongService } from '../services/song.service';
+import { TagService } from '../services/tag.service';
 import { stubDialog } from '../shared/confirm-dialog/dialog.testing';
 import { SONG_STATE, type SongState, SongStore } from '../store/song.store';
-import { TestSongs } from '../store/song.store.testdata';
+import { draftOf, songFrom, TestSongs } from '../store/song.store.testdata';
+import { TAG_STATE, type TagState } from '../store/tag.store';
 import { SongformComponent } from './songform.component';
+
+const StoredTags: Tag[] = [
+  { id: 't1', name: 'Acoustic' },
+  { id: 't2', name: 'Rehearsed' },
+  { id: 't3', name: 'Summer party' },
+];
 
 describe('SongformComponent', () => {
   let fixture: ComponentFixture<SongformComponent>;
@@ -17,6 +26,7 @@ describe('SongformComponent', () => {
   let updateSong: Mock<(id: string, draft: SongDraft) => Observable<Song>>;
   let fetchSongs: Mock<() => void>;
   let fetchSong: Mock<(id: string) => void>;
+  let fetchTags: Mock<() => void>;
   let navigate: Mock<Router['navigate']>;
 
   type Options = Partial<SongState> & { songId?: string };
@@ -26,15 +36,18 @@ describe('SongformComponent', () => {
     stubDialog();
     createSong = vi.fn<(draft: SongDraft) => Observable<Song>>(() => of(TestSongs[2]));
     updateSong = vi.fn<(id: string, draft: SongDraft) => Observable<Song>>((id, draft) =>
-      of({ id, ...draft }),
+      of(songFrom(id, draft)),
     );
     fetchSongs = vi.fn<() => void>();
     fetchSong = vi.fn<(id: string) => void>();
+    fetchTags = vi.fn<() => void>();
     await TestBed.configureTestingModule({
       imports: [SongformComponent],
       providers: [
         provideRouter([]),
         MockProvider(SongService, { createSong, updateSong, fetchSongs, fetchSong }),
+        MockProvider(TagService, { fetchTags }),
+        { provide: TAG_STATE, useValue: { allTags: StoredTags } satisfies TagState },
         MockProvider(ActivatedRoute, {
           snapshot: { paramMap: convertToParamMap(songId ? { songId } : {}) },
         } as Partial<ActivatedRoute>),
@@ -60,13 +73,25 @@ describe('SongformComponent', () => {
   const dialog = () => el().querySelector<HTMLDialogElement>('dialog');
   // The confirm dialog carries a form of its own.
   const songForm = () => el().querySelector('form[novalidate]');
+  const chips = () =>
+    Array.from(el().querySelectorAll('app-taginput li span')).map((s) => s.textContent?.trim());
+  const tagField = () => el().querySelector<HTMLInputElement>('app-taginput input');
+  const typeTag = (text: string) => {
+    const field = tagField();
+    if (!field) {
+      throw new Error('tag field missing');
+    }
+    field.value = text;
+    field.dispatchEvent(new InputEvent('input', { inputType: 'insertText' }));
+    fixture.detectChanges();
+  };
 
   describe('layout', () => {
-    it('should group the fields into identity, references and catalogue', async () => {
+    it('should group the fields into identity, references, catalogue and tags', async () => {
       await setup();
 
       const legends = Array.from(el().querySelectorAll('legend')).map((l) => l.textContent?.trim());
-      expect(legends).toEqual(['Identity', 'References', 'Catalogue']);
+      expect(legends).toEqual(['Identity', 'References', 'Catalogue', 'Tags']);
     });
 
     it('should mark only the title as required', async () => {
@@ -200,6 +225,7 @@ describe('SongformComponent', () => {
         genre: ' Folk ',
         language: '',
         album: ' Grace',
+        tags: ['Acoustic'],
       });
 
       component.submit();
@@ -213,6 +239,7 @@ describe('SongformComponent', () => {
         genre: 'Folk',
         language: null,
         album: 'Grace',
+        tags: ['Acoustic'],
       });
     });
 
@@ -263,6 +290,80 @@ describe('SongformComponent', () => {
       expect(component.saving()).toBe(false);
       expect(el().textContent).toContain('The backend rejected the song: Title is required.');
       expect(component.form.controls.title.value).toBe('Song');
+    });
+  });
+
+  describe('tags', () => {
+    it('should refresh the tag catalogue every time the form opens', async () => {
+      await setup();
+
+      expect(fetchTags).toHaveBeenCalledTimes(1);
+    });
+
+    it('should offer the stored tags for autocompletion', async () => {
+      await setup();
+
+      const options = Array.from(
+        el().querySelectorAll<HTMLOptionElement>('#tag-options option'),
+      ).map((o) => o.value);
+      expect(options).toEqual(['Acoustic', 'Rehearsed', 'Summer party']);
+    });
+
+    it('should send the added tags as names', async () => {
+      await setup();
+      component.form.controls.title.setValue('Song');
+      typeTag('acoustic,brand new,');
+
+      component.submit();
+
+      expect(createSong.mock.calls[0][0].tags).toEqual(['Acoustic', 'brand new']);
+    });
+
+    it('should add a name still in the tag field when saving', async () => {
+      await setup();
+      component.form.controls.title.setValue('Song');
+      typeTag('Unsaved');
+
+      component.submit();
+
+      expect(createSong.mock.calls[0][0].tags).toEqual(['Unsaved']);
+    });
+
+    it('should not save while the tag field holds a name that is too long', async () => {
+      await setup();
+      component.form.controls.title.setValue('Song');
+      typeTag('x'.repeat(51));
+
+      component.submit();
+      fixture.detectChanges();
+
+      expect(createSong).not.toHaveBeenCalled();
+      expect(el().querySelector('app-taginput [role="alert"]')?.textContent).toContain('50');
+    });
+
+    it('should ask before leaving with a name still in the tag field', async () => {
+      await setup();
+      typeTag('Unsaved');
+
+      expect(component.confirmLeave()).toBeInstanceOf(Promise);
+    });
+
+    it('should replace the tag set on edit, removing a chip', async () => {
+      await setup([TestSongs[3]], { songId: TestSongs[3].id });
+
+      el().querySelector<HTMLButtonElement>('[aria-label="Remove tag Acoustic"]')?.click();
+      fixture.detectChanges();
+      component.submit();
+
+      expect(updateSong.mock.calls[0][1].tags).toEqual(['Rehearsed']);
+    });
+
+    it('should count a removed tag as an unsaved change', async () => {
+      await setup([TestSongs[3]], { songId: TestSongs[3].id });
+
+      el().querySelector<HTMLButtonElement>('[aria-label="Remove tag Rehearsed"]')?.click();
+
+      expect(component.confirmLeave()).toBeInstanceOf(Promise);
     });
   });
 
@@ -339,7 +440,8 @@ describe('SongformComponent', () => {
 
   describe('edit mode', () => {
     const song = TestSongs[3];
-    const { id, ...draftOfSong } = song;
+    const id = song.id;
+    const draftOfSong = draftOf(song);
     const editSetup = (allSongs: Song[] = [TestSongs[1], song], options: Options = {}) =>
       setup(allSongs, { songId: id, ...options });
 
@@ -356,10 +458,12 @@ describe('SongformComponent', () => {
         genre: 'Pop',
         language: 'English',
         album: 'Album 3',
+        tags: ['Acoustic', 'Rehearsed'],
       });
       expect(el().querySelector<HTMLInputElement>('input[formControlName="title"]')?.value).toBe(
         'Song 3',
       );
+      expect(chips()).toEqual(['Acoustic', 'Rehearsed']);
       expect(fetchSong).not.toHaveBeenCalled();
       expect(fetchSongs).not.toHaveBeenCalled();
     });

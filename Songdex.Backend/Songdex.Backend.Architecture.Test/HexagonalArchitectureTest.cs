@@ -111,8 +111,8 @@ public class HexagonalArchitectureTest
     {
         Types().That().ResideInAssemblyMatching("Songdex\\.Backend\\..*")
             .And().DoNotResideInNamespaceOrBelow(Persistence)
-            .Should().NotDependOnAny(typeof(SongdexDbContext), typeof(SongEntity))
-            .Because("DbContext and entity are implementation details of the persistence adapter")
+            .Should().NotDependOnAny(typeof(SongdexDbContext), typeof(SongEntity), typeof(TagEntity))
+            .Because("DbContext and entities are implementation details of the persistence adapter")
             .Check(Architecture);
     }
 

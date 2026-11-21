@@ -19,6 +19,7 @@
         <th>Title</th>
         <th>Artist</th>
         <th>Year</th>
+        <th>Tags</th>
         <th><span class="sr-only">Actions</span></th>
       </tr>
       </thead>
@@ -28,6 +29,13 @@
             <td>{{ song.title }}</td>
             <td>{{ song.artist }}</td>
             <td>{{ song.releaseYear }}</td>
+            <td>
+              <div class="flex flex-wrap gap-1">
+                @for (tag of song.tags; track tag.id) {
+                  <span class="badge badge-outline badge-sm">{{ tag.name }}</span>
+                }
+              </div>
+            </td>
             <td class="text-right"><app-songdelete [song]="song" /></td>
           </tr>
         }
