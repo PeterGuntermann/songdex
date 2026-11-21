@@ -77,19 +77,21 @@ Songdex.Backend/
 │   └── Result.cs
 ├── Songdex.Backend.Application/
 │   ├── Domain/
-│   │   ├── Model/      Song.cs, SongId.cs, Tag.cs, TagId.cs
+│   │   ├── Model/      Song.cs, SongId.cs, Tag.cs, TagId.cs, TagUsage.cs, TagChangeResult.cs
 │   │   └── Service/    SongService.cs, TagService.cs
 │   ├── Port/
 │   │   ├── In/         IGetAllSongsUseCase.cs, IGetSongUseCase.cs, ICreateSongUseCase.cs,
 │   │   │               IUpdateSongUseCase.cs, IDeleteSongUseCase.cs,
-│   │   │               IGetAllTagsUseCase.cs, ICreateTagUseCase.cs
+│   │   │               IGetAllTagsUseCase.cs, ICreateTagUseCase.cs, IRenameTagUseCase.cs,
+│   │   │               IDeleteTagUseCase.cs, IMergeTagsUseCase.cs
 │   │   └── Out/        ISongRepository.cs, ITagRepository.cs
 │   └── ApplicationExtensions.cs
 ├── Songdex.Backend.Adapter.In.Web/
 │   ├── Endpoints/
 │   │   ├── Songs/      GetAllSongs.cs, GetSong.cs, CreateSong.cs, UpdateSong.cs,
 │   │   │               DeleteSong.cs, SongContracts.cs, SongRequestValidation.cs
-│   │   └── Tags/       GetAllTags.cs, CreateTag.cs, TagContracts.cs, TagRequestValidation.cs
+│   │   └── Tags/       GetAllTags.cs, CreateTag.cs, RenameTag.cs, DeleteTag.cs, MergeTags.cs,
+│   │                   TagContracts.cs, TagRequestValidation.cs
 │   └── WebAdapterExtensions.cs
 ├── Songdex.Backend.Adapter.Out.Persistence/
 │   ├── Entities/       SongEntity.cs, TagEntity.cs
@@ -103,7 +105,9 @@ Songdex.Backend/
 │   ├── Program.cs, appsettings*.json, Properties/
 │   └── packages.lock.json
 └── *.Test/             je ein Testprojekt pro Produktivprojekt
-    └── Songdex.Backend.Architecture.Test/   HexagonalArchitectureTest.cs
+    ├── Songdex.Backend.Architecture.Test/            HexagonalArchitectureTest.cs
+    ├── Songdex.Backend.Application.Test/             Domain-Services gegen In-Memory-Fakes
+    └── Songdex.Backend.Adapter.Out.Persistence.Test/ TagRepositoryTest gegen SQLite in-memory
 ```
 
 Die Ordner innerhalb eines Projekts sind die Namespaces; der Root-Namespace ist der Projektname.
@@ -205,6 +209,14 @@ für ein einzelnes Projekt liefe über `VersionOverride` — bisher braucht das 
 In `Songdex.Backend.Application.Test`, gegen die Ports. Ausgehende Ports werden gemockt; es braucht
 weder Datenbank noch Webserver.
 
+### Ich will Datenbankverhalten testen
+
+Was nur die Datenbank leistet — Zählungen, Unique-Indizes, Kaskaden, mehrere Änderungen in einem
+`SaveChanges` —, gehört in `Songdex.Backend.Adapter.Out.Persistence.Test`. `SqliteTestDatabase`
+hält eine SQLite-in-memory-Verbindung offen und wendet alle Migrationen an; pro Schritt einen
+frischen Context holen, damit nichts versehentlich aus dem Change Tracker kommt. Ein In-Memory-Fake
+in `Application.Test` darf solches Verhalten nur grob nachstellen.
+
 ### Es passt nirgendwo hin
 
 Dann ist entweder der Schnitt falsch oder die Anforderung unklar. Erst dieses Dokument klären,
@@ -248,4 +260,4 @@ benannten Backlog-Einträgen und dürfen nicht als Vorbild für neuen Code diene
 | Abweichung                                                                                                                                                                       | Gehört zu |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
 | `Common/Result.cs` ist vorhanden, aber von keinem Use Case benutzt. Die CRUD-Use-Cases geben stattdessen `Song?` bzw. `bool` zurück, weil `Result<T>.IsSuccess() => Value is not null` einen erfolgreichen void-Vorgang (Delete) nicht ausdrücken kann. | T-7       |
-| Drei der fachlichen Testprojekte sind leere Hüllen. Nur `Architecture.Test` und `Application.Test` enthalten Tests.                                                              | T-6, T-8  |
+| Zwei der fachlichen Testprojekte (`Adapter.In.Web.Test`, `Common.Test`) sind leere Hüllen; kein Test ruft einen Endpoint auf.                                                     | T-6, T-8  |

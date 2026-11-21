@@ -158,4 +158,40 @@ describe('SongStore', () => {
       expect(store.allSongs()).toEqual([TestSongs[0], TestSongs[1], TestSongs[3]]);
     });
   });
+
+  // TestSongs[3] carries t1 "Acoustic" and t2 "Rehearsed"; the others carry no tags.
+  describe('following tag changes', () => {
+    const tagsOfSong3 = () => store.getSongById('3')?.tags;
+
+    it('should rename the tag on every song and keep the tags sorted', () => {
+      store.renameTag({ id: 't1', name: 'Unplugged' });
+
+      expect(tagsOfSong3()).toEqual([
+        { id: 't2', name: 'Rehearsed' },
+        { id: 't1', name: 'Unplugged' },
+      ]);
+      expect(store.getSongById('1')).toBe(TestSongs[1]);
+    });
+
+    it('should remove a deleted tag from every song', () => {
+      store.removeTag('t2');
+
+      expect(tagsOfSong3()).toEqual([{ id: 't1', name: 'Acoustic' }]);
+    });
+
+    it('should replace a merged tag with its target', () => {
+      store.mergeTag('t1', { id: 't9', name: 'Live' });
+
+      expect(tagsOfSong3()).toEqual([
+        { id: 't9', name: 'Live' },
+        { id: 't2', name: 'Rehearsed' },
+      ]);
+    });
+
+    it('should not carry the target twice when a song had both tags', () => {
+      store.mergeTag('t1', { id: 't2', name: 'Rehearsed' });
+
+      expect(tagsOfSong3()).toEqual([{ id: 't2', name: 'Rehearsed' }]);
+    });
+  });
 });

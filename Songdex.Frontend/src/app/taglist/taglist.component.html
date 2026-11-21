@@ -1,0 +1,136 @@
+<section class="mx-auto max-w-3xl p-4">
+  <div class="flex items-baseline justify-between p-2">
+    <h2 class="text-2xl font-bold">Tags</h2>
+    @if (tagStore.allTags().length > 0) {
+      <p class="opacity-70">
+        {{ tagStore.allTags().length }} tags · {{ tagStore.unusedCount() }} unused
+      </p>
+    }
+  </div>
+
+  <!-- An error sits above the table, so a failed change does not hide the tags. -->
+  @if (tagStore.error(); as error) {
+    <div role="alert" class="alert alert-error">
+      <span>{{ error }}</span>
+      <button type="button" class="btn btn-sm" (click)="retry()">Reload</button>
+    </div>
+  }
+
+  @if (tagStore.allTags().length > 0) {
+    <table class="table table-sm table-zebra">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Songs</th>
+          <th><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tag of tagStore.sortedTags(); track tag.id) {
+          <tr [class.opacity-60]="tag.songCount === 0">
+            <td>
+              @if (editingId() === tag.id) {
+                <input
+                  type="text"
+                  class="input input-sm input-bordered w-full"
+                  attr.aria-label="New name for {{ tag.name }}"
+                  [class.input-error]="nameError()"
+                  [formControl]="nameControl"
+                  (keydown.enter)="saveRename(tag, $event)"
+                  (keydown.escape)="cancelRename()"
+                />
+                @if (nameError(); as error) {
+                  <span class="mt-1 block text-sm text-error" role="alert">{{ error }}</span>
+                }
+              } @else {
+                {{ tag.name }}
+              }
+            </td>
+            <td>
+              @if (tag.songCount === 0) {
+                <span class="badge badge-warning badge-sm">unused</span>
+              } @else {
+                {{ tag.songCount }}
+              }
+            </td>
+            <td>
+              <div class="flex justify-end gap-2">
+                @if (editingId() === tag.id) {
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    [disabled]="busy()"
+                    (click)="saveRename(tag)"
+                  >
+                    Save
+                  </button>
+                  <button type="button" class="btn btn-sm" (click)="cancelRename()">Cancel</button>
+                } @else if (mergingId() === tag.id) {
+                  <select
+                    class="select select-bordered select-sm"
+                    attr.aria-label="Merge {{ tag.name }} into"
+                    [formControl]="mergeTarget"
+                  >
+                    <option value="" disabled>Merge into …</option>
+                    @for (other of othersThan(tag); track other.id) {
+                      <option value="{{ other.id }}">{{ other.name }}</option>
+                    }
+                  </select>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    [disabled]="busy() || mergeTarget.value === ''"
+                    (click)="merge(tag)"
+                  >
+                    Merge
+                  </button>
+                  <button type="button" class="btn btn-sm" (click)="cancelMerge()">Cancel</button>
+                } @else {
+                  <button type="button" class="btn btn-sm" (click)="startRename(tag)">Rename</button>
+                  <button
+                    type="button"
+                    class="btn btn-sm"
+                    [disabled]="tagStore.allTags().length < 2"
+                    (click)="startMerge(tag)"
+                  >
+                    Merge
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline btn-error btn-sm"
+                    [disabled]="busy()"
+                    (click)="delete(tag)"
+                  >
+                    Delete
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (tagStore.loading()) {
+    <div class="flex items-center gap-2 p-4">
+      <span class="loading loading-spinner"></span>
+      <span>Loading tags …</span>
+    </div>
+  } @else if (!tagStore.error()) {
+    <p class="p-4 opacity-70">No tags yet. Tags are added to a song in its form.</p>
+  }
+
+  <app-confirm-dialog
+    #deleteDialog
+    heading="Delete this tag?"
+    message="{{ deleteMessage() }}"
+    confirmLabel="Delete"
+    cancelLabel="Keep"
+  />
+  <app-confirm-dialog
+    #mergeDialog
+    heading="Merge these tags?"
+    message="{{ mergeMessage() }}"
+    confirmLabel="Merge"
+    cancelLabel="Cancel"
+  />
+</section>

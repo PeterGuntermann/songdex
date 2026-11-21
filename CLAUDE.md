@@ -34,13 +34,16 @@ Verify before assuming:
 - **The UI covers full CRUD.** The song form (`songform/`) serves both `songs/new` (E1.4,
   `createSong`) and `songs/:songId/edit` (E1.5, `updateSong`, always a full PUT); both routes
   carry `unsavedChangesGuard`. Deleting (E1.6) goes through `songdelete/`, used in the list and on
-  the detail page.
-- **Three of the five `Songdex.Backend.*.Test` projects are empty shells** with zero `.cs` files.
-  Only `Architecture.Test` (ArchUnitNET rules) and `Application.Test` (`SongServiceTest`) are filled.
-  There is no test that exercises an endpoint or the database (T-8).
+  the detail page. Tags are managed on `tags` (`taglist/`, E1.8: rename, merge, delete, unused
+  marked); the header navigation links Songs and Tags (E1.9).
+- **Two of the five `Songdex.Backend.*.Test` projects are empty shells** (`Adapter.In.Web.Test`,
+  `Common.Test`). `Architecture.Test` holds the ArchUnitNET rules, `Application.Test` the service
+  tests against in-memory fakes, `Adapter.Out.Persistence.Test` `TagRepositoryTest` against a
+  migrated SQLite in-memory database (`SqliteTestDatabase`). No test exercises an endpoint (T-8).
 - **`Common/Result.cs` is still used nowhere.** The CRUD use cases return `Song?`/`bool` instead,
   because `Result<T>.IsSuccess() => Value is not null` cannot express a successful `Delete`.
-  Fixing `Result<T>` first is T-7 — do not adopt it as-is.
+  Fixing `Result<T>` first is T-7 — do not adopt it as-is. Renaming and merging tags return the
+  tag-specific `TagChangeResult` (status enum + tag), which is not meant as a general pattern.
 - **Legacy `coversongs` naming persists** in the build output path (`dist/coversongs-frontend`,
   matched by the Dockerfile COPY), the nginx site file name and the image names.
 - **`/test` is a daisyUI playground route**, not a feature.

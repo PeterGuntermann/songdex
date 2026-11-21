@@ -6,9 +6,9 @@ namespace Songdex.Backend.Adapter.In.Web.Endpoints.Tags;
 
 public static partial class TagsApi
 {
-    public static async Task<Ok<IEnumerable<TagResponse>>> GetAllTags(IGetAllTagsUseCase getAllTags)
+    public static async Task<Ok<IEnumerable<TagSummaryResponse>>> GetAllTags(IGetAllTagsUseCase getAllTags)
     {
         var tags = await getAllTags.GetAllTags();
-        return TypedResults.Ok(tags.Select(TagContractMappings.ToResponse));
+        return TypedResults.Ok(tags.Select(TagContractMappings.ToSummary));
     }
 }

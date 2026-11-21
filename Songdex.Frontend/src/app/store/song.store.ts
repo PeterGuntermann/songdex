@@ -1,6 +1,7 @@
 import { computed, InjectionToken, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import type { Song } from '../models/song';
+import type { Tag } from '../models/tag';
 
 export type SongState = {
   allSongs: Song[];
@@ -31,6 +32,15 @@ function distinctValues(songs: Song[], pick: (song: Song) => string | null): str
     }
   }
   return [...seen.values()].sort((a, b) => a.localeCompare(b));
+}
+
+/** Applies `change` to the tags of every song that carries the tag `id`, keeping them sorted. */
+function withTagChange(songs: Song[], id: string, change: (tags: Tag[]) => Tag[]): Song[] {
+  return songs.map((song) =>
+    song.tags.some((tag) => tag.id === id)
+      ? { ...song, tags: change(song.tags).sort((a, b) => a.name.localeCompare(b.name)) }
+      : song,
+  );
 }
 
 export const SongStore = signalStore(
@@ -84,6 +94,34 @@ export const SongStore = signalStore(
     updateSong(updatedSong: Song): void {
       patchState(store, {
         allSongs: store.allSongs().map((song) => (song.id === updatedSong.id ? updatedSong : song)),
+      });
+    },
+
+    /** Follows a renamed tag, so stored songs do not show the old name. */
+    renameTag(renamed: Tag): void {
+      patchState(store, {
+        allSongs: withTagChange(store.allSongs(), renamed.id, (tags) =>
+          tags.map((tag) => (tag.id === renamed.id ? { id: renamed.id, name: renamed.name } : tag)),
+        ),
+      });
+    },
+
+    /** Follows a deleted tag. */
+    removeTag(id: string): void {
+      patchState(store, {
+        allSongs: withTagChange(store.allSongs(), id, (tags) =>
+          tags.filter((tag) => tag.id !== id),
+        ),
+      });
+    },
+
+    /** Follows a merge: the source becomes the target, without carrying the target twice. */
+    mergeTag(sourceId: string, target: Tag): void {
+      patchState(store, {
+        allSongs: withTagChange(store.allSongs(), sourceId, (tags) => [
+          ...tags.filter((tag) => tag.id !== sourceId && tag.id !== target.id),
+          { id: target.id, name: target.name },
+        ]),
       });
     },
 

@@ -28,5 +28,9 @@ export const routes: Routes = [
     loadComponent: () => import('./songform/songform.component').then((m) => m.SongformComponent),
     canDeactivate: [unsavedChangesGuard],
   },
+  {
+    path: 'tags',
+    loadComponent: () => import('./taglist/taglist.component').then((m) => m.TaglistComponent),
+  },
   { path: '**', redirectTo: 'songs' },
 ];

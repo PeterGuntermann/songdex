@@ -1,4 +1,4 @@
-<header class="navbar border-b border-base-300 bg-base-200 px-4">
+<header class="navbar gap-4 border-b border-base-300 bg-base-200 px-4">
   <!-- The static href only satisfies Biome; RouterLink overrides it and navigates without a reload. -->
   <a routerLink="/songs" href="/songs" class="flex items-center">
     <img
@@ -9,6 +9,12 @@
       class="h-10 w-auto"
     />
   </a>
+  <nav aria-label="Main">
+    <ul class="menu menu-horizontal gap-1 p-0">
+      <li><a routerLink="/songs" href="/songs" routerLinkActive="active">Songs</a></li>
+      <li><a routerLink="/tags" href="/tags" routerLinkActive="active">Tags</a></li>
+    </ul>
+  </nav>
 </header>
 
 <router-outlet/>

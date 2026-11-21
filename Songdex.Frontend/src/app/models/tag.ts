@@ -6,6 +6,12 @@ export type Tag = {
   name: string;
 };
 
+/** Mirrors `TagSummaryResponse`: a tag as the tag endpoints return it. */
+export type TagSummary = Tag & {
+  /** Zero marks an unused tag. */
+  songCount: number;
+};
+
 /** Keep in sync with `TagsApi.MaxNameLength` in the backend. */
 export const TagLimits = {
   name: 50,

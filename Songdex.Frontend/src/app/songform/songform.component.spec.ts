@@ -4,7 +4,7 @@ import { MockProvider } from 'ng-mocks';
 import { Observable, of, throwError } from 'rxjs';
 import type { Mock } from 'vitest';
 import type { Song, SongDraft } from '../models/song';
-import type { Tag } from '../models/tag';
+import type { TagSummary } from '../models/tag';
 import { SongService } from '../services/song.service';
 import { TagService } from '../services/tag.service';
 import { stubDialog } from '../shared/confirm-dialog/dialog.testing';
@@ -13,10 +13,10 @@ import { draftOf, songFrom, TestSongs } from '../store/song.store.testdata';
 import { TAG_STATE, type TagState } from '../store/tag.store';
 import { SongformComponent } from './songform.component';
 
-const StoredTags: Tag[] = [
-  { id: 't1', name: 'Acoustic' },
-  { id: 't2', name: 'Rehearsed' },
-  { id: 't3', name: 'Summer party' },
+const StoredTags: TagSummary[] = [
+  { id: 't1', name: 'Acoustic', songCount: 1 },
+  { id: 't2', name: 'Rehearsed', songCount: 1 },
+  { id: 't3', name: 'Summer party', songCount: 0 },
 ];
 
 describe('SongformComponent', () => {
@@ -47,7 +47,10 @@ describe('SongformComponent', () => {
         provideRouter([]),
         MockProvider(SongService, { createSong, updateSong, fetchSongs, fetchSong }),
         MockProvider(TagService, { fetchTags }),
-        { provide: TAG_STATE, useValue: { allTags: StoredTags } satisfies TagState },
+        {
+          provide: TAG_STATE,
+          useValue: { allTags: StoredTags, loading: false, error: null } satisfies TagState,
+        },
         MockProvider(ActivatedRoute, {
           snapshot: { paramMap: convertToParamMap(songId ? { songId } : {}) },
         } as Partial<ActivatedRoute>),

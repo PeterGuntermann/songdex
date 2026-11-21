@@ -63,6 +63,9 @@ public static class WebAdapterExtensions
         var tags = app.MapGroup("/api/tags").WithTags("TagsApi");
         tags.MapGet("/", TagsApi.GetAllTags);
         tags.MapPost("/", TagsApi.CreateTag);
+        tags.MapPut("/{id}", TagsApi.RenameTag);
+        tags.MapDelete("/{id}", TagsApi.DeleteTag);
+        tags.MapPost("/{id}/merge-into/{targetId}", TagsApi.MergeTags);
 
         return app;
     }

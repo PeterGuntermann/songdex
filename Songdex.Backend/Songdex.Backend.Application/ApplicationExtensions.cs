@@ -20,6 +20,9 @@ public static class ApplicationExtensions
         services.AddScoped<TagService>();
         services.AddScoped<IGetAllTagsUseCase>(sp => sp.GetRequiredService<TagService>());
         services.AddScoped<ICreateTagUseCase>(sp => sp.GetRequiredService<TagService>());
+        services.AddScoped<IRenameTagUseCase>(sp => sp.GetRequiredService<TagService>());
+        services.AddScoped<IDeleteTagUseCase>(sp => sp.GetRequiredService<TagService>());
+        services.AddScoped<IMergeTagsUseCase>(sp => sp.GetRequiredService<TagService>());
         return services;
     }
 }

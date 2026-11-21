@@ -167,25 +167,51 @@ Vorschläge kommen aus dem neuen `TagStore`, den `TagService.fetchTags()` bei je
 Formulars auffrischt — ein Fehlschlag bleibt still, das Formular funktioniert ohne Vorschläge.
 Noch Getipptes wird beim Speichern übernommen und zählt für die Verlassen-Nachfrage.
 
-### E1.8 — Tags verwalten · S
+### E1.8 — Tags verwalten · S — *erledigt (2026-11-21)*
 
 > Als Nutzer will ich meine Tag-Liste aufräumen, damit sie nicht vermüllt.
 
-- [ ] Eigene Ansicht mit allen Tags und der Anzahl zugeordneter Songs
-- [ ] Umbenennen
-- [ ] Löschen (entfernt die Zuordnung bei allen Songs, nach Bestätigung)
-- [ ] Zusammenführen zweier Tags
-- [ ] Ungenutzte Tags sind erkennbar
+- [x] Eigene Ansicht mit allen Tags und der Anzahl zugeordneter Songs
+- [x] Umbenennen
+- [x] Löschen (entfernt die Zuordnung bei allen Songs, nach Bestätigung)
+- [x] Zusammenführen zweier Tags
+- [x] Ungenutzte Tags sind erkennbar
 
-### E1.9 — App-Shell mit Navigation · S
+Die Ansicht `taglist/` (Route `tags`, erreichbar über den Header) listet die Tags nach Name mit
+ihrer Song-Anzahl; ungenutzte sind gedimmt und als „unused“ markiert, der Kopf zählt sie.
+Umbenennen geschieht in der Zeile (Enter speichert, Escape bricht ab), Zusammenführen über eine
+Auswahl des Ziel-Tags, beides wie das Löschen mit `ConfirmDialog` bzw. Feldprüfung.
+
+API: `GET /api/tags` liefert jetzt `{id, name, songCount}`; neu sind `PUT /api/tags/{id}`
+(Umbenennen; 409, wenn ein *anderer* Tag den Namen ohne Beachtung der Groß-/Kleinschreibung schon
+trägt — die eigene Schreibweise zu ändern ist erlaubt), `DELETE /api/tags/{id}` und
+`POST /api/tags/{id}/merge-into/{targetId}` (400 beim Zusammenführen mit sich selbst). Die
+Ergebnisse von Umbenennen und Zusammenführen trägt `TagChangeResult` — bewusst tag-spezifisch,
+das allgemeine Result-Pattern bleibt T-7.
+
+**Entscheidung: Zusammenführen und Löschen erledigt das `TagRepository` in einer Transaktion**
+(ein `SaveChanges`): Beim Zusammenführen erhält jeder Song der Quelle das Ziel, sofern er es
+nicht schon trägt, dann verschwindet die Quelle; beim Löschen räumt der kaskadierende
+Fremdschlüssel `SongTags` auf. Weil das Datenbankverhalten ist, prüfen es die ersten Tests in
+`Adapter.Out.Persistence.Test` (`TagRepositoryTest`) gegen eine migrierte SQLite-in-memory-DB.
+
+Im Frontend patcht `TagService` nach jeder Änderung neben dem `TagStore` auch die Tags der Songs
+im `SongStore`, damit Detailseite und Formular keinen umbenannten, gelöschten oder
+zusammengeführten Tag mehr zeigen.
+
+### E1.9 — App-Shell mit Navigation · S — *erledigt (2026-11-21), mit E1.8*
 
 > Als Nutzer will ich zwischen den Bereichen der Anwendung wechseln können.
 
-- [ ] `AppComponent` ist nicht länger ein nacktes `<router-outlet/>`
-- [ ] Kopfzeile mit Produktnamen und Navigation (Songs, Tags, später Setlists)
-- [ ] Der aktive Bereich ist hervorgehoben
-- [ ] Der Seitentitel heißt „Songdex", nicht mehr „Coversongs"
-- [ ] Die Playground-Route `/test` ist aus der Navigation ausgenommen
+- [x] `AppComponent` ist nicht länger ein nacktes `<router-outlet/>`
+- [x] Kopfzeile mit Produktnamen und Navigation (Songs, Tags, später Setlists)
+- [x] Der aktive Bereich ist hervorgehoben
+- [x] Der Seitentitel heißt „Songdex", nicht mehr „Coversongs"
+- [x] Die Playground-Route `/test` ist aus der Navigation ausgenommen
+
+Der Header mit Logo kam vor E1.7; E1.8 brauchte einen Einstieg in die Tag-Ansicht und hat ihn um
+die Navigation „Songs“/„Tags“ ergänzt (`routerLinkActive` markiert den aktiven Bereich, auch auf
+Unterseiten wie `songs/:id`). Der Seitentitel war bereits „Songdex“.
 
 ---
 
@@ -453,7 +479,7 @@ seit dem 2026-10-28 erledigt.**
 | ID       | Thema                                                                                                                                                                        | Größe |
 |----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
 | ~~T-5~~  | ~~Sync-over-async beseitigen.~~ erledigt 2026-10-28 mit E1.2: `SongService` ist durchgehend `async`, `IGetAllSongsUseCase` liefert `Task<IEnumerable<Song>>`.                | S     |
-| T-6      | **Backend-Testprojekte füllen.** `Application.Test` ist seit 2026-10-28 gefüllt (`SongServiceTest` gegen ein In-Memory-Repository). Die drei übrigen fachlichen `*.Test`-Projekte enthalten weiterhin keine einzige `.cs`-Datei. | M     |
+| T-6      | **Backend-Testprojekte füllen.** `Application.Test` ist seit 2026-10-28 gefüllt (`SongServiceTest`, `TagServiceTest` gegen In-Memory-Repositories), `Adapter.Out.Persistence.Test` seit 2026-11-21 mit `TagRepositoryTest` gegen SQLite in-memory (`SongRepository` dort noch ungetestet). `Adapter.In.Web.Test` und `Common.Test` enthalten weiterhin keine einzige `.cs`-Datei. | M     |
 | T-7      | **Result-Pattern tatsächlich verwenden.** `Common/Result.cs` ist deklariert, aber nirgends benutzt. Die CRUD-Use-Cases geben stattdessen `Song?`/`bool` zurück — `Result<T>.IsSuccess() => Value is not null` kann einen erfolgreichen `Delete` nicht ausdrücken. Erst `Result<T>` reparieren, dann umstellen. | M     |
 | T-8      | **Integrationstest REST → Datenbank.** Die fünf `/api/songs`-Endpoints sind bisher nur von Hand per curl geprüft. *(aus `Todos.backend.md`)*                                 | M     |
 | T-9      | **Coverage aktivieren.** Läuft nur auf Zuruf (`ng test --coverage`), ohne Schwellwerte. `coverageThresholds` im `test`-Target setzen.                                        | S     |

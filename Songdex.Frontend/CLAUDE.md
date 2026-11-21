@@ -54,8 +54,13 @@ pass your own: `vi.fn<(id: string) => void>()` — the bare `vi.fn()` return typ
   `SongRequestValidation.cs` in the backend.
 - **Tags are edited through `TaginputComponent`** (`taginput/`), a `ControlValueAccessor` over a
   `string[]` of names (`SongDraft.tags`); a `Song` carries `Tag` objects instead. Suggestions
-  come from `TagStore` (own `TAG_STATE` seam), filled by `TagService.fetchTags()`, which fails
-  silently. Name limit and case-insensitive comparison live in `models/tag.ts`.
+  come from `TagStore` (own `TAG_STATE` seam, holds `TagSummary` with `songCount`), filled by
+  `TagService.fetchTags()`; the form ignores its `error`, the tag view (`taglist/`) shows it.
+  Name limit and case-insensitive comparison live in `models/tag.ts`.
+- **Tag changes patch both stores.** `TagService.renameTag`/`deleteTag`/`mergeTags` (cold, like
+  `SongService`) update the `TagStore` *and* the tags of the songs in the `SongStore`
+  (`renameTag`/`removeTag`/`mergeTag`), so no view shows a stale tag. Keep that when adding a
+  tag operation.
 - **Confirmations use `shared/confirm-dialog`** (`open(): Promise<boolean>`), not `window.confirm`.
   jsdom does not implement `<dialog>` modals; specs call `stubDialog()` from `dialog.testing.ts`.
 - **The writing `SongService` methods return cold observables** — `createSong` and
